@@ -6,26 +6,31 @@ The Web API allows you as the Partner to validate a user’s identity against th
 
 The Auth Smile class allows you as the Partner to generate a sec key to interact with our servers.
 
-## Installation
+## Documentation
+
+This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction). 
+
+## Usage
 
 Add this line to your application's Gemfile:
 
 ```ruby
 gem 'smile-identity-core'
 ```
+and
 
-And then execute:
+```ruby
+require 'smile-identity-core'
+```
 
-    $ bundle
+Or install it to your system as:
 
-Or install it yourself as:
-
-    $ gem install smile-identity-core
-
-## Usage
-
+```
+  $ gem install smile-identity-core
+```
 
 #### Calculating your Signature
+
 ```
 $ connection = SmileIdentityCore::AuthSmile.new(partner_id, api_key)
 

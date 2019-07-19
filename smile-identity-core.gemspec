@@ -9,13 +9,14 @@ Gem::Specification.new do |spec|
   spec.email         = ["ridhwana.khan16@gmail.com"]
 
   spec.summary       = "The Smile Identity Web API allows the user to access most of the features of the Smile Identity system through direct server to server queries."
-  spec.description   = "The official Smile Identity gem"
+  spec.description   = "The Official Smile Identity gem"
   spec.homepage      = "https://www.smileidentity.com/"
   spec.required_ruby_version = '>= 2.0'
   spec.license = 'MIT'
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/smileidentity/smile-identity-core"
+  spec.metadata["source_code_uri"] = "https://github.com/smileidentity/smile-identity-core-ruby"
+  spec.metadata["documentation_uri"] = "https://docs-smileid.herokuapp.com/docs#web-api-introduction"
   spec.metadata["changelog_uri"] = "https://github.com/smileidentity/smile-identity-core/blob/master/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
