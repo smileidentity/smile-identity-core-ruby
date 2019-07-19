@@ -8,8 +8,9 @@ The Auth Smile class allows you as the Partner to generate a sec key to interact
 
 ## Documentation
 
-This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction). 
+This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction).
 
+Please note that you will have to be a Smile Identity Partner to be able to query our services.
 ## Usage
 
 Add this line to your application's Gemfile:
