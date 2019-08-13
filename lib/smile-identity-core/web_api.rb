@@ -305,8 +305,8 @@ module SmileIdentityCore
         user_id: @partner_params[:user_id],
         job_id: @partner_params[:job_id],
         partner_id: @partner_id,
-        image_links: @options[:image_links],
-        history: @options[:history]
+        image_links: @options[:return_image_links],
+        history: @options[:return_history]
       }.to_json
 
       url = "#{@url}/job_status"
