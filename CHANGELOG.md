@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 The first release version of Web Api.
 
-## [0.1.0] - 2019-07-19
+## [0.1.1] - 2019-07-23
 ### Updated
 Some package configurations were added.
 
