@@ -54,8 +54,24 @@ RSpec.describe SmileIdentityCore do
     }
   }
 
-  let (:optional_callback) {'www.optional_callback.com'}
-  let (:return_job_status) {true}
+  let(:options) {
+    {
+      optional_callback: 'www.optional_callback.com',
+      return_job_status: false,
+      return_image_links: false,
+      return_history: false
+    }
+  }
+
+  let(:options_with_job_status_true) {
+    {
+      optional_callback: 'wwww.optional_callback.com',
+      return_job_status: true,
+      return_image_links: false,
+      return_history: false
+    }
+  }
+
 
   let(:timestamp) {Time.now.to_i}
 
@@ -104,11 +120,11 @@ RSpec.describe SmileIdentityCore do
             job_type: nil,
           }
 
-          expect { connection.submit_job(no_partner_parameters, images, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'Please ensure that you send through partner params')
+          expect { connection.submit_job(no_partner_parameters, images, id_info, options) }.to raise_error(ArgumentError, 'Please ensure that you send through partner params')
 
-          expect { connection.submit_job(array_partner_params, images, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'Partner params needs to be an object')
+          expect { connection.submit_job(array_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Partner params needs to be an object')
 
-          expect { connection.submit_job(missing_partner_params, images, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
+          expect { connection.submit_job(missing_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
         end
 
         it 'validates the images' do
@@ -122,13 +138,13 @@ RSpec.describe SmileIdentityCore do
            }
          ]
 
-         expect { connection.submit_job(partner_params, no_images, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'Please ensure that you send through image details')
+         expect { connection.submit_job(partner_params, no_images, id_info, options) }.to raise_error(ArgumentError, 'Please ensure that you send through image details')
 
-         expect { connection.submit_job(partner_params, hash_images, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'Image details needs to be an array' )
+         expect { connection.submit_job(partner_params, hash_images, id_info, options) }.to raise_error(ArgumentError, 'Image details needs to be an array' )
 
-         expect { connection.submit_job(partner_params, empty_images, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'You need to send through at least one selfie image')
+         expect { connection.submit_job(partner_params, empty_images, id_info, options) }.to raise_error(ArgumentError, 'You need to send through at least one selfie image')
 
-         expect { connection.submit_job(partner_params, just_id_image, id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, 'You need to send through at least one selfie image')
+         expect { connection.submit_job(partner_params, just_id_image, id_info, options) }.to raise_error(ArgumentError, 'You need to send through at least one selfie image')
         end
 
         it 'validates the id_info' do
@@ -136,18 +152,40 @@ RSpec.describe SmileIdentityCore do
             amended_id_info = id_info.clone
             amended_id_info[key] = ''
 
-            expect{ connection.submit_job(partner_params, images, amended_id_info, optional_callback, return_job_status) }.to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
+            expect{ connection.submit_job(partner_params, images, amended_id_info, options) }.to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
             amended_id_info = id_info.clone
           end
         end
 
-        it 'validates the return_job_status' do
-          expect{ connection.submit_job(partner_params, images, id_info, optional_callback, nil) }.to raise_error(ArgumentError, 'Please ensure that you send through return_job_status')
+        it 'validates the options' do
 
-          expect{ connection.submit_job(partner_params, images, id_info, optional_callback, 'something') }.to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
+          options = {
+            optional_callback: 'wwww.optional_callback.com',
+            return_job_status: 'false',
+            return_image_links: false,
+            return_history: false
+          }
+
+          expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
+
+          options = {
+            optional_callback: '',
+            return_job_status: 'false',
+            return_image_links: false,
+            return_history: false
+          }
+
+          expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that optional_callback is included in the options')
+
+          options = {
+            optional_callback: 'www.optional_callback.com',
+            return_image_links: false,
+            return_history: false
+          }
+
+          expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that return_job_status is included in the options')
         end
       end
-
 
       it 'updates the callback_url when optional_callback is defined' do
 
@@ -167,16 +205,15 @@ RSpec.describe SmileIdentityCore do
         connection.instance_variable_set("@images", images)
         connection.instance_variable_set("@timestamp", timestamp)
         connection.instance_variable_set("@partner_id", partner_id)
-        connection.instance_variable_set("@callback_url", default_callback)
+        connection.instance_variable_set("@options", options)
         connection.instance_variable_set("@id_info", id_info)
-        connection.instance_variable_set("@return_job_status", false)
 
         upload_response = Typhoeus::Response.new(code: 200)
         Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
 
-        connection.submit_job(partner_params, images, id_info, optional_callback, false)
+        connection.submit_job(partner_params, images, id_info, options)
 
-        expect(connection.instance_variable_get(:@callback_url)).to eq(optional_callback)
+        expect(connection.instance_variable_get(:@callback_url)).to eq(options[:optional_callback])
         expect(connection.instance_variable_get(:@callback_url)).to_not eq(default_callback)
 
       end
@@ -195,13 +232,14 @@ RSpec.describe SmileIdentityCore do
     describe '#validate_return_data' do
       it 'validates that data is returned via the callback or job_status' do
         connection.instance_variable_set('@callback_url', '')
-        connection.instance_variable_set('@return_job_status', true)
+        connection.instance_variable_set('@options', options_with_job_status_true)
         expect {connection.send(:validate_return_data)}.not_to raise_error
 
-        connection.instance_variable_set('@return_job_status', false)
+
+        connection.instance_variable_set('@options', options)
         expect {connection.send(:validate_return_data)}.to raise_error(ArgumentError, 'Please choose to either get your response via the callback or job status query')
 
-        connection.instance_variable_set('@return_job_status', false)
+        connection.instance_variable_set('@options', options_with_job_status_true)
         connection.instance_variable_set('@callback_url', default_callback)
         expect {connection.send(:validate_return_data)}.not_to raise_error
       end
@@ -285,7 +323,7 @@ RSpec.describe SmileIdentityCore do
         connection.instance_variable_set("@partner_id", partner_id)
         connection.instance_variable_set("@callback_url", default_callback)
         connection.instance_variable_set("@id_info", id_info)
-        connection.instance_variable_set("@return_job_status", false)
+        connection.instance_variable_set("@options", options)
 
         upload_response = Typhoeus::Response.new(code: 200)
         Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
@@ -554,7 +592,7 @@ RSpec.describe SmileIdentityCore do
           typhoeus_response = Typhoeus::Response.new(code: 200)
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          connection.instance_variable_set('@return_job_status', false)
+          connection.instance_variable_set('@options', options)
           expect(connection.send(:upload_file, url, info_json)).to eq(nil)
         end
 
@@ -564,7 +602,7 @@ RSpec.describe SmileIdentityCore do
         before(:each) {
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
-          connection.instance_variable_set('@return_job_status', false)
+          connection.instance_variable_set('@options', options)
           connection.instance_variable_set('@images', images)
         }
 
@@ -602,6 +640,7 @@ RSpec.describe SmileIdentityCore do
             job_type: 1
         })
         connection.instance_variable_set('@url', url )
+        connection.instance_variable_set('@options', options )
       }
 
       it 'returns the response if job_complete is true' do
