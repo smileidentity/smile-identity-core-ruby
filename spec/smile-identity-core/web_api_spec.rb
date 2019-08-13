@@ -640,7 +640,7 @@ RSpec.describe SmileIdentityCore do
             job_type: 1
         })
         connection.instance_variable_set('@url', url )
-        connection.instance_variable_set('@options', options )
+        connection.instance_variable_set('@options', options)
       }
 
       it 'returns the response if job_complete is true' do
