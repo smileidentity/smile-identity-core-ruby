@@ -35,7 +35,7 @@ module SmileIdentityCore
       self.id_info = id_info
       self.options = options
 
-      if !options[:optional_callback].empty?
+      if options[:optional_callback] && options[:optional_callback].length > 0
         @callback_url = options[:optional_callback]
       end
 
@@ -109,7 +109,7 @@ module SmileIdentityCore
     private
 
     def validate_return_data
-      if @callback_url.empty? && !@options[:return_job_status]
+      if (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
         raise ArgumentError.new("Please choose to either get your response via the callback or job status query")
       end
     end
