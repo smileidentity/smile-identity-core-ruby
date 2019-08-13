@@ -96,19 +96,14 @@ module SmileIdentityCore
     end
 
     def options=(options)
-      [:optional_callback, :return_job_status, :return_image_links, :return_history].each do |key|
-        unless !options[key].nil? && !(options[key].empty? if options[key].is_a?(String))
-          raise ArgumentError.new("Please make sure that #{key.to_s} is included in the options")
+      updated_options = {}
+      [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
+        if key != :optional_callback
+          updated_options[key] = check_boolean(key, options[key])
         end
       end
 
-      [:return_job_status, :return_image_links, :return_history].each do |key|
-        if !!options[key] != options[key]
-          raise ArgumentError.new("#{key.to_s} needs to be a boolean")
-        end
-      end
-
-      @options = options
+      @options = updated_options
     end
 
     private
@@ -123,6 +118,18 @@ module SmileIdentityCore
       if(((@images.none? {|h| h[:image_type_id] == 1 || h[:image_type_id] == 3 }) && @id_info[:entered] != 'true'))
         raise ArgumentError.new("You are attempting to complete a job type 1 without providing an id card image or id info")
       end
+    end
+
+    def check_boolean(key, bool)
+      if (!bool)
+        bool = false;
+      end
+
+      if !!bool != bool
+        raise ArgumentError.new("#{key} needs to be a boolean")
+      end
+
+      return bool
     end
 
     def determine_sec_key

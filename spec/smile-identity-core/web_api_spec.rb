@@ -158,7 +158,6 @@ RSpec.describe SmileIdentityCore do
         end
 
         it 'validates the options' do
-
           options = {
             optional_callback: 'wwww.optional_callback.com',
             return_job_status: 'false',
@@ -167,23 +166,6 @@ RSpec.describe SmileIdentityCore do
           }
 
           expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
-
-          options = {
-            optional_callback: '',
-            return_job_status: 'false',
-            return_image_links: false,
-            return_history: false
-          }
-
-          expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that optional_callback is included in the options')
-
-          options = {
-            optional_callback: 'www.optional_callback.com',
-            return_image_links: false,
-            return_history: false
-          }
-
-          expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that return_job_status is included in the options')
         end
       end
 
@@ -276,6 +258,19 @@ RSpec.describe SmileIdentityCore do
         connection.instance_variable_set('@images', images)
         expect { connection.send(:validate_enroll_with_id) }.not_to raise_error
       end
+    end
+
+    describe '#check_boolean' do
+
+      it 'returns false if a key is nil (i.e. does not exist)' do
+        expect(connection.send(:check_boolean, 'return_job_status', nil)).to be(false)
+      end
+
+      it 'returns the boolean value as it is when it as a boolean' do
+        expect(connection.send(:check_boolean, 'return_job_status', true )).to be(true)
+        expect(connection.send(:check_boolean, 'image_links', false )).to be(false)
+      end
+
     end
 
     describe '#determine_sec_key' do
