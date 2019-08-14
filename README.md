@@ -4,7 +4,7 @@ The official Smile Identity gem exposes two classes namely, the Web API and Auth
 
 The Web API allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare).
 
-The Auth Smile class allows you as the Partner to generate a sec key to interact with our servers.
+The Signature class allows you as the Partner to generate a sec key to interact with our servers.
 
 ## Documentation
 

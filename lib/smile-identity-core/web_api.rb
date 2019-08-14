@@ -27,16 +27,16 @@ module SmileIdentityCore
 
     end
 
-    def submit_job(partner_params, images, id_info, optional_callback, return_job_status)
+    def submit_job(partner_params, images, id_info, options)
       self.partner_params = partner_params
       self.images = images
       @timestamp = Time.now.to_i
 
       self.id_info = id_info
-      self.return_job_status = return_job_status
+      self.options = options
 
-      if !optional_callback.empty?
-        @callback_url = optional_callback
+      if options[:optional_callback] && options[:optional_callback].length > 0
+        @callback_url = options[:optional_callback]
       end
 
       if partner_params[:job_type].to_i == 1
@@ -95,22 +95,21 @@ module SmileIdentityCore
       @id_info = id_info
     end
 
-    def return_job_status=(return_job_status)
-      if return_job_status == nil
-        raise ArgumentError.new('Please ensure that you send through return_job_status')
+    def options=(options)
+      updated_options = {}
+      [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
+        if key != :optional_callback
+          updated_options[key] = check_boolean(key, options[key])
+        end
       end
 
-      if !!return_job_status != return_job_status
-        raise ArgumentError.new('return_job_status needs to be a boolean')
-      end
-
-      @return_job_status = return_job_status
+      @options = updated_options
     end
 
     private
 
     def validate_return_data
-      if @callback_url.empty? && !@return_job_status
+      if (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
         raise ArgumentError.new("Please choose to either get your response via the callback or job status query")
       end
     end
@@ -119,6 +118,18 @@ module SmileIdentityCore
       if(((@images.none? {|h| h[:image_type_id] == 1 || h[:image_type_id] == 3 }) && @id_info[:entered] != 'true'))
         raise ArgumentError.new("You are attempting to complete a job type 1 without providing an id card image or id info")
       end
+    end
+
+    def check_boolean(key, bool)
+      if (!bool)
+        bool = false;
+      end
+
+      if !!bool != bool
+        raise ArgumentError.new("#{key} needs to be a boolean")
+      end
+
+      return bool
     end
 
     def determine_sec_key
@@ -264,7 +275,7 @@ module SmileIdentityCore
 
       request.on_complete do |response|
         if response.success?
-          if @return_job_status
+          if @options[:return_job_status]
             return query_job_status
           else
             return
@@ -294,7 +305,8 @@ module SmileIdentityCore
         user_id: @partner_params[:user_id],
         job_id: @partner_params[:job_id],
         partner_id: @partner_id,
-        image_links: "false", # we hardcode to false for now
+        image_links: @options[:return_image_links],
+        history: @options[:return_history]
       }.to_json
 
       url = "#{@url}/job_status"
