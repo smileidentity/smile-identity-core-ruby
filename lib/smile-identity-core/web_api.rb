@@ -54,7 +54,7 @@ module SmileIdentityCore
       end
 
       if !partner_params.is_a?(Hash)
-        raise ArgumentError.new('Partner params needs to be an object')
+        raise ArgumentError.new('Partner params needs to be a hash')
       end
 
       [:user_id, :job_id, :job_type].each do |key|
