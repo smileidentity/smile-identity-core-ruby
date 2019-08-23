@@ -133,16 +133,15 @@ module SmileIdentityCore
     end
 
     def determine_sec_key
-      hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, @timestamp].join(":"))
-      public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
-      @sec_key = [Base64.encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
+      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
     end
 
     def configure_prep_upload_json
+
       body =  {
         file_name: 'selfie.zip',
         timestamp: @timestamp,
-        sec_key: determine_sec_key,
+        sec_key: determine_sec_key[:sec_key],
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
