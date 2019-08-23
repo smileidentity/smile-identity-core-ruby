@@ -276,7 +276,7 @@ RSpec.describe SmileIdentityCore do
     describe '#determine_sec_key' do
       # NOTE: we can possibly test more here
       it 'contains a join in the signature' do
-        expect(connection.send(:determine_sec_key)).to include('|')
+        expect(connection.send(:determine_sec_key)[:sec_key]).to include('|')
       end
     end
 
