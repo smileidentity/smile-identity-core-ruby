@@ -24,16 +24,15 @@ module SmileIdentityCore
       else
         @url = sid_server
       end
-
     end
 
     def submit_job(partner_params, images, id_info, options)
-      self.partner_params = partner_params
+      self.partner_params = symbolize_keys partner_params
       self.images = images
       @timestamp = Time.now.to_i
 
-      self.id_info = id_info
-      self.options = options
+      self.id_info = symbolize_keys id_info
+      self.options = symbolize_keys options
 
       if options[:optional_callback] && options[:optional_callback].length > 0
         @callback_url = options[:optional_callback]
@@ -80,7 +79,7 @@ module SmileIdentityCore
         raise ArgumentError.new('You need to send through at least one selfie image')
       end
 
-      @images = images
+      @images = images.map { |image| symbolize_keys image }
     end
 
     def id_info=(id_info)
@@ -107,6 +106,10 @@ module SmileIdentityCore
     end
 
     private
+
+    def symbolize_keys hash
+      Hash[hash.map{ |k, v| [k.to_sym, v] }]
+    end
 
     def validate_return_data
       if (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
