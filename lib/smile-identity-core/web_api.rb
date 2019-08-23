@@ -34,11 +34,11 @@ module SmileIdentityCore
       self.id_info = symbolize_keys id_info
       self.options = symbolize_keys options
 
-      if options[:optional_callback] && options[:optional_callback].length > 0
-        @callback_url = options[:optional_callback]
+      if @options[:optional_callback] && @options[:optional_callback].length > 0
+        @callback_url = @options[:optional_callback]
       end
 
-      if partner_params[:job_type].to_i == 1
+      if @partner_params[:job_type].to_i == 1
         validate_enroll_with_id
       end
 
