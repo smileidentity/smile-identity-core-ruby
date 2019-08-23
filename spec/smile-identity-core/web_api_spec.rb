@@ -122,7 +122,7 @@ RSpec.describe SmileIdentityCore do
 
           expect { connection.submit_job(no_partner_parameters, images, id_info, options) }.to raise_error(ArgumentError, 'Please ensure that you send through partner params')
 
-          expect { connection.submit_job(array_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Partner params needs to be an object')
+          expect { connection.submit_job(array_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Partner params needs to be a hash')
 
           expect { connection.submit_job(missing_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
         end
