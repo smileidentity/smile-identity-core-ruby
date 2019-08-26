@@ -1,7 +1,7 @@
 RSpec.describe SmileIdentityCore do
   let (:partner_id) {1}
   let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
-  let (:api_key) {Base64.strict_encode64( rsa.public_key.to_pem)}
+  let (:api_key) {Base64.strict_encode64(rsa.public_key.to_pem)}
   let (:connection) { SmileIdentityCore::Signature.new(partner_id, api_key)}
 
   it 'should return the defined keys' do
@@ -12,7 +12,6 @@ RSpec.describe SmileIdentityCore do
   end
 
   it 'should correctly calculate the sec_key' do
-
     payload = connection.generate_sec_key
     sec_key = payload[:sec_key]
     encrypted, hashed = sec_key.split('|')

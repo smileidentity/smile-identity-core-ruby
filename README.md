@@ -1,6 +1,6 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes two classes namely, the Web API and AuthSmile class.
+The official Smile Identity gem exposes two classes namely, the Web API and Signature class.
 
 The Web API allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare).
 
@@ -33,7 +33,7 @@ Or install it to your system as:
 #### Calculating your Signature
 
 ```
-$ connection = SmileIdentityCore::AuthSmile.new(partner_id, api_key)
+$ connection = SmileIdentityCore::Signature.new(partner_id, api_key)
 
 $ sec_key = connection.generate_sec_key(timestamp)
 where timestamp is optional
@@ -53,7 +53,7 @@ The response will be a hash:
 ```
 $ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
 
-$ response = connection.submit_job(partner_params, images, optional_callback, return_job_status)
+$ response = connection.submit_job(partner_params, images, id_info, options)
 ```
 
 The response will be nil if you chose to set return_job_status to false, however if you have set return_job_status to true then you will receive a response like below:

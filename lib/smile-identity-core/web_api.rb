@@ -24,22 +24,21 @@ module SmileIdentityCore
       else
         @url = sid_server
       end
-
     end
 
     def submit_job(partner_params, images, id_info, options)
-      self.partner_params = partner_params
+      self.partner_params = symbolize_keys partner_params
       self.images = images
       @timestamp = Time.now.to_i
 
-      self.id_info = id_info
-      self.options = options
+      self.id_info = symbolize_keys id_info
+      self.options = symbolize_keys options
 
-      if options[:optional_callback] && options[:optional_callback].length > 0
-        @callback_url = options[:optional_callback]
+      if @options[:optional_callback] && @options[:optional_callback].length > 0
+        @callback_url = @options[:optional_callback]
       end
 
-      if partner_params[:job_type].to_i == 1
+      if @partner_params[:job_type].to_i == 1
         validate_enroll_with_id
       end
 
@@ -54,7 +53,7 @@ module SmileIdentityCore
       end
 
       if !partner_params.is_a?(Hash)
-        raise ArgumentError.new('Partner params needs to be an object')
+        raise ArgumentError.new('Partner params needs to be a hash')
       end
 
       [:user_id, :job_id, :job_type].each do |key|
@@ -80,7 +79,7 @@ module SmileIdentityCore
         raise ArgumentError.new('You need to send through at least one selfie image')
       end
 
-      @images = images
+      @images = images.map { |image| symbolize_keys image }
     end
 
     def id_info=(id_info)
@@ -100,6 +99,8 @@ module SmileIdentityCore
       [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
         if key != :optional_callback
           updated_options[key] = check_boolean(key, options[key])
+        else
+          updated_options[key] = options[key]
         end
       end
 
@@ -107,6 +108,10 @@ module SmileIdentityCore
     end
 
     private
+
+    def symbolize_keys hash
+      (hash.is_a?(Hash)) ? Hash[hash.map{ |k, v| [k.to_sym, v] }] : hash
+    end
 
     def validate_return_data
       if (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
@@ -133,16 +138,15 @@ module SmileIdentityCore
     end
 
     def determine_sec_key
-      hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, @timestamp].join(":"))
-      public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
-      @sec_key = [Base64.encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
+      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
     end
 
     def configure_prep_upload_json
+
       body =  {
         file_name: 'selfie.zip',
         timestamp: @timestamp,
-        sec_key: determine_sec_key,
+        sec_key: determine_sec_key[:sec_key],
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
