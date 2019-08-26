@@ -138,7 +138,7 @@ module SmileIdentityCore
     end
 
     def determine_sec_key
-      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
+      @sec_key = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key]
     end
 
     def configure_prep_upload_json
@@ -146,7 +146,7 @@ module SmileIdentityCore
       body =  {
         file_name: 'selfie.zip',
         timestamp: @timestamp,
-        sec_key: determine_sec_key[:sec_key],
+        sec_key: determine_sec_key,
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
