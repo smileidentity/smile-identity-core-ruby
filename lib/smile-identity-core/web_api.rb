@@ -83,7 +83,18 @@ module SmileIdentityCore
     end
 
     def id_info=(id_info)
-      if id_info[:entered] == 'true'
+
+      # if it doesnt exist, set it false
+      if(id_info.nil? || id_info[:entered].empty? || !id_info.key?(:entered))
+        id_info[:entered] = "false"
+      end
+
+      # if it's a boolean
+      if(!!id_info[:entered] == id_info[:entered])
+        id_info[:entered] = id_info[:entered].to_s
+      end
+
+      if id_info[:entered] && id_info[:entered] == 'true'
         [:first_name, :last_name, :country, :id_type, :id_number].each do |key|
           unless id_info[key] && !id_info[key].nil? && !id_info[key].empty?
             raise ArgumentError.new("Please make sure that #{key.to_s} is included in the id_info")
