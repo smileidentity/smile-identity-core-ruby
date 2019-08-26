@@ -109,8 +109,8 @@ module SmileIdentityCore
 
     private
 
-    def symbolize_keys hash
-      (hash.is_a?(Hash)) ? Hash[hash.map{ |k, v| [k.to_sym, v] }] : hash
+    def symbolize_keys params
+      (params.is_a?(Hash)) ? Hash[params.map{ |k, v| [k.to_sym, v] }] : params
     end
 
     def validate_return_data
