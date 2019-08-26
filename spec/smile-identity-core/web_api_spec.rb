@@ -261,15 +261,34 @@ RSpec.describe SmileIdentityCore do
 
     describe '#check_boolean' do
 
-      it 'returns false if a key is nil (i.e. does not exist)' do
-        expect(connection.send(:check_boolean, 'return_job_status', nil)).to be(false)
+      it 'returns false for the key if the object does not exist' do
+        options = {}
+        expect(connection.send(:check_boolean, :return_job_status, options)).to be(false)
+      end
+
+      it 'returns false if a key is nil or does not exist' do
+        expect(connection.send(:check_boolean, :return_job_status, nil)).to be(false)
       end
 
       it 'returns the boolean value as it is when it as a boolean' do
-        expect(connection.send(:check_boolean, 'return_job_status', true )).to be(true)
-        expect(connection.send(:check_boolean, 'image_links', false )).to be(false)
+        expect(connection.send(:check_boolean, :return_job_status, { :return_job_status => true } )).to be(true)
+        expect(connection.send(:check_boolean, :image_links, { :image_links => false } )).to be(false)
+      end
+    end
+
+    describe '#check_string' do
+      it 'returns '' for the key if the object does not exist' do
+        options = {}
+        expect(connection.send(:check_string, :optional_callback, options)).to eq('')
       end
 
+      it 'returns '' if a key is nil or does not exist' do
+        expect(connection.send(:check_string, :optional_callback, nil)).to eq('')
+      end
+
+      it 'returns the string as it is when it exists' do
+        expect(connection.send(:check_string, :optional_callback, { :optional_callback => 'www.optional_callback' } )).to eq('www.optional_callback')
+      end
     end
 
     describe '#determine_sec_key' do

@@ -95,12 +95,12 @@ module SmileIdentityCore
     end
 
     def options=(options)
-      updated_options = {}
+      updated_options = options
       [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
-        if key != :optional_callback
-          updated_options[key] = check_boolean(key, options[key])
+        if key.to_sym != :optional_callback
+          updated_options[key] = check_boolean(key.to_sym, options)
         else
-          updated_options[key] = options[key]
+          updated_options[key] = check_string(key.to_sym, options)
         end
       end
 
@@ -125,16 +125,24 @@ module SmileIdentityCore
       end
     end
 
-    def check_boolean(key, bool)
-      if (!bool)
-        bool = false;
+    def check_boolean(key, obj)
+      if (!obj || !obj[key])
+        return false
       end
 
-      if !!bool != bool
+      if !!obj[key] != obj[key]
         raise ArgumentError.new("#{key} needs to be a boolean")
       end
 
-      return bool
+      return obj[key]
+    end
+
+    def check_string(key, obj)
+      if (!obj || !obj[key])
+        return ''
+      else
+        return obj[key]
+      end
     end
 
     def determine_sec_key
@@ -186,7 +194,6 @@ module SmileIdentityCore
         end
       end
       request.run
-
     end
 
     def configure_info_json(server_information)
