@@ -329,6 +329,13 @@ module SmileIdentityCore
         else
           begin
             status_body = JSON.load(response.body)
+
+            valid = SmileIdentityCore::Signature.new(@partner_id, @api_key).confirm_sec_key(status_body['timestamp'], status_body['signature'])
+
+            if(!valid)
+              raise "Unable to confirm validity of the job_status response"
+            end
+
             job_complete = status_body['job_complete'].to_s
           rescue => e
             puts e.message

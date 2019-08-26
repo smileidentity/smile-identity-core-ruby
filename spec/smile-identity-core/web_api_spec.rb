@@ -625,7 +625,11 @@ RSpec.describe SmileIdentityCore do
 
     describe '#query_job_status' do
       # NOTE: this is slow, need to fix
-      let(:url) { 'https://some_server.com/dev01' }
+      let (:url) { 'https://some_server.com/dev01' }
+      let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
+      let (:partner_id) { 1 }
+      let (:api_key) { Base64.strict_encode64(rsa.public_key.to_pem) }
+      let (:timestamp)   { Time.now.to_i }
 
       before(:each) {
         connection.instance_variable_set('@partner_params', {
@@ -635,23 +639,43 @@ RSpec.describe SmileIdentityCore do
         })
         connection.instance_variable_set('@url', url )
         connection.instance_variable_set('@options', options)
+        connection.instance_variable_set('@api_key', api_key)
+        connection.instance_variable_set('@partner_id', partner_id)
+
+        hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
+        @sec_key = [Base64.strict_encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
       }
 
       it 'returns the response if job_complete is true' do
-        body = "{\"timestamp\":\"2019-07-11T13:18:27.443Z\",\"signature\":\"yX4lm9DJdOB5K3tpcHubpeHXk8dJKXNeWBstw0tnWjzG2p2a8RJDBu37yrfs+5OpYiyTsQyBDdoypqpW1fk1XZxg37NtHruh7PN/jvDyE/LXuYQvWAlxOwil8k7l9u0GFf/B5lzeMzlxqjEpTEOOJSKuNGnLNPm+qUMvnLubfVk=|301dc7936e053e836a3628c14148b7fd3cec9165f45df3918a2af6bc10430467\",\"job_complete\":true,\"job_success\":false,\"code\":\"2302\"}"
 
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: body)
+
+        body = {
+          timestamp: "#{timestamp}",
+          signature: "#{@sec_key}",
+          job_complete: true,
+          job_success: false,
+          code: "2302"
+        }.to_json
+
+        typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status)).to eq(JSON.load(body))
+        expect(connection.send(:query_job_status)).to eq(JSON.load(body.to_s))
       end
 
       it 'returns the response if the counter is 20' do
-        body = "{\"timestamp\":\"2019-07-11T13:18:27.443Z\",\"signature\":\"yX4lm9DmdOB5K3tpcg3bpeHXk8dJKXNeWBstw0tnWjzG2p2a8RJDBu37yrfs+5OpYiyTsQyBDdoypqpW1fk1XZxg37NtHyuINN/jvDyE/LXuYQvWAlxOwil8k7l9u0GFf/B5lzeMzlxqjEpTEOOJSKuNGnLNPm+qUMvnLubfVk=|301dc7936e053e836a3628c14148b7fd3cec9165f45df3918a2af6bc10430467\",\"job_complete\":false,\"job_success\":false,\"code\":\"2302\"}"
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: body)
+        body = {
+          timestamp: "#{timestamp}",
+          signature: "#{@sec_key}",
+          job_complete: false,
+          job_success: false,
+          code: "2302"
+        }.to_json
+
+        typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body))
+        expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body.to_s))
       end
 
       xit 'increments the counter if the counter is less than 20 and job_complete is not true' do
