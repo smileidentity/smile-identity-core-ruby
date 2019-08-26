@@ -119,10 +119,10 @@ module SmileIdentityCore
       end
 
       [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
-        if key.to_sym != :optional_callback
-          updated_options[key] = check_boolean(key.to_sym, options)
+        if key != :optional_callback
+          updated_options[key] = check_boolean(key, options)
         else
-          updated_options[key] = check_string(key.to_sym, options)
+          updated_options[key] = check_string(key, options)
         end
       end
 
