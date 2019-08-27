@@ -83,7 +83,24 @@ module SmileIdentityCore
     end
 
     def id_info=(id_info)
-      if id_info[:entered] == 'true'
+
+      updated_id_info = id_info
+
+      if updated_id_info.nil?
+        updated_id_info = {}
+      end
+
+      # if it doesnt exist, set it false
+      if(!updated_id_info.key?(:entered) || id_info[:entered].empty? )
+        updated_id_info[:entered] = "false"
+      end
+
+      # if it's a boolean
+      if(!!updated_id_info[:entered] == updated_id_info[:entered])
+        updated_id_info[:entered] = id_info[:entered].to_s
+      end
+
+      if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
         [:first_name, :last_name, :country, :id_type, :id_number].each do |key|
           unless id_info[key] && !id_info[key].nil? && !id_info[key].empty?
             raise ArgumentError.new("Please make sure that #{key.to_s} is included in the id_info")
@@ -91,16 +108,21 @@ module SmileIdentityCore
         end
       end
 
-      @id_info = id_info
+      @id_info = updated_id_info
     end
 
     def options=(options)
-      updated_options = {}
+      updated_options = options
+
+      if updated_options.nil?
+        updated_options = {}
+      end
+
       [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
         if key != :optional_callback
-          updated_options[key] = check_boolean(key, options[key])
+          updated_options[key] = check_boolean(key, options)
         else
-          updated_options[key] = options[key]
+          updated_options[key] = check_string(key, options)
         end
       end
 
@@ -109,8 +131,8 @@ module SmileIdentityCore
 
     private
 
-    def symbolize_keys hash
-      (hash.is_a?(Hash)) ? Hash[hash.map{ |k, v| [k.to_sym, v] }] : hash
+    def symbolize_keys params
+      (params.is_a?(Hash)) ? Hash[params.map{ |k, v| [k.to_sym, v] }] : params
     end
 
     def validate_return_data
@@ -125,20 +147,28 @@ module SmileIdentityCore
       end
     end
 
-    def check_boolean(key, bool)
-      if (!bool)
-        bool = false;
+    def check_boolean(key, obj)
+      if (!obj || !obj[key])
+        return false
       end
 
-      if !!bool != bool
+      if !!obj[key] != obj[key]
         raise ArgumentError.new("#{key} needs to be a boolean")
       end
 
-      return bool
+      return obj[key]
+    end
+
+    def check_string(key, obj)
+      if (!obj || !obj[key])
+        return ''
+      else
+        return obj[key]
+      end
     end
 
     def determine_sec_key
-      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
+      @sec_key = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key]
     end
 
     def configure_prep_upload_json
@@ -146,7 +176,7 @@ module SmileIdentityCore
       body =  {
         file_name: 'selfie.zip',
         timestamp: @timestamp,
-        sec_key: determine_sec_key[:sec_key],
+        sec_key: determine_sec_key,
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
@@ -186,7 +216,6 @@ module SmileIdentityCore
         end
       end
       request.run
-
     end
 
     def configure_info_json(server_information)
@@ -329,6 +358,13 @@ module SmileIdentityCore
         else
           begin
             status_body = JSON.load(response.body)
+
+            valid = SmileIdentityCore::Signature.new(@partner_id, @api_key).confirm_sec_key(status_body['timestamp'], status_body['signature'])
+
+            if(!valid)
+              raise "Unable to confirm validity of the job_status response"
+            end
+
             job_complete = status_body['job_complete'].to_s
           rescue => e
             puts e.message

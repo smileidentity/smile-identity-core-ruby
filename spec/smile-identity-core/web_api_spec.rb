@@ -72,7 +72,6 @@ RSpec.describe SmileIdentityCore do
     }
   }
 
-
   let(:timestamp) {Time.now.to_i}
 
   it "has a version number" do
@@ -262,21 +261,40 @@ RSpec.describe SmileIdentityCore do
 
     describe '#check_boolean' do
 
-      it 'returns false if a key is nil (i.e. does not exist)' do
-        expect(connection.send(:check_boolean, 'return_job_status', nil)).to be(false)
+      it 'returns false for the key if the object does not exist' do
+        options = {}
+        expect(connection.send(:check_boolean, :return_job_status, options)).to be(false)
+      end
+
+      it 'returns false if a key is nil or does not exist' do
+        expect(connection.send(:check_boolean, :return_job_status, nil)).to be(false)
       end
 
       it 'returns the boolean value as it is when it as a boolean' do
-        expect(connection.send(:check_boolean, 'return_job_status', true )).to be(true)
-        expect(connection.send(:check_boolean, 'image_links', false )).to be(false)
+        expect(connection.send(:check_boolean, :return_job_status, { :return_job_status => true } )).to be(true)
+        expect(connection.send(:check_boolean, :image_links, { :image_links => false } )).to be(false)
+      end
+    end
+
+    describe '#check_string' do
+      it 'returns '' for the key if the object does not exist' do
+        options = {}
+        expect(connection.send(:check_string, :optional_callback, options)).to eq('')
       end
 
+      it 'returns '' if a key is nil or does not exist' do
+        expect(connection.send(:check_string, :optional_callback, nil)).to eq('')
+      end
+
+      it 'returns the string as it is when it exists' do
+        expect(connection.send(:check_string, :optional_callback, { :optional_callback => 'www.optional_callback' } )).to eq('www.optional_callback')
+      end
     end
 
     describe '#determine_sec_key' do
       # NOTE: we can possibly test more here
       it 'contains a join in the signature' do
-        expect(connection.send(:determine_sec_key)[:sec_key]).to include('|')
+        expect(connection.send(:determine_sec_key)).to include('|')
       end
     end
 
@@ -626,7 +644,11 @@ RSpec.describe SmileIdentityCore do
 
     describe '#query_job_status' do
       # NOTE: this is slow, need to fix
-      let(:url) { 'https://some_server.com/dev01' }
+      let (:url) { 'https://some_server.com/dev01' }
+      let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
+      let (:partner_id) { 1 }
+      let (:api_key) { Base64.strict_encode64(rsa.public_key.to_pem) }
+      let (:timestamp)   { Time.now.to_i }
 
       before(:each) {
         connection.instance_variable_set('@partner_params', {
@@ -636,23 +658,43 @@ RSpec.describe SmileIdentityCore do
         })
         connection.instance_variable_set('@url', url )
         connection.instance_variable_set('@options', options)
+        connection.instance_variable_set('@api_key', api_key)
+        connection.instance_variable_set('@partner_id', partner_id)
+
+        hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
+        @sec_key = [Base64.strict_encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
       }
 
       it 'returns the response if job_complete is true' do
-        body = "{\"timestamp\":\"2019-07-11T13:18:27.443Z\",\"signature\":\"yX4lm9DJdOB5K3tpcHubpeHXk8dJKXNeWBstw0tnWjzG2p2a8RJDBu37yrfs+5OpYiyTsQyBDdoypqpW1fk1XZxg37NtHruh7PN/jvDyE/LXuYQvWAlxOwil8k7l9u0GFf/B5lzeMzlxqjEpTEOOJSKuNGnLNPm+qUMvnLubfVk=|301dc7936e053e836a3628c14148b7fd3cec9165f45df3918a2af6bc10430467\",\"job_complete\":true,\"job_success\":false,\"code\":\"2302\"}"
 
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: body)
+
+        body = {
+          timestamp: "#{timestamp}",
+          signature: "#{@sec_key}",
+          job_complete: true,
+          job_success: false,
+          code: "2302"
+        }.to_json
+
+        typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status)).to eq(JSON.load(body))
+        expect(connection.send(:query_job_status)).to eq(JSON.load(body.to_s))
       end
 
       it 'returns the response if the counter is 20' do
-        body = "{\"timestamp\":\"2019-07-11T13:18:27.443Z\",\"signature\":\"yX4lm9DmdOB5K3tpcg3bpeHXk8dJKXNeWBstw0tnWjzG2p2a8RJDBu37yrfs+5OpYiyTsQyBDdoypqpW1fk1XZxg37NtHyuINN/jvDyE/LXuYQvWAlxOwil8k7l9u0GFf/B5lzeMzlxqjEpTEOOJSKuNGnLNPm+qUMvnLubfVk=|301dc7936e053e836a3628c14148b7fd3cec9165f45df3918a2af6bc10430467\",\"job_complete\":false,\"job_success\":false,\"code\":\"2302\"}"
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: body)
+        body = {
+          timestamp: "#{timestamp}",
+          signature: "#{@sec_key}",
+          job_complete: false,
+          job_success: false,
+          code: "2302"
+        }.to_json
+
+        typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body))
+        expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body.to_s))
       end
 
       xit 'increments the counter if the counter is less than 20 and job_complete is not true' do
