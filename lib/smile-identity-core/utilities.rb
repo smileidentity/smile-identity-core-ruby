@@ -22,7 +22,6 @@ module SmileIdentityCore
     def get_job_status(user_id, job_id, return_image_links, return_history)
       @timestamp = Time.now.to_i
       return query_job_status(user_id, job_id, return_image_links, return_history)
-
     end
 
     private
@@ -39,18 +38,18 @@ module SmileIdentityCore
 
       request.on_complete do |response|
         begin
-          valid = @signature_connection.confirm_sec_key(status_body['timestamp'], status_body['signature'])
+          body = JSON.parse(response.body)
+          valid = @signature_connection.confirm_sec_key(body['timestamp'], body['signature'])
 
           if(!valid)
             raise "Unable to confirm validity of the job_status response"
           end
 
-          return JSON.parse(response.body)
+          return body
         rescue => e
           puts e.message
           puts e.backtrace
         end
-
       end
 
       request.run
