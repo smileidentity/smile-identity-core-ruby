@@ -92,7 +92,7 @@ module SmileIdentityCore
       end
 
       # if it doesnt exist, set it false
-      if(!updated_id_info.key?(:entered) || id_info[:entered].empty? )
+      if(!updated_id_info.key?(:entered) || id_info[:entered].empty?)
         updated_id_info[:entered] = "false"
       end
 
@@ -107,6 +107,10 @@ module SmileIdentityCore
             raise ArgumentError.new("Please make sure that #{key.to_s} is included in the id_info")
           end
         end
+      end
+
+      if updated_id_info[:country].upcase == 'NG' && ['PASSPORT', 'VOTER_ID', 'DRIVERS_LICENSE', 'NATIONAL_ID', 'TIN', 'CAC'].include?(updated_id_info[:id_type].upcase) && (!updated_id_info[:dob] || updated_id_info[:dob].empty? || updated_id_info[:dob].nil?)
+        raise ArgumentError.new("The ID type #{updated_id_info[:id_type]} for #{updated_id_info[:country]} requires a valid dob paramater.")
       end
 
       @id_info = updated_id_info
