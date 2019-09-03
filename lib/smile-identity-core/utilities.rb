@@ -39,6 +39,7 @@ module SmileIdentityCore
       request.on_complete do |response|
         begin
           body = JSON.parse(response.body)
+
           valid = @signature_connection.confirm_sec_key(body['timestamp'], body['signature'])
 
           if(!valid)
@@ -54,7 +55,6 @@ module SmileIdentityCore
 
       request.run
     end
-
 
     def configure_job_query(user_id, job_id, return_image_links, return_history)
       return {

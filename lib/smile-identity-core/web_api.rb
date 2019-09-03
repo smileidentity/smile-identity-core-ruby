@@ -15,6 +15,7 @@ module SmileIdentityCore
       @callback_url = default_callback
       @api_key = api_key
 
+      @sid_server = sid_server
       if !(sid_server =~ URI::regexp)
         sid_server_mapping = {
           0 => 'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
@@ -309,6 +310,7 @@ module SmileIdentityCore
       request.on_complete do |response|
         if response.success?
           if @options[:return_job_status]
+            @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
             return query_job_status
           else
             return
@@ -328,58 +330,17 @@ module SmileIdentityCore
     end
 
     def query_job_status(counter=0)
-      job_complete = false
       counter < 4 ? (sleep 2) : (sleep 6)
       counter += 1
 
-      body = {
-        sec_key: @sec_key,
-        timestamp: @timestamp,
-        user_id: @partner_params[:user_id],
-        job_id: @partner_params[:job_id],
-        partner_id: @partner_id,
-        image_links: @options[:return_image_links],
-        history: @options[:return_history]
-      }.to_json
+      response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options[:return_image_links], @options[:return_history])
 
-      url = "#{@url}/job_status"
-
-      request = Typhoeus::Request.new(
-        url,
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        method: :post,
-        body: body
-      )
-
-      request.on_complete do |response|
-
-        if response.code == 0
-          return query_job_status(counter)
-        else
-          begin
-            status_body = JSON.load(response.body)
-
-            valid = SmileIdentityCore::Signature.new(@partner_id, @api_key).confirm_sec_key(status_body['timestamp'], status_body['signature'])
-
-            if(!valid)
-              raise "Unable to confirm validity of the job_status response"
-            end
-
-            job_complete = status_body['job_complete'].to_s
-          rescue => e
-            puts e.message
-            puts e.backtrace
-          end
-
-          if job_complete == 'true' || counter == 20
-            return JSON.parse(response.body)
-          else
-            return query_job_status(counter)
-          end
-        end
+      if response && (response['job_complete'] == true || counter == 20)
+        return response
+      else
+        return query_job_status(counter)
       end
 
-      request.run
     end
   end
 end
