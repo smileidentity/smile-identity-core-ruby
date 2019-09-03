@@ -19,21 +19,26 @@ module SmileIdentityCore
 
     end
 
-    def get_job_status(user_id, job_id, return_image_links, return_history)
+    def get_job_status(user_id, job_id, options = {})
+
       @timestamp = Time.now.to_i
-      return query_job_status(user_id, job_id, return_image_links, return_history)
+      return query_job_status(user_id, job_id, symbolize_keys(options))
     end
 
     private
 
-    def query_job_status(user_id, job_id, return_image_links, return_history)
+    def symbolize_keys params
+      (params.is_a?(Hash)) ? Hash[params.map{ |k, v| [k.to_sym, v] }] : params
+    end
+
+    def query_job_status(user_id, job_id, options)
       url = "#{@url}/job_status"
 
       request = Typhoeus::Request.new(
         url,
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
         method: :post,
-        body: configure_job_query(user_id, job_id, return_image_links, return_history)
+        body: configure_job_query(user_id, job_id, options)
       )
 
       request.on_complete do |response|
@@ -56,15 +61,15 @@ module SmileIdentityCore
       request.run
     end
 
-    def configure_job_query(user_id, job_id, return_image_links, return_history)
+    def configure_job_query(user_id, job_id, options)
       return {
         sec_key: @signature_connection.generate_sec_key(@timestamp)[:sec_key],
         timestamp: @timestamp,
         user_id: user_id,
         job_id: job_id,
         partner_id: @partner_id,
-        image_links: return_image_links,
-        history: return_history
+        image_links: options[:return_image_links] || false,
+        history:  options[:return_history] || false
       }.to_json
     end
 

@@ -337,7 +337,7 @@ module SmileIdentityCore
       counter < 4 ? (sleep 2) : (sleep 6)
       counter += 1
 
-      response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options[:return_image_links], @options[:return_history])
+      response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options)
 
       if response && (response['job_complete'] == true || counter == 20)
         return response
