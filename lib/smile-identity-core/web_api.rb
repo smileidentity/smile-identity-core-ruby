@@ -178,7 +178,7 @@ module SmileIdentityCore
 
     def configure_prep_upload_json
 
-      body =  {
+      body = {
         file_name: 'selfie.zip',
         timestamp: @timestamp,
         sec_key: determine_sec_key,
