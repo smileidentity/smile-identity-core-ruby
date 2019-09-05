@@ -21,6 +21,13 @@ module SmileIdentityCore
 
     def get_job_status(user_id, job_id, options = {})
 
+      if(options.nil? || options.empty?)
+        options = {
+          return_history: false,
+          return_job_status: false
+        }
+      end
+
       @timestamp = Time.now.to_i
       return query_job_status(user_id, job_id, symbolize_keys(options))
     end
