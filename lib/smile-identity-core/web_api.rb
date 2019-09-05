@@ -48,6 +48,17 @@ module SmileIdentityCore
       return setup_requests
     end
 
+    def get_job_status(partner_params, options)
+      partner_params = symbolize_keys partner_params
+      @timestamp = Time.now.to_i
+
+      user_id = partner_params[:user_id]
+      job_id = partner_params[:job_id]
+
+      utilities = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
+      return utilities.get_job_status(user_id, job_id, options);
+    end
+
     def partner_params=(partner_params)
       if partner_params == nil
         raise ArgumentError.new('Please ensure that you send through partner params')
