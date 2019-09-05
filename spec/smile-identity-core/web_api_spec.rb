@@ -86,7 +86,7 @@ RSpec.describe SmileIdentityCore do
         connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
       end
 
-      [:@partner_id, :@api_key].each do |instance_variable|
+      [:@partner_id, :@api_key, :@sid_server].each do |instance_variable|
         it "sets the #{instance_variable} instance variable" do
           value = eval(instance_variable.slice(1..instance_variable.length-1))
           expect(connection.instance_variable_get(instance_variable)).to eq(value)
@@ -660,14 +660,13 @@ RSpec.describe SmileIdentityCore do
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
         connection.instance_variable_set('@partner_id', partner_id)
+        connection.instance_variable_set('@utilies_connection', SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
 
         hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
         @sec_key = [Base64.strict_encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
       }
 
       it 'returns the response if job_complete is true' do
-
-
         body = {
           timestamp: "#{timestamp}",
           signature: "#{@sec_key}",
