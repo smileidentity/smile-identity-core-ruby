@@ -120,7 +120,7 @@ module SmileIdentityCore
         end
       end
 
-      if updated_id_info[:country].upcase == 'NG' && ['PASSPORT', 'VOTER_ID', 'DRIVERS_LICENSE', 'NATIONAL_ID', 'TIN', 'CAC'].include?(updated_id_info[:id_type].upcase) && (!updated_id_info[:dob] || updated_id_info[:dob].empty? || updated_id_info[:dob].nil?)
+      if updated_id_info[:country] && updated_id_info[:country].upcase == 'NG' && ['PASSPORT', 'VOTER_ID', 'DRIVERS_LICENSE', 'NATIONAL_ID', 'TIN', 'CAC'].include?(updated_id_info[:id_type].upcase) && (!updated_id_info[:dob] || updated_id_info[:dob].empty? || updated_id_info[:dob].nil?)
         raise ArgumentError.new("The ID type #{updated_id_info[:id_type]} for #{updated_id_info[:country]} requires a valid dob paramater.")
       end
 
