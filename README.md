@@ -161,14 +161,20 @@ utilities_connection = SmileIdentityCore::Utilities.new('partner_id', 'api_key' 
 
 utilities_connection.get_job_status('user_id', 'job_id', options)
 where options is {return_history: true | false, return_image_links: true | false}
-```
+``` -->
 
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Then, run `bundle exec rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `gem build smile-identity-core.gemspec` and thereafter `gem push smile-identity-core-version.gem`. Make sure to git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
+To release a new version:
+- Update the version number in `version.rb`
+- Run `gem build smile-identity-core.gemspec`
+- Thereafter `gem push smile-identity-core-version.gem`.
+
+Make sure to git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 

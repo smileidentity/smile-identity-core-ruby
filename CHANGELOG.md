@@ -14,7 +14,7 @@ Some package configurations were added.
 Removed two parameters: optional_callback and return_job_status in the submit_job function in favour of an options hash.
 Introduced return_history and image_links
 
-## [0.2.1] - 2019-08-27
+## [0.2.1] - 2019-09-05
 ### Updated
 Updates to the readme
 Update some error messages
