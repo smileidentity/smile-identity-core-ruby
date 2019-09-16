@@ -241,7 +241,8 @@ module SmileIdentityCore
             "buildNumber": 0,
             "majorVersion": 2,
             "minorVersion": 0
-          }
+          },
+          "language": "ruby"
         },
         "misc_information": {
           "sec_key": @sec_key,
