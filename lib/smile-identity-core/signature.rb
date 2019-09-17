@@ -11,7 +11,7 @@ module SmileIdentityCore
         @timestamp = timestamp
 
         hash_signature = Digest::SHA256.hexdigest([@partner_id, @timestamp].join(":"))
-        public_key = OpenSSL::PKey::RSA.new(Base64.strict_decode64(@api_key))
+        public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
         @sec_key = [Base64.strict_encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
 
         return {
@@ -28,8 +28,8 @@ module SmileIdentityCore
         hash_signature = Digest::SHA256.hexdigest([@partner_id, timestamp].join(":"))
         encrypted = sec_key.split('|')[0]
 
-        public_key = OpenSSL::PKey::RSA.new(Base64.strict_decode64(@api_key))
-        decrypted = public_key.public_decrypt(Base64.strict_decode64(encrypted))
+        public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
+        decrypted = public_key.public_decrypt(Base64.decode64(encrypted))
 
         return decrypted == hash_signature
       rescue => e
