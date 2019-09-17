@@ -28,3 +28,7 @@ Add a Utilities class with get_job_status that we use internally to expose a pub
 ## [0.2.2] - 2019-09-17
 ### Updated
 Add the language to the package information
+
+## [0.2.3] - 2019-09-17
+### Updated
+Lenient Decoding of the api key
