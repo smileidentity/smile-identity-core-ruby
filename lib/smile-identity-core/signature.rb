@@ -12,7 +12,7 @@ module SmileIdentityCore
 
         hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, @timestamp].join(":"))
         public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
-        @sec_key = [Base64.strict_encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
+        @sec_key = [Base64.encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
 
         return {
           sec_key: @sec_key,
