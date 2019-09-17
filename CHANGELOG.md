@@ -24,3 +24,7 @@ Fix the loss of optional_callback
 Ensure that we allow nil inputs or empty hashes for options and id_info
 Confirm the signature when querying the job status
 Add a Utilities class with get_job_status that we use internally to expose a public get_job_status method on WebApi
+
+## [0.2.2] - 2019-09-17
+### Updated
+Add the language to the package information
