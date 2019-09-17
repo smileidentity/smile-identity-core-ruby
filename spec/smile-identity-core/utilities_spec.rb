@@ -2,7 +2,7 @@ RSpec.describe SmileIdentityCore do
   let (:partner_id) {1}
   let (:sid_server) {0}
   let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
-  let (:api_key) {Base64.strict_encode64(rsa.public_key.to_pem)}
+  let (:api_key) {Base64.encode64(rsa.public_key.to_pem)}
   let (:connection) { SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server)}
   let(:timestamp) {Time.now.to_i}
 
@@ -32,7 +32,7 @@ RSpec.describe SmileIdentityCore do
     let (:url) { 'https://some_server.com/dev01' }
     let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
     let (:partner_id) { 1 }
-    let (:api_key) { Base64.strict_encode64(rsa.public_key.to_pem) }
+    let (:api_key) { Base64.encode64(rsa.public_key.to_pem) }
     let (:timestamp)   { Time.now.to_i }
 
     before(:each) {
@@ -41,7 +41,7 @@ RSpec.describe SmileIdentityCore do
       connection.instance_variable_set('@partner_id', partner_id)
 
       hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
-      @sec_key = [Base64.strict_encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
+      @sec_key = [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
     }
 
     it 'returns the response if job_complete is true' do

@@ -1,6 +1,6 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes two classes namely, the Web API and Signature class.
+The official Smile Identity gem exposes three classes namely, the Web API and Signature class.
 
 The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
@@ -10,8 +10,8 @@ The **Signature Class** allows you as the Partner to generate a sec key to inter
 - generate_sec_key
 - confirm_sec_key
 
-<!-- The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
-- get_job_status -->
+The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
+- get_job_status
 
 ## Documentation
 
@@ -150,7 +150,7 @@ $ connection = SmileIdentityCore::Signature.new(partner_id, api_key)
 $ sec_key = connection.confirm_sec_key(sec_key, timestamp)
 ```
 
-<!-- #### Utilities Class
+#### Utilities Class
 
 You may want to receive more information about a job. This is built into Web Api if you choose to set return_job_status as true in the options hash. However, you also have the option to build the functionality yourself by using the Utilities class. Please note that if you are querying a job immediately after submitting it, you will need to poll it for the duration of the job.
 
@@ -161,7 +161,7 @@ utilities_connection = SmileIdentityCore::Utilities.new('partner_id', 'api_key' 
 
 utilities_connection.get_job_status('user_id', 'job_id', options)
 where options is {return_history: true | false, return_image_links: true | false}
-``` -->
+```
 
 ## Development
 
