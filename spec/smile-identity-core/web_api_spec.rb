@@ -320,7 +320,7 @@ RSpec.describe SmileIdentityCore do
         connection.instance_variable_set("@url", url)
       }
 
-      it 'should return nil if it runs successfully' do
+      it 'should return a json object if it runs successfully' do
         body = "{\"upload_url\":\"https://some-url/selfie.zip\",\"ref_id\":\"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww\",\"smile_job_id\":\"0000000583\",\"camera_config\":\"null\",\"code\":\"2202\"}"
 
         prep_upload_response = Typhoeus::Response.new(code: 200, body: body)
@@ -342,7 +342,7 @@ RSpec.describe SmileIdentityCore do
         Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
 
         setup_requests = connection.send(:setup_requests)
-        expect(setup_requests).to eq(nil)
+        expect(setup_requests).to eq({success: true, smile_job_id: JSON.load(body)['smile_job_id']}.to_json)
       end
 
       it 'returns the correct message if we could not get an http response' do
@@ -593,6 +593,7 @@ RSpec.describe SmileIdentityCore do
     describe '#upload_file' do
       let (:url) {'www.upload_zip.com'}
       let (:info_json) {{}}
+      let (:smile_job_id) {'0000000583'}
 
       context 'if successful' do
         before(:each) {
@@ -601,12 +602,12 @@ RSpec.describe SmileIdentityCore do
           connection.instance_variable_set('@images', images)
         }
 
-        it 'returns nothing if the file upload is a success and return_job_status is false' do
+        it 'returns a json object if the file upload is a success and return_job_status is false' do
           typhoeus_response = Typhoeus::Response.new(code: 200)
           Typhoeus.stub(url).and_return(typhoeus_response)
 
           connection.instance_variable_set('@options', options)
-          expect(connection.send(:upload_file, url, info_json)).to eq(nil)
+          expect(connection.send(:upload_file, url, info_json, smile_job_id)).to eq({success: true, smile_job_id: smile_job_id}.to_json)
         end
 
       end
@@ -623,21 +624,21 @@ RSpec.describe SmileIdentityCore do
           typhoeus_response = Typhoeus::Response.new(code: 512, body: 'Some error')
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          expect {connection.send(:upload_file, url, info_json) }.to raise_error(RuntimeError)
+          expect {connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
         end
 
         it 'returns the correct message if we could not get an http response' do
           typhoeus_response = Typhoeus::Response.new(code: 0, body: 'Some error')
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          expect {connection.send(:upload_file, url, info_json) }.to raise_error(RuntimeError)
+          expect {connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
         end
 
         it 'returns the correct message if we received a non-successful http response' do
           typhoeus_response = Typhoeus::Response.new(code: 403, body: 'Some error')
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          expect {connection.send(:upload_file, url, info_json) }.to raise_error(RuntimeError)
+          expect {connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
         end
       end
     end
