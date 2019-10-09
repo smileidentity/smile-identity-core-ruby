@@ -70,6 +70,7 @@ module SmileIdentityCore
 
     def setup_requests
       url = "#{@url}/id_verification"
+
       request = Typhoeus::Request.new(
         url,
         method: 'POST',
@@ -79,7 +80,7 @@ module SmileIdentityCore
 
       request.on_complete do |response|
         if response.success?
-          return response.body
+          return response.body.to_json
         elsif response.timed_out?
           raise "#{response.code.to_s}: #{response.body}"
         elsif response.code == 0

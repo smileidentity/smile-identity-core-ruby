@@ -55,8 +55,8 @@ RSpec.describe SmileIdentityCore do
         no_partner_parameters = nil
         array_partner_params = []
         missing_partner_params = {
-          user_id: '1',
-          job_id: '2',
+          user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
+          job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
           job_type: nil,
         }
 
@@ -90,7 +90,56 @@ RSpec.describe SmileIdentityCore do
     end
 
     describe '#setup_requests' do
+      let(:url) {'https://www.example.com'}
 
+      before(:each) {
+        connection.instance_variable_set('@id_info', id_info)
+        connection.instance_variable_set('@url', url)
+      }
+
+      it 'should return a correct json object if it runs successfully' do
+        body = {
+          "JSONVersion": "1.0.0",
+          "SmileJobID": "0000001096",
+          "PartnerParams": {
+              "user_id": "dmKaJazQCziLc6Tw9lwcgzLo",
+              "job_id": "DeXyJOGtaACFFfbZ2kxjuICE",
+              "job_type": 5
+          },
+          "ResultType": "ID Verification",
+          "ResultText": "ID Number Validated",
+          "ResultCode": "1012",
+          "IsFinalResult": "true",
+          "Actions": {
+              "Verify_ID_Number": "Verified",
+              "Return_Personal_Info": "Returned"
+          },
+          "Country": "NG",
+          "IDType": "BVN",
+          "IDNumber": "00000000000",
+          "ExpirationDate": "NaN-NaN-NaN",
+          "FullName": "some  person",
+          "DOB": "NaN-NaN-NaN",
+          "Photo": "Not Available",
+          "sec_key": "RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZli8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba",
+          "timestamp": 1570612182124
+        }
+
+        response = Typhoeus::Response.new(code: 200, body: body)
+        Typhoeus.stub("#{url}/id_verification").and_return(response)
+
+        setup_response = connection.send(:setup_requests)
+
+        expect(JSON.parse(setup_response)['PartnerParams']['user_id']).to eq(partner_params[:user_id])
+        expect(JSON.parse(setup_response)['PartnerParams']['job_id']).to eq(partner_params[:job_id])
+        expect(JSON.parse(setup_response)['PartnerParams']['job_type']).to eq(partner_params[:job_type])
+        expect(JSON.parse(setup_response)['IDType']).to eq(id_info[:id_type])
+        expect(JSON.parse(setup_response)['IDNumber']).to eq(id_info[:id_number])
+
+        # this test does not directly relate to the implementation of the library but it will help us to debug if any keys get removed from the response which will affect the partner.
+        expect(JSON.parse(setup_response).keys).to match_array(['JSONVersion', 'SmileJobID', 'PartnerParams', 'ResultType', 'ResultText', 'ResultCode', 'IsFinalResult', 'Actions', 'Country', 'IDType', 'IDNumber', 'ExpirationDate', 'FullName', 'DOB', 'Photo', 'sec_key', 'timestamp'])
+
+      end
     end
 
     describe '#configure_json' do
@@ -109,8 +158,16 @@ RSpec.describe SmileIdentityCore do
           expect(parsed_response).to have_key(key)
         end
       end
-
     end
+
+    describe '#determine_sec_key' do
+      # NOTE: more testing done in Signature class
+      it 'contains a join in the signature' do
+        expect(connection.send(:determine_sec_key)).to include('|')
+      end
+    end
+
+
   end
 
 end
