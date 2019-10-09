@@ -90,9 +90,26 @@ RSpec.describe SmileIdentityCore do
     end
 
     describe '#setup_requests' do
+
     end
 
     describe '#configure_json' do
+      let(:parsed_response) { JSON.parse(connection.send(:configure_json)) }
+
+      before(:each) {
+        connection.instance_variable_set('@id_info', id_info)
+      }
+
+      it 'returns the correct data type' do
+        expect(parsed_response).to be_kind_of(Hash)
+      end
+
+      ['timestamp', 'sec_key', 'partner_id', 'partner_params', 'id_number', 'id_type'].each do |key|
+        it "includes the #{key} key" do
+          expect(parsed_response).to have_key(key)
+        end
+      end
+
     end
   end
 

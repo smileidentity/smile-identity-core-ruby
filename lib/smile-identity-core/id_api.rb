@@ -57,6 +57,8 @@ module SmileIdentityCore
         raise ArgumentError.new("Please make sure that id_info not empty or nil")
       end
 
+      # maybe do some validation on consistent required fields like id_type and id_number
+
       @id_info = updated_id_info
     end
 
@@ -101,6 +103,10 @@ module SmileIdentityCore
 
       body.merge!(@id_info)
       JSON.generate(body)
+    end
+
+    def determine_sec_key
+      @sec_key = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key]
     end
 
   end
