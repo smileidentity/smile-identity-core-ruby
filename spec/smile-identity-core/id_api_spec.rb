@@ -51,6 +51,31 @@ RSpec.describe SmileIdentityCore do
     end
 
     describe '#submit_job' do
+      it "validates the partner_params" do
+        no_partner_parameters = nil
+        array_partner_params = []
+        missing_partner_params = {
+          user_id: '1',
+          job_id: '2',
+          job_type: nil,
+        }
+
+        expect { connection.submit_job(no_partner_parameters, id_info) }.to raise_error(ArgumentError, 'Please ensure that you send through partner params')
+
+        expect { connection.submit_job(array_partner_params, id_info) }.to raise_error(ArgumentError, 'Partner params needs to be a hash')
+
+        expect { connection.submit_job(missing_partner_params, id_info) }.to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
+      end
+
+      it 'validates that a job type 5 was submitted' do
+        expect { connection.submit_job({ user_id: 'dmKaJazQCziLc6Tw9lwcgzLo', job_id: 'DeXyJOGtaACFFfbZ2kxjuICE', job_type: 1 }, id_info) }.to raise_error(ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api')
+      end
+
+      it 'validates the id_info' do
+        expect{ connection.submit_job(partner_params, nil) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
+        expect{ connection.submit_job(partner_params, {}) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
+      end
+
       xit 'should return a json object' do
         payload = connection.submit_job(partner_params, id_info)
         # expect(payload).to be_kind_of(Hash)
@@ -62,15 +87,12 @@ RSpec.describe SmileIdentityCore do
 
   context 'ensure that the private methods behave correctly' do
     describe '#symbolize_keys' do
-
     end
 
     describe '#setup_requests' do
-
     end
 
     describe '#configure_json' do
-
     end
   end
 

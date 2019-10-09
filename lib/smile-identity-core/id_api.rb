@@ -24,9 +24,40 @@ module SmileIdentityCore
 
       self.id_info = symbolize_keys id_info
 
-      # if its not a job type 5 then throw an error
+      if @partner_params[:job_type].to_i != 5
+        raise ArgumentError.new('Please ensure that you are setting your job_type to 5 to query ID Api')
+      end
 
       return setup_requests
+    end
+
+    def partner_params=(partner_params)
+      if partner_params == nil
+        raise ArgumentError.new('Please ensure that you send through partner params')
+      end
+
+      if !partner_params.is_a?(Hash)
+        raise ArgumentError.new('Partner params needs to be a hash')
+      end
+
+      [:user_id, :job_id, :job_type].each do |key|
+        unless partner_params[key] && !partner_params[key].nil? && !(partner_params[key].empty? if partner_params[key].is_a?(String))
+          raise ArgumentError.new("Please make sure that #{key.to_s} is included in the partner params")
+        end
+      end
+
+      @partner_params = partner_params
+    end
+
+    def id_info=(id_info)
+
+      updated_id_info = id_info
+
+      if updated_id_info.nil? ||  updated_id_info.keys.length == 0
+        raise ArgumentError.new("Please make sure that id_info not empty or nil")
+      end
+
+      @id_info = updated_id_info
     end
 
     private
