@@ -124,6 +124,22 @@ Please note that if you do not need to pass through options if you will not be u
 response = connection.get_job_status(partner_params, nil);
 ```
 
+#### ID Api Class
+
+
+##### submit_job method
+```
+$ connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
+
+$ response = connection.submit_job(partner_params, id_info)
+```
+
+
+Your response will looks as follows:
+```
+```
+
+
 #### Signature Class
 
 ##### generate_sec_key method
