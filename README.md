@@ -56,8 +56,12 @@ Please note that if you do not need to pass through id_info or options, you may 
 String response = connection.submit_job(partner_params, images, nil, nil);
 ```
 
-The response will be nil if you chose to set return_job_status to false, however if you have set return_job_status to true then you will receive a response like below:
+if you chose to set return_job_status to false, the response will be:
+```
+{success: true, smile_job_id: smile_job_id}
+```
 
+However, if you have set return_job_status to true then you will receive a response like below:
 ```
 {
   "timestamp": "2018-03-13T21:04:11.193Z",
