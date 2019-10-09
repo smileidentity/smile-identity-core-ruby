@@ -218,7 +218,7 @@ module SmileIdentityCore
           prep_upload_response = JSON.parse(response.body)
           info_json = configure_info_json(prep_upload_response)
 
-          file_upload_response = upload_file(prep_upload_response['upload_url'], info_json)
+          file_upload_response = upload_file(prep_upload_response['upload_url'], info_json, prep_upload_response['smile_job_id'])
           return file_upload_response
 
         elsif response.timed_out?
@@ -311,7 +311,7 @@ module SmileIdentityCore
       end
     end
 
-    def upload_file(url, info_json)
+    def upload_file(url, info_json, smile_job_id)
 
       file = zip_up_file(info_json)
       file.rewind
@@ -329,7 +329,7 @@ module SmileIdentityCore
             @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
             return query_job_status
           else
-            return
+            return {success: true, smile_job_id: smile_job_id}.to_json
           end
         elsif response.timed_out?
           raise " #{response.code.to_s}: #{response.body}"
