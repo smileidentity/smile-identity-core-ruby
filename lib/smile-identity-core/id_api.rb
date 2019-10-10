@@ -80,7 +80,7 @@ module SmileIdentityCore
 
       request.on_complete do |response|
         if response.success?
-          return response.body.to_json
+          return response.body
         elsif response.timed_out?
           raise "#{response.code.to_s}: #{response.body}"
         elsif response.code == 0

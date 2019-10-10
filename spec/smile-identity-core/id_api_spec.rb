@@ -75,12 +75,6 @@ RSpec.describe SmileIdentityCore do
         expect{ connection.submit_job(partner_params, nil) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
         expect{ connection.submit_job(partner_params, {}) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
       end
-
-      xit 'should return a json object' do
-        payload = connection.submit_job(partner_params, id_info)
-        # expect(payload).to be_kind_of(Hash)
-        # expect(payload).to have_key(key)
-      end
     end
   end
 
