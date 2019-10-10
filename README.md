@@ -6,6 +6,9 @@ The **Web API Class** allows you as the Partner to validate a user’s identity 
 - submit_job
 - get_job_status
 
+The **ID Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
+- submit_job
+
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
 - generate_sec_key
 - confirm_sec_key
@@ -427,9 +430,7 @@ $ sec_key = connection.confirm_sec_key(sec_key, timestamp)
 
 You may want to receive more information about a job. This is built into Web Api if you choose to set return_job_status as true in the options hash. However, you also have the option to build the functionality yourself by using the Utilities class. Please note that if you are querying a job immediately after submitting it, you will need to poll it for the duration of the job.
 
-```java
-
-
+```ruby
 utilities_connection = SmileIdentityCore::Utilities.new('partner_id', 'api_key' , sid_server)
 
 utilities_connection.get_job_status('user_id', 'job_id', options)
