@@ -70,47 +70,155 @@ Should you choose to *set return_job_status to false*, the response will be a JS
 {success: true, smile_job_id: smile_job_id}
 ```
 
-However, if you have *set return_job_status to true* then you will receive JSON Object response like below:
+However, if you have *set return_job_status to true (with image_links and history)* then you will receive JSON Object response like below:
 ```
 {
-  "timestamp": "2018-03-13T21:04:11.193Z",
-  "signature": "<your signature>",
-  "job_complete": true,
-  "job_success": true,
-  "result": {
-    "ResultText": "Enroll User",
-    "ResultType": "SAIA",
-    "SmileJobID": "0000001897",
-    "JSONVersion": "1.0.0",
-    "IsFinalResult": "true",
-    "PartnerParams": {
-      "job_id": "52d0de86-be3b-4219-9e96-8195b0018944",
-      "user_id": "e54e0e98-8b8c-4215-89f5-7f9ea42bf650",
-      "job_type": 4
-    },
-    "ConfidenceValue": "100",
-    "IsMachineResult": "true",
-  }
-  "code": "2302"
+   "job_success":true,
+   "result":{
+      "ConfidenceValue":"99",
+      "JSONVersion":"1.0.0",
+      "Actions":{
+         "Verify_ID_Number":"Verified",
+         "Return_Personal_Info":"Returned",
+         "Human_Review_Update_Selfie":"Not Applicable",
+         "Human_Review_Compare":"Not Applicable",
+         "Update_Registered_Selfie_On_File":"Not Applicable",
+         "Liveness_Check":"Not Applicable",
+         "Register_Selfie":"Approved",
+         "Human_Review_Liveness_Check":"Not Applicable",
+         "Selfie_To_ID_Authority_Compare":"Completed",
+         "Selfie_To_ID_Card_Compare":"Not Applicable",
+         "Selfie_To_Registered_Selfie_Compare":"Not Applicable"
+      },
+      "ResultText":"Enroll User",
+      "IsFinalResult":"true",
+      "IsMachineResult":"true",
+      "ResultType":"SAIA",
+      "PartnerParams":{
+         "job_type":"1",
+         "optional_info":"we are one",
+         "user_id":"HBBBBBBH57g",
+         "job_id":"HBBBBBBHg"
+      },
+      "Source":"WebAPI",
+      "ResultCode":"0810",
+      "SmileJobID":"0000001111"
+   },
+   "code":"2302",
+   "job_complete":true,
+   "signature":"HKBhxcv+1qaLy\C7PjVtk257dE=|1577b051a4313ed5e3e4d29893a66f966e31af0a2d2f6bec2a7f2e00f2701259",
+   "history":[
+      {
+         "ConfidenceValue":"99",
+         "JSONVersion":"1.0.0",
+         "Actions":{
+            "Verify_ID_Number":"Verified",
+            "Return_Personal_Info":"Returned",
+            "Human_Review_Update_Selfie":"Not Applicable",
+            "Human_Review_Compare":"Not Applicable",
+            "Update_Registered_Selfie_On_File":"Not Applicable",
+            "Liveness_Check":"Not Applicable",
+            "Register_Selfie":"Approved",
+            "Human_Review_Liveness_Check":"Not Applicable",
+            "Selfie_To_ID_Authority_Compare":"Completed",
+            "Selfie_To_ID_Card_Compare":"Not Applicable",
+            "Selfie_To_Registered_Selfie_Compare":"Not Applicable"
+         },
+         "ResultText":"Enroll User",
+         "IsFinalResult":"true",
+         "IsMachineResult":"true",
+         "ResultType":"SAIA",
+         "PartnerParams":{
+            "job_type":"1",
+            "optional_info":"we are one",
+            "user_id":"HBBBBBBH57g",
+            "job_id":"HBBBBBBHg"
+         },
+         "Source":"WebAPI",
+         "ResultCode":"0810",
+         "SmileJobID":"0000001111"
+      }
+   ],
+   "image_links":{
+      "selfie_image":"image_link"
+   },
+   "timestamp":"2019-10-10T12:32:04.622Z"
 }
 ```
 
 You can also *view your response asynchronously at the callback* that you have set, it will look as follows:
 ```
 {
-  "ResultCode": "1220",
-  "ResultText": "Authenticated",
-  "ResultType": "DIVA",
-  "SmileJobID": "0000000001",
-  "JSONVersion": "1.0.0",
-  "IsFinalResult": "true",
-  "PartnerParams": {
-    "job_id": "e7ca3e6c-e527-7165-b0b5-b90db1276378",
-    "user_id": "07a0c120-98d7-4fdc-bc62-3c6bfd16c60e",
-    "job_type": 2
-  },
-  "ConfidenceValue": "100.000000",
-  "IsMachineResult": "true"
+   "job_success":true,
+   "result":{
+      "ConfidenceValue":"99",
+      "JSONVersion":"1.0.0",
+      "Actions":{
+         "Verify_ID_Number":"Verified",
+         "Return_Personal_Info":"Returned",
+         "Human_Review_Update_Selfie":"Not Applicable",
+         "Human_Review_Compare":"Not Applicable",
+         "Update_Registered_Selfie_On_File":"Not Applicable",
+         "Liveness_Check":"Not Applicable",
+         "Register_Selfie":"Approved",
+         "Human_Review_Liveness_Check":"Not Applicable",
+         "Selfie_To_ID_Authority_Compare":"Completed",
+         "Selfie_To_ID_Card_Compare":"Not Applicable",
+         "Selfie_To_Registered_Selfie_Compare":"Not Applicable"
+      },
+      "ResultText":"Enroll User",
+      "IsFinalResult":"true",
+      "IsMachineResult":"true",
+      "ResultType":"SAIA",
+      "PartnerParams":{
+         "job_type":"1",
+         "optional_info":"we are one",
+         "user_id":"HBBBBBBH57g",
+         "job_id":"HBBBBBBHg"
+      },
+      "Source":"WebAPI",
+      "ResultCode":"0810",
+      "SmileJobID":"0000001111"
+   },
+   "code":"2302",
+   "job_complete":true,
+   "signature":"HKBhxcv+1qaLy\C7PjVtk257dE=|1577b051a4313ed5e3e4d29893a66f966e31af0a2d2f6bec2a7f2e00f2701259",
+   "history":[
+      {
+         "ConfidenceValue":"99",
+         "JSONVersion":"1.0.0",
+         "Actions":{
+            "Verify_ID_Number":"Verified",
+            "Return_Personal_Info":"Returned",
+            "Human_Review_Update_Selfie":"Not Applicable",
+            "Human_Review_Compare":"Not Applicable",
+            "Update_Registered_Selfie_On_File":"Not Applicable",
+            "Liveness_Check":"Not Applicable",
+            "Register_Selfie":"Approved",
+            "Human_Review_Liveness_Check":"Not Applicable",
+            "Selfie_To_ID_Authority_Compare":"Completed",
+            "Selfie_To_ID_Card_Compare":"Not Applicable",
+            "Selfie_To_Registered_Selfie_Compare":"Not Applicable"
+         },
+         "ResultText":"Enroll User",
+         "IsFinalResult":"true",
+         "IsMachineResult":"true",
+         "ResultType":"SAIA",
+         "PartnerParams":{
+            "job_type":"1",
+            "optional_info":"we are one",
+            "user_id":"HBBBBBBH57g",
+            "job_id":"HBBBBBBHg"
+         },
+         "Source":"WebAPI",
+         "ResultCode":"0810",
+         "SmileJobID":"0000001111"
+      }
+   ],
+   "image_links":{
+      "selfie_image":"image_link"
+   },
+   "timestamp":"2019-10-10T12:32:04.622Z"
 }
 ```
 
@@ -144,7 +252,6 @@ If you have queried a job type 5, your response be a JSON String that will conta
 }
 ```
 
-
 ##### get_job_status method
 Sometimes, you may want to get a particular job status at a later time. You may use the get_job_status function to do this:
 
@@ -167,29 +274,80 @@ response = connection.get_job_status(partner_params, nil);
 
 **Response**
 
-Your response will return a JSON Object below:
+Your response will return a JSON Object below with image_links and history included:
 
 ```
 {
-  "timestamp": "2018-03-13T21:04:11.193Z",
-  "signature": "<your signature>",
-  "job_complete": true,
-  "job_success": true,
-  "result": {
-    "ResultText": "Enroll User",
-    "ResultType": "SAIA",
-    "SmileJobID": "0000001897",
-    "JSONVersion": "1.0.0",
-    "IsFinalResult": "true",
-    "PartnerParams": {
-      "job_id": "52d0de86-be3b-4219-9e96-8195b0018944",
-      "user_id": "e54e0e98-8b8c-4215-89f5-7f9ea42bf650",
-      "job_type": 4
-    },
-    "ConfidenceValue": "100",
-    "IsMachineResult": "true",
-  }
-  "code": "2302"
+   "job_success":true,
+   "result":{
+      "ConfidenceValue":"99",
+      "JSONVersion":"1.0.0",
+      "Actions":{
+         "Verify_ID_Number":"Verified",
+         "Return_Personal_Info":"Returned",
+         "Human_Review_Update_Selfie":"Not Applicable",
+         "Human_Review_Compare":"Not Applicable",
+         "Update_Registered_Selfie_On_File":"Not Applicable",
+         "Liveness_Check":"Not Applicable",
+         "Register_Selfie":"Approved",
+         "Human_Review_Liveness_Check":"Not Applicable",
+         "Selfie_To_ID_Authority_Compare":"Completed",
+         "Selfie_To_ID_Card_Compare":"Not Applicable",
+         "Selfie_To_Registered_Selfie_Compare":"Not Applicable"
+      },
+      "ResultText":"Enroll User",
+      "IsFinalResult":"true",
+      "IsMachineResult":"true",
+      "ResultType":"SAIA",
+      "PartnerParams":{
+         "job_type":"1",
+         "optional_info":"we are one",
+         "user_id":"HBBBBBBH57g",
+         "job_id":"HBBBBBBHg"
+      },
+      "Source":"WebAPI",
+      "ResultCode":"0810",
+      "SmileJobID":"0000001111"
+   },
+   "code":"2302",
+   "job_complete":true,
+   "signature":"HKBhxcv+1qaLy\C7PjVtk257dE=|1577b051a4313ed5e3e4d29893a66f966e31af0a2d2f6bec2a7f2e00f2701259",
+   "history":[
+      {
+         "ConfidenceValue":"99",
+         "JSONVersion":"1.0.0",
+         "Actions":{
+            "Verify_ID_Number":"Verified",
+            "Return_Personal_Info":"Returned",
+            "Human_Review_Update_Selfie":"Not Applicable",
+            "Human_Review_Compare":"Not Applicable",
+            "Update_Registered_Selfie_On_File":"Not Applicable",
+            "Liveness_Check":"Not Applicable",
+            "Register_Selfie":"Approved",
+            "Human_Review_Liveness_Check":"Not Applicable",
+            "Selfie_To_ID_Authority_Compare":"Completed",
+            "Selfie_To_ID_Card_Compare":"Not Applicable",
+            "Selfie_To_Registered_Selfie_Compare":"Not Applicable"
+         },
+         "ResultText":"Enroll User",
+         "IsFinalResult":"true",
+         "IsMachineResult":"true",
+         "ResultType":"SAIA",
+         "PartnerParams":{
+            "job_type":"1",
+            "optional_info":"we are one",
+            "user_id":"HBBBBBBH57g",
+            "job_id":"HBBBBBBHg"
+         },
+         "Source":"WebAPI",
+         "ResultCode":"0810",
+         "SmileJobID":"0000001111"
+      }
+   ],
+   "image_links":{
+      "selfie_image":"image_link"
+   },
+   "timestamp":"2019-10-10T12:32:04.622Z"
 }
 ```
 
