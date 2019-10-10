@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/smileidentity/smile-identity-core-ruby"
-  spec.metadata["documentation_uri"] = "https://docs-smileid.herokuapp.com/docs#web-api-introduction"
+  spec.metadata["documentation_uri"] = "https://docs.smileidentity.com"
   spec.metadata["changelog_uri"] = "https://github.com/smileidentity/smile-identity-core/blob/master/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
