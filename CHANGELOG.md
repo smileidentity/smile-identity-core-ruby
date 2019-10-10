@@ -32,3 +32,9 @@ Add the language to the package information
 ## [0.2.3] - 2019-09-17
 ### Updated
 Lenient Decoding of the api key
+
+## [1.0.0] - 2019-10-11
+## Updated
+Amend the success response when job status is false to be a JSON String containing {"success":true,"smile_job_id":"job_id"}
+Add the ID API Class
+Add the ability to query ID Api from the Web API class
