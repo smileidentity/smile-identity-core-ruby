@@ -15,7 +15,7 @@ The **Utilities Class** allows you as the Partner to have access to our general 
 
 ## Documentation
 
-This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction).
+This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs.smileidentity.com).
 
 Please note that you will have to be a Smile Identity Partner to be able to query our services. You can sign up on the [Portal](https://test-smileid.herokuapp.com/signup?products[]=1-IDVALIDATION&products[]=2-AUTHENTICATION).
 
