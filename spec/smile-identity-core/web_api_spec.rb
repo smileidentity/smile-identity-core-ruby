@@ -1,4 +1,4 @@
-RSpec.describe SmileIdentityCore do
+RSpec.describe SmileIdentityCore::WebApi do
 
   let (:partner_id) {'001'}
   let (:default_callback) {'www.default_callback.com'}

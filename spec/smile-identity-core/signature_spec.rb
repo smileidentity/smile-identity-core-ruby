@@ -1,4 +1,4 @@
-RSpec.describe SmileIdentityCore do
+RSpec.describe SmileIdentityCore::Signature do
   let (:partner_id) {1}
   let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
   let (:api_key) {Base64.encode64(rsa.public_key.to_pem)}

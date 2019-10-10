@@ -1,4 +1,4 @@
-RSpec.describe SmileIdentityCore do
+RSpec.describe SmileIdentityCore::Utilities do
   let (:partner_id) {1}
   let (:sid_server) {0}
   let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
