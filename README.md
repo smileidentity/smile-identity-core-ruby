@@ -60,7 +60,7 @@ Please note that if you do not need to pass through id_info or options, you may 
 $ response = connection.submit_job(partner_params, images, nil, nil);
 ```
 
-In the case of a Job Type you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
+In the case of a Job Type 5 you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
 
 ```
 $ response = connection.submit_job(partner_params, nil, id_info, nil);
