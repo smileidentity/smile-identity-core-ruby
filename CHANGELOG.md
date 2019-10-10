@@ -38,3 +38,4 @@ Lenient Decoding of the api key
 Amend the success response when job status is false to be a JSON String containing {"success":true,"smile_job_id":"job_id"}
 Add the ID API Class
 Add the ability to query ID Api from the Web API class
+Update the documentation
