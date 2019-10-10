@@ -28,7 +28,12 @@ module SmileIdentityCore
     end
 
     def submit_job(partner_params, images, id_info, options)
+
       self.partner_params = symbolize_keys partner_params
+      if @partner_params[:job_type].to_i == 5
+        return SmileIdentityCore::IDApi.new(@partner_id, @api_key, @sid_server).submit_job(partner_params, id_info)
+      end
+
       self.images = images
       @timestamp = Time.now.to_i
 
