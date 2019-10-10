@@ -52,16 +52,25 @@ $ response = connection.submit_job(partner_params, images, id_info, options)
 ```
 
 Please note that if you do not need to pass through id_info or options, you may omit calling those class and send through nil in submit_job, as follows:
+
 ```
-String response = connection.submit_job(partner_params, images, nil, nil);
+$ response = connection.submit_job(partner_params, images, nil, nil);
 ```
 
-if you chose to set return_job_status to false, the response will be:
+In the case of a Job Type you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
+
+```
+$ response = connection.submit_job(partner_params, nil, id_info, nil);
+```
+
+**Response:**
+
+Should you choose to *set return_job_status to false*, the response will be a JSON String containing:
 ```
 {success: true, smile_job_id: smile_job_id}
 ```
 
-However, if you have set return_job_status to true then you will receive a response like below:
+However, if you have *set return_job_status to true* then you will receive JSON Object response like below:
 ```
 {
   "timestamp": "2018-03-13T21:04:11.193Z",
@@ -85,7 +94,8 @@ However, if you have set return_job_status to true then you will receive a respo
   "code": "2302"
 }
 ```
-You can also view your response asynchronously at the callback that you have set, it will look as follows:
+
+You can also *view your response asynchronously at the callback* that you have set, it will look as follows:
 ```
 {
   "ResultCode": "1220",
@@ -103,6 +113,37 @@ You can also view your response asynchronously at the callback that you have set
   "IsMachineResult": "true"
 }
 ```
+
+If you have queried a job type 5, your response be a JSON String that will contain the following:
+```
+{
+   "JSONVersion":"1.0.0",
+   "SmileJobID":"0000001105",
+   "PartnerParams":{
+      "user_id":"T6yzdOezucdsPrY0QG9LYNDGOrC",
+      "job_id":"FS1kd1dd15JUpd87gTBDapvFxv0",
+      "job_type":5
+   },
+   "ResultType":"ID Verification",
+   "ResultText":"ID Number Validated",
+   "ResultCode":"1012",
+   "IsFinalResult":"true",
+   "Actions":{
+      "Verify_ID_Number":"Verified",
+      "Return_Personal_Info":"Returned"
+   },
+   "Country":"NG",
+   "IDType":"PASSPORT",
+   "IDNumber":"A04150107",
+   "ExpirationDate":"2017-10-28",
+   "FullName":"ADEYEMI KEHINDE ADUNOLA",
+   "DOB":"1989-09-20",
+   "Photo":"SomeBase64Image",
+   "sec_key":"pjxsxEY69zEHjSPFvPEQTqu17vpZbw+zTNqaFxRWpYDiO+7wzKc9zvPU2lRGiKg7rff6nGPBvQ6rA7/wYkcLrlD2SuR2Q8hOcDFgni3PJHutij7j6ThRdpTwJRO2GjLXN5HHDB52NjAvKPyclSDANHrG1qb/tloO7x4bFJ7tKYE=|8faebe00b317654548f8b739dc631431b67d2d4e6ab65c6d53539aaad1600ac7",
+   "timestamp":1570698930193
+}
+```
+
 
 ##### get_job_status method
 Sometimes, you may want to get a particular job status at a later time. You may use the get_job_status function to do this:
@@ -124,6 +165,34 @@ Please note that if you do not need to pass through options if you will not be u
 response = connection.get_job_status(partner_params, nil);
 ```
 
+**Response**
+
+Your response will return a JSON Object below:
+
+```
+{
+  "timestamp": "2018-03-13T21:04:11.193Z",
+  "signature": "<your signature>",
+  "job_complete": true,
+  "job_success": true,
+  "result": {
+    "ResultText": "Enroll User",
+    "ResultType": "SAIA",
+    "SmileJobID": "0000001897",
+    "JSONVersion": "1.0.0",
+    "IsFinalResult": "true",
+    "PartnerParams": {
+      "job_id": "52d0de86-be3b-4219-9e96-8195b0018944",
+      "user_id": "e54e0e98-8b8c-4215-89f5-7f9ea42bf650",
+      "job_type": 4
+    },
+    "ConfidenceValue": "100",
+    "IsMachineResult": "true",
+  }
+  "code": "2302"
+}
+```
+
 #### ID Api Class
 
 
@@ -134,11 +203,37 @@ $ connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
 $ response = connection.submit_job(partner_params, id_info)
 ```
 
+**Response**
 
-Your response will looks as follows:
+Your response will return a JSON String containing the below:
 ```
+{
+   "JSONVersion":"1.0.0",
+   "SmileJobID":"0000001105",
+   "PartnerParams":{
+      "user_id":"T6yzdOezucdsPrY0QG9LYNDGOrC",
+      "job_id":"FS1kd1dd15JUpd87gTBDapvFxv0",
+      "job_type":5
+   },
+   "ResultType":"ID Verification",
+   "ResultText":"ID Number Validated",
+   "ResultCode":"1012",
+   "IsFinalResult":"true",
+   "Actions":{
+      "Verify_ID_Number":"Verified",
+      "Return_Personal_Info":"Returned"
+   },
+   "Country":"NG",
+   "IDType":"PASSPORT",
+   "IDNumber":"A04150107",
+   "ExpirationDate":"2017-10-28",
+   "FullName":"ADEYEMI KEHINDE ADUNOLA",
+   "DOB":"1989-09-20",
+   "Photo":"SomeBase64Image",
+   "sec_key":"pjxsxEY69zEHjSPFvPEQTqu17vpZbw+zTNqaFxRWpYDiO+7wzKc9zvPU2lRGiKg7rff6nGPBvQ6rA7/wYkcLrlD2SuR2Q8hOcDFgni3PJHutij7j6ThRdpTwJRO2GjLXN5HHDB52NjAvKPyclSDANHrG1qb/tloO7x4bFJ7tKYE=|8faebe00b317654548f8b739dc631431b67d2d4e6ab65c6d53539aaad1600ac7",
+   "timestamp":1570698930193
+}
 ```
-
 
 #### Signature Class
 
