@@ -117,7 +117,7 @@ RSpec.describe SmileIdentityCore do
           "Photo": "Not Available",
           "sec_key": "RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZli8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba",
           "timestamp": 1570612182124
-        }
+        }.to_json
 
         response = Typhoeus::Response.new(code: 200, body: body)
         Typhoeus.stub("#{url}/id_verification").and_return(response)
