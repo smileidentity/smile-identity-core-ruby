@@ -28,7 +28,12 @@ module SmileIdentityCore
     end
 
     def submit_job(partner_params, images, id_info, options)
+
       self.partner_params = symbolize_keys partner_params
+      if @partner_params[:job_type].to_i == 5
+        return SmileIdentityCore::IDApi.new(@partner_id, @api_key, @sid_server).submit_job(partner_params, id_info)
+      end
+
       self.images = images
       @timestamp = Time.now.to_i
 
@@ -218,7 +223,7 @@ module SmileIdentityCore
           prep_upload_response = JSON.parse(response.body)
           info_json = configure_info_json(prep_upload_response)
 
-          file_upload_response = upload_file(prep_upload_response['upload_url'], info_json)
+          file_upload_response = upload_file(prep_upload_response['upload_url'], info_json, prep_upload_response['smile_job_id'])
           return file_upload_response
 
         elsif response.timed_out?
@@ -311,7 +316,7 @@ module SmileIdentityCore
       end
     end
 
-    def upload_file(url, info_json)
+    def upload_file(url, info_json, smile_job_id)
 
       file = zip_up_file(info_json)
       file.rewind
@@ -329,7 +334,7 @@ module SmileIdentityCore
             @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
             return query_job_status
           else
-            return
+            return {success: true, smile_job_id: smile_job_id}.to_json
           end
         elsif response.timed_out?
           raise " #{response.code.to_s}: #{response.body}"
