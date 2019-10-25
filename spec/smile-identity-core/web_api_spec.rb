@@ -147,7 +147,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         end
 
         it 'validates the id_info' do
-          [:first_name, :last_name, :country, :id_type, :id_number].each do |key|
+          [:country, :id_type, :id_number].each do |key|
             amended_id_info = id_info.clone
             amended_id_info[key] = ''
 

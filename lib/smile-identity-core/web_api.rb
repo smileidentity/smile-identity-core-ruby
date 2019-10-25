@@ -97,6 +97,7 @@ module SmileIdentityCore
       end
 
       @images = images.map { |image| symbolize_keys image }
+
     end
 
     def id_info=(id_info)
@@ -118,15 +119,11 @@ module SmileIdentityCore
       end
 
       if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
-        [:first_name, :last_name, :country, :id_type, :id_number].each do |key|
+        [:country, :id_type, :id_number].each do |key|
           unless id_info[key] && !id_info[key].nil? && !id_info[key].empty?
             raise ArgumentError.new("Please make sure that #{key.to_s} is included in the id_info")
           end
         end
-      end
-
-      if updated_id_info[:country] && updated_id_info[:country].upcase == 'NG' && ['PASSPORT', 'VOTER_ID', 'DRIVERS_LICENSE', 'NATIONAL_ID', 'TIN', 'CAC'].include?(updated_id_info[:id_type].upcase) && (!updated_id_info[:dob] || updated_id_info[:dob].empty? || updated_id_info[:dob].nil?)
-        raise ArgumentError.new("The ID type #{updated_id_info[:id_type]} for #{updated_id_info[:country]} requires a valid dob paramater.")
       end
 
       @id_info = updated_id_info

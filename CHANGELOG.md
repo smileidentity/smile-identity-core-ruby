@@ -39,3 +39,8 @@ Amend the success response when job status is false to be a JSON String containi
 Add the ID API Class
 Add the ability to query ID Api from the Web API class
 Update the documentation
+
+## [1.0.1] - 2019-10-24
+## Updated
+Remove first_name and last_name validations from id information in Web Api
+Add country, id_number and id_type validations for id information in ID Api

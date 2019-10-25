@@ -57,7 +57,11 @@ module SmileIdentityCore
         raise ArgumentError.new("Please make sure that id_info not empty or nil")
       end
 
-      # maybe do some validation on consistent required fields like id_type and id_number
+      [:country, :id_type, :id_number].each do |key|
+        unless updated_id_info[key] && !updated_id_info[key].nil? && !updated_id_info[key].empty?
+          raise ArgumentError.new("Please make sure that #{key.to_s} is included in the id_info")
+        end
+      end
 
       @id_info = updated_id_info
     end
