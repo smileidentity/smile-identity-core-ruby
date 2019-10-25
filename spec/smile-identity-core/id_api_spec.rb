@@ -74,6 +74,14 @@ RSpec.describe SmileIdentityCore::IDApi do
       it 'validates the id_info' do
         expect{ connection.submit_job(partner_params, nil) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
         expect{ connection.submit_job(partner_params, {}) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
+
+        [:country, :id_type, :id_number].each do |key|
+          amended_id_info = id_info.clone
+          amended_id_info[key] = ''
+
+          expect{ connection.submit_job(partner_params, amended_id_info) }.to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
+          amended_id_info = id_info.clone
+        end
       end
     end
   end
