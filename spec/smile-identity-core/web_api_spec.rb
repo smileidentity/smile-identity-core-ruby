@@ -681,7 +681,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status, "123")).to eq(JSON.load(body.to_s))
+        expect(connection.send(:query_job_status)).to eq(JSON.load(body.to_s))
       end
 
       it 'returns the response if the counter is 20' do
@@ -698,7 +698,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status, 19, "123")).to eq(JSON.load(body.to_s))
+        expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body.to_s))
       end
 
       xit 'increments the counter if the counter is less than 20 and job_complete is not true' do

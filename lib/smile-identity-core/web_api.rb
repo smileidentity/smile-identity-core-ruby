@@ -329,7 +329,10 @@ module SmileIdentityCore
         if response.success?
           if @options[:return_job_status]
             @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
-            return query_job_status(smile_job_id)
+            job_response = query_job_status(smile_job_id)
+            job_response["success"] = true
+            job_response["smile_job_id"] = smile_job_id
+            return job_response
           else
             return {success: true, smile_job_id: smile_job_id}.to_json
           end
@@ -347,18 +350,16 @@ module SmileIdentityCore
 
     end
 
-    def query_job_status(counter=0, smile_job_id)
+    def query_job_status(counter=0)
       counter < 4 ? (sleep 2) : (sleep 6)
       counter += 1
 
       response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options)
 
       if response && (response['job_complete'] == true || counter == 20)
-        response["success"] = true
-        response["smile_job_id"] = smile_job_id
         return response
       else
-        return query_job_status(counter, smile_job_id)
+        return query_job_status(counter)
       end
 
     end
