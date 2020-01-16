@@ -45,5 +45,5 @@ Update the documentation
 Remove first_name and last_name validations from id information in Web Api
 Add country, id_number and id_type validations for id information in ID Api
 
-## [1.0.2] - 2020-01-14
+## [1.0.2] - 2020-01-16
 Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too
