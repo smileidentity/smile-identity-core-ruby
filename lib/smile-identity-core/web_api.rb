@@ -329,7 +329,10 @@ module SmileIdentityCore
         if response.success?
           if @options[:return_job_status]
             @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
-            return query_job_status
+            job_response = query_job_status
+            job_response["success"] = true
+            job_response["smile_job_id"] = smile_job_id
+            return job_response
           else
             return {success: true, smile_job_id: smile_job_id}.to_json
           end

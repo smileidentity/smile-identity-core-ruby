@@ -673,7 +673,9 @@ RSpec.describe SmileIdentityCore::WebApi do
           signature: "#{@sec_key}",
           job_complete: true,
           job_success: false,
-          code: "2302"
+          code: "2302",
+          success: true,
+          smile_job_id: "123"
         }.to_json
 
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
@@ -688,7 +690,9 @@ RSpec.describe SmileIdentityCore::WebApi do
           signature: "#{@sec_key}",
           job_complete: false,
           job_success: false,
-          code: "2302"
+          code: "2302",
+          success: true,
+          smile_job_id: "123"
         }.to_json
 
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)

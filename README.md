@@ -1,12 +1,12 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes three classes namely, the Web API and Signature class.
+The official Smile Identity gem exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
 
-The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
+The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
 - get_job_status
 
-The **ID Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
+The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submit_job
 
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
@@ -443,12 +443,22 @@ After checking out the repo, run `bundle install` to install dependencies. Then,
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 
+You can use `bundle console` and then call the necessary classes with their parameters.
+
+## Testing
+
+Run `bundle exec rspec` to run the tests.
+After running your tests open the coverage/index.html to view the test coverage
+
+## Deployment
+
 To release a new version:
 - Update the version number in `version.rb`
 - Run `gem build smile-identity-core.gemspec`
-- Thereafter `gem push smile-identity-core-version.gem`.
+- Thereafter `gem push smile-identity-core-<version>.gem`.
 
 Make sure to git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
 
 ## Contributing
 
