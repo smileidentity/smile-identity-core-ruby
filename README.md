@@ -1,4 +1,4 @@
-# SmileIdentityCore
+# SmileIdentityCore [![Build Status](https://travis-ci.com/smileidentity/smile-identity-core-ruby.svg?branch=master)](https://travis-ci.com/smileidentity/smile-identity-core-ruby)
 
 The official Smile Identity gem exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
 
