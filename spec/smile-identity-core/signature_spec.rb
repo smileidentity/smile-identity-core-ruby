@@ -38,13 +38,24 @@ RSpec.describe SmileIdentityCore::Signature do
 
     it 'should create a signature for the server' do
       payload = connection.generate_signature
-      
       hmac = OpenSSL::HMAC.new(api_key, 'sha256')
       hmac.update(payload[:timestamp])
       hmac.update(partner_id)
       hmac.update("sid_request")
       signature = Base64.strict_encode64(hmac.digest())
       expect(payload[:signature]).to eq(signature)
+    end
+  end
+
+  describe '#confirm_signature' do
+    it 'should confirm an incoming signature from the server' do
+      timestamp = Time.now.to_s
+      hmac = OpenSSL::HMAC.new(api_key, 'sha256')
+      hmac.update(timestamp)
+      hmac.update(partner_id)
+      hmac.update("sid_request")
+      signature = Base64.strict_encode64(hmac.digest())
+      expect(connection.confirm_signature(timestamp, signature)).to eq(true)
     end
   end
 
