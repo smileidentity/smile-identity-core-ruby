@@ -35,7 +35,7 @@ module SmileIdentityCore
       end
 
       self.images = images
-      @timestamp = Time.now.to_i
+      @timestamp = Time.now
 
       self.id_info = symbolize_keys id_info
       self.options = symbolize_keys options
@@ -193,14 +193,14 @@ module SmileIdentityCore
 
       body = {
         file_name: 'selfie.zip',
-        timestamp: @timestamp,
-        sec_key: determine_sec_key,
+        timestamp: @timestamp.to_s,
+        signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
         callback_url: @callback_url
       }
-
+      p @timestamp
       JSON.generate(body)
     end
 

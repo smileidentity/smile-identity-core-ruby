@@ -25,13 +25,13 @@ module SmileIdentityCore
 
     def generate_signature(timestamp=Time.now.to_s)
       hmac = OpenSSL::HMAC.new(@api_key, 'sha256')
-      hmac.update(timestamp)
+      hmac.update(timestamp.to_s)
       hmac.update(@partner_id)
       hmac.update("sid_request")
       signature = Base64.strict_encode64(hmac.digest())
       return {
         signature: signature,
-        timestamp: timestamp
+        timestamp: timestamp.to_s
       }
     end
 
