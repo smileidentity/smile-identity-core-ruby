@@ -130,19 +130,12 @@ module SmileIdentityCore
     end
 
     def options=(options)
-      updated_options = options
+      updated_options = options || {}
 
-      if updated_options.nil?
-        updated_options = {}
-      end
-
-      [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
-        if key != :optional_callback
-          updated_options[key] = check_boolean(key, options)
-        else
-          updated_options[key] = check_string(key, options)
-        end
-      end
+      updated_options[:optional_callback] = check_string(:optional_callback, options)
+      updated_options[:return_job_status] = check_boolean(:return_job_status, options)
+      updated_options[:return_image_links] = check_boolean(:return_image_links, options)
+      updated_options[:return_history] = check_boolean(:return_history, options)
 
       @options = updated_options
     end
