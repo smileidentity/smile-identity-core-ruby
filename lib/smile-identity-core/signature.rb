@@ -50,12 +50,7 @@ module SmileIdentityCore
     end
 
     def confirm_signature(timestamp, msg_signature)
-      hmac = OpenSSL::HMAC.new(@api_key, 'sha256')
-      hmac.update(timestamp)
-      hmac.update(@partner_id)
-      hmac.update("sid_request")
-      signature = Base64.strict_encode64(hmac.digest())
-      return signature == msg_signature
+      generate_signature(timestamp)[:signature] == msg_signature
     end
   end
 end
