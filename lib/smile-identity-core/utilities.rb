@@ -24,8 +24,8 @@ module SmileIdentityCore
       options[:return_history] ||= false
       options[:return_image_links] ||= false
 
-      @timestamp = Time.now.to_i
-      query_job_status(job_status_request(user_id, job_id, options))
+      security = request_security(use_legacy_sec_key: options.fetch(:use_legacy_sec_key, true))
+      query_job_status(job_status_request(user_id, job_id, options).merge(security))
     end
 
     private
@@ -48,7 +48,16 @@ module SmileIdentityCore
         begin
           body = JSON.parse(response.body)
 
-          valid = @signature_connection.confirm_sec_key(body['timestamp'], body['signature'])
+          # NB: we have to trust that the server will return the right kind of
+          # timestamp (integer or string) for the signature, and the right kind
+          # of signature in the "signature" field. The best way to know what
+          # kind of validation to perform is by remembering which kind of
+          # security we started with.
+          if request_json_data.has_key?(:sec_key)
+            valid = @signature_connection.confirm_sec_key(body['timestamp'], body['signature'])
+          else
+            valid = @signature_connection.confirm_signature(body['timestamp'], body['signature'])
+          end
 
           if(!valid)
             raise "Unable to confirm validity of the job_status response"
@@ -63,10 +72,24 @@ module SmileIdentityCore
       request.run
     end
 
+    def request_security(timestamp = Time.now, use_legacy_sec_key: true)
+      if use_legacy_sec_key
+        @timestamp = timestamp.to_i
+        {
+          sec_key: @signature_connection.generate_sec_key(@timestamp)[:sec_key],
+          timestamp: @timestamp,
+        }
+      else
+        @timestamp = timestamp.to_s
+        {
+          signature: @signature_connection.generate_signature(@timestamp)[:signature],
+          timestamp: @timestamp,
+        }
+      end
+    end
+
     def job_status_request(user_id, job_id, options)
       {
-        sec_key: @signature_connection.generate_sec_key(@timestamp)[:sec_key],
-        timestamp: @timestamp,
         user_id: user_id,
         job_id: job_id,
         partner_id: @partner_id,
