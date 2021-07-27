@@ -19,6 +19,52 @@ RSpec.describe SmileIdentityCore::Utilities do
     end
   end
 
+  describe '#get_job_status' do
+    let(:user_id) { rand(100000) }
+    let(:job_id) { rand(100000) }
+    let(:return_history) { [true, false].sample }
+    let(:return_image_links) { [true, false].sample }
+
+    it 'munges parameters and passes the request to #query_job_status' do
+      # NB: testing by mocking what's passed to #query_job_status isn't ideal, because it makes
+      # it harder to refactor the class' internals, but it'll have to do for now.
+
+      expect(connection).to receive(:query_job_status).with(
+        user_id: user_id,
+        job_id: job_id,
+        partner_id: partner_id.to_s, # NB the .to_s
+        history: return_history,
+        image_links: return_image_links,
+        timestamp: instance_of(Integer),
+        sec_key: instance_of(String),
+        )
+
+      connection.get_job_status(
+        user_id,
+        job_id,
+        { return_history: return_history, return_image_links: return_image_links })
+    end
+
+    context 'when options are missing' do
+      it 'defaults them' do
+        expect(connection).to receive(:query_job_status).with(hash_including(history: false, image_links: false))
+        connection.get_job_status(user_id, job_id)
+
+        expect(connection).to receive(:query_job_status).with(hash_including(history: false, image_links: false))
+        connection.get_job_status(user_id, job_id, {})
+      end
+    end
+
+    context 'when options are provided as strings' do
+      it 'symbolizes them' do
+        expect(connection).to receive(:query_job_status).with(
+          hash_including(history: return_history, image_links: return_image_links))
+        connection.get_job_status(
+          user_id, job_id, { 'return_history' => return_history, 'return_image_links' => return_image_links })
+      end
+    end
+  end
+
   describe '#query_job_status' do
     let(:url) { 'https://some_server.com/dev01' }
     let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
@@ -47,8 +93,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       typhoeus_response = Typhoeus::Response.new(code: 200, body: response_body)
       Typhoeus.stub(@url).and_return(typhoeus_response)
 
-      expect(connection.send(:query_job_status, '1', '1', {return_job_status: true, return_image_links: true}))
-        .to eq(JSON.load(response_body))
+      expect(connection.send(:query_job_status, { some: 'json data' })).to eq(JSON.load(response_body))
     end
 
     context 'when the signature is invalid' do
@@ -58,7 +103,7 @@ RSpec.describe SmileIdentityCore::Utilities do
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
         expect {
-          connection.send(:query_job_status, '1', '1', {return_job_status: true, return_image_links: true})
+          connection.send(:query_job_status, { some: 'json data' })
         }.to raise_error(OpenSSL::PKey::RSAError)
         # The specific error here matters less than the fact that it will raise.
         # The code tries to raise a custom error, but we don't currently handle it properly.
@@ -67,12 +112,24 @@ RSpec.describe SmileIdentityCore::Utilities do
     end
   end
 
-  describe '#configure_job_query' do
+  describe '#job_status_request' do
+    let(:partner_id) { 4242 }
+    let(:return_history) { [true, false].sample }
+    let(:return_image_links) { [true, false].sample }
+
     it 'should set the correct keys on the payload' do
-      ['sec_key', 'timestamp', 'user_id', 'job_id', 'partner_id', 'image_links', 'history'].each do |key|
-        expect(JSON.parse(connection.send(:configure_job_query, 1, 2, {return_history: true, return_image_links: true}))).to have_key(key)
-      end
+      connection.instance_variable_set(:@timestamp, "we only care here that it comes through")
+
+      result = connection.send(:job_status_request,
+        111, 222, { return_history: return_history, return_image_links: return_image_links })
+
+      expect(result[:user_id]).to eq(111)
+      expect(result[:job_id]).to eq(222)
+      expect(result[:partner_id]).to eq('4242') # NB: it gets .to_s'd
+      expect(result[:history]).to eq(return_history)
+      expect(result[:image_links]).to eq(return_image_links)
+      expect(result[:timestamp]).to eq("we only care here that it comes through")
+      expect(result[:sec_key]).to be_a(String)
     end
   end
-
 end
