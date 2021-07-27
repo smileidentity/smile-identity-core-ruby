@@ -28,17 +28,10 @@ RSpec.describe SmileIdentityCore::IDApi do
   context 'ensure that the public methods behave correctly' do
 
     describe '#initialize' do
-      it "receives the correct attributes and returns an instance" do
-        expect(SmileIdentityCore::IDApi).to receive(:new).with(partner_id, api_key, sid_server).and_return(connection)
-
-        connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
-      end
-
-      [:@partner_id, :@api_key, :@sid_server].each do |instance_variable|
-        it "sets the #{instance_variable} instance variable" do
-          value = eval(instance_variable.slice(1..instance_variable.length-1))
-          expect(connection.instance_variable_get(instance_variable)).to eq(value)
-        end
+      it "sets the partner_id, api_key, and sid_server instance variables" do
+        expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id)
+        expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
+        expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
       end
 
       it "sets the correct @url instance variable" do

@@ -7,17 +7,9 @@ RSpec.describe SmileIdentityCore::Utilities do
   let(:timestamp) {Time.now.to_i}
 
   describe '#initialize' do
-    it "receives the correct attributes and returns an instance" do
-      expect(SmileIdentityCore::Utilities).to receive(:new).with(partner_id, api_key, sid_server).and_return(connection)
-
-      connection = SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server)
-    end
-
-    [:@partner_id, :@api_key].each do |instance_variable|
-      it "sets the #{instance_variable} instance variable" do
-        value = eval(instance_variable.slice(1..instance_variable.length-1))
-        expect(connection.instance_variable_get(instance_variable)).to eq(value.to_s)
-      end
+    it "sets the partner_id and api_key instance variables" do
+      expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id.to_s)
+      expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
     end
 
     it "sets the correct @url instance variable" do
