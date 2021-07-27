@@ -4,7 +4,6 @@ RSpec.describe SmileIdentityCore::Utilities do
   let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
   let (:api_key) {Base64.encode64(rsa.public_key.to_pem)}
   let (:connection) { SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server)}
-  let(:timestamp) {Time.now.to_i}
 
   describe '#initialize' do
     it "sets the partner_id and api_key instance variables" do
