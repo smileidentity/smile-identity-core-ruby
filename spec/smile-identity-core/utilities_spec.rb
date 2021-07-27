@@ -35,7 +35,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       @sec_key = [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
     }
 
-    it 'returns the response if job_complete is true' do
+    it 'returns the response' do
       body = {
         timestamp: "#{timestamp}",
         signature: "#{@sec_key}",
