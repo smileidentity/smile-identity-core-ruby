@@ -634,7 +634,6 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#query_job_status' do
-      # NOTE: this is slow, need to fix
       let (:url) { 'https://some_server.com/dev01' }
       let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
       let (:partner_id) { 1 }
@@ -655,6 +654,14 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
         @sec_key = [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
+
+        def connection.sleep(n)
+          # TODO: This isn't ideal, but it's a way to speed up these specs.
+          # #query_job_status sleeps as it retries, which adds ~8 seconds to this spec run.
+          # Monkeypatching sleep on the connection object here no-ops it so it goes faster.
+          # Don't believe me? Uncomment:
+          # puts "sleep for #{n}!"
+        end
       }
 
       it 'returns the response if job_complete is true' do
