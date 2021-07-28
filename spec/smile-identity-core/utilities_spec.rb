@@ -35,7 +35,7 @@ RSpec.describe SmileIdentityCore::Utilities do
         partner_id: partner_id.to_s, # NB the .to_s
         history: return_history,
         image_links: return_image_links,
-        timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!
+        timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!
         signature: instance_of(String), # new signature!
         )
 

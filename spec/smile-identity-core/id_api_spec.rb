@@ -178,7 +178,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
         parsed_response = JSON.parse(connection.send(:id_verification_request))
         expect(parsed_response).to match(
-          'timestamp' => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!,
+          'timestamp' => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
           'signature' => instance_of(String),
           'partner_id' => '004',
           'partner_params' => 'any partner params',

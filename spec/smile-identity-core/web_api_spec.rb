@@ -326,7 +326,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         expect(parsed_response).to match(
           "signature" => instance_of(String),
-          "timestamp" => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!,
+          "timestamp" => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
           "file_name" => "selfie.zip", # The code hard-codes this value
           "smile_client_id" => "001",
           "partner_params" => 'some partner params',
@@ -438,7 +438,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             partner_params: 'partner params',
             smile_client_id: 'partner id',
             callback_url: 'example.com',
-            timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!,
+            timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
             signature: instance_of(String), # new signature!
             userData: instance_of(Hash), # hard-coded, and spec'd below
             retry: 'false', # hard-coded
