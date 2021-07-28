@@ -148,27 +148,21 @@ RSpec.describe SmileIdentityCore::IDApi do
     end
 
     describe '#configure_json' do
-      let(:parsed_response) { JSON.parse(connection.send(:configure_json)) }
+      it "returns a hash formatted for the request" do
+        connection.instance_variable_set(:@id_info, { id: 'info', is_merged: 'in, too' })
+        connection.instance_variable_set(:@timestamp, 123456789)
+        connection.instance_variable_set(:@partner_id, '004')
+        connection.instance_variable_set(:@partner_params, 'any partner params')
 
-      before(:each) {
-        connection.instance_variable_set('@id_info', id_info)
-      }
-
-      it 'returns the correct data type' do
-        expect(parsed_response).to be_kind_of(Hash)
-      end
-
-      ['timestamp', 'sec_key', 'partner_id', 'partner_params', 'id_number', 'id_type'].each do |key|
-        it "includes the #{key} key" do
-          expect(parsed_response).to have_key(key)
-        end
-      end
-    end
-
-    describe '#determine_sec_key' do
-      # NOTE: more testing done in Signature class
-      it 'contains a join in the signature' do
-        expect(connection.send(:determine_sec_key)).to include('|')
+        parsed_response = JSON.parse(connection.send(:configure_json))
+        expect(parsed_response).to match(
+          'timestamp' => 123456789,
+          'sec_key' => instance_of(String),
+          'partner_id' => '004',
+          'partner_params' => 'any partner params',
+          'id' => 'info',
+          'is_merged' => 'in, too'
+          )
       end
     end
   end
