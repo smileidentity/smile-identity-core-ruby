@@ -154,16 +154,39 @@ RSpec.describe SmileIdentityCore::WebApi do
           end
         end
 
-        it 'validates the options' do
-          options = {
-            optional_callback: 'wwww.optional_callback.com',
-            return_job_status: 'false',
-            return_image_links: false,
-            return_history: false
-          }
+        describe 'validating the options' do
+          let(:good_options) do
+            {
+              optional_callback: 'wwww.optional_callback.com',
+              return_job_status: false,
+              return_image_links: false,
+              return_history: false
+            }
+          end
 
-          expect { connection.submit_job(partner_params, images, id_info, options) }
-            .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
+          it 'checks that return_job_status is a boolean' do
+            bad_options = good_options.merge(return_job_status: 'false')
+            expect { connection.submit_job(partner_params, images, id_info, bad_options) }
+              .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
+          end
+
+          describe 'setting use_legacy_sec_key' do
+            before do
+              # If all's valid, it'll send the request, so use `#setup_requests` as a seam to stop it:
+              allow(connection).to receive(:setup_requests) { }
+            end
+
+            def flag_with_options(options)
+              connection.submit_job(partner_params, images, id_info, options)
+              connection.instance_variable_get(:@use_legacy_sec_key)
+            end
+
+            it 'defaults use_legacy_sec_key to true' do
+              expect(flag_with_options(good_options)).to eq(true) # it's unspecified in good_options
+              expect(flag_with_options(good_options.merge(use_legacy_sec_key: (val = [true, false].sample)))).to eq(val)
+              expect(flag_with_options(good_options.merge('use_legacy_sec_key' => (val = [true, false].sample)))).to eq(val)
+            end
+          end
         end
       end
 
@@ -292,23 +315,36 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
     end
 
-    describe '#determine_sec_key' do
-      # NOTE: we can possibly test more here
-      it 'contains a join in the signature' do
-        expect(connection.send(:determine_sec_key)).to include('|')
-      end
-    end
-
-    describe '#configure_prep_upload_json' do
-      let(:parsed_response) {JSON.parse(connection.send(:configure_prep_upload_json))}
+    describe '#upload_request' do
+      let(:parsed_response) { JSON.parse(connection.send(:upload_request)) }
 
       it 'returns the correct data type' do
-        expect(parsed_response).to be_kind_of(Hash)
+        connection.instance_variable_set(:@partner_id, '001')
+        connection.instance_variable_set(:@partner_params, 'some partner params')
+        connection.instance_variable_set(:@callback_url, 'www.example.com')
+        connection.instance_variable_set(:@use_legacy_sec_key, false)
+
+        expect(parsed_response).to match(
+          "signature" => instance_of(String),
+          "timestamp" => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!,
+          "file_name" => "selfie.zip", # The code hard-codes this value
+          "smile_client_id" => "001",
+          "partner_params" => 'some partner params',
+          "model_parameters" => {}, # The code hard-codes this value
+          "callback_url" => "www.example.com"
+          )
+        expect(parsed_response).not_to have_key 'sec_key'
       end
 
-      ['file_name', 'timestamp', 'sec_key', 'smile_client_id', 'partner_params', 'model_parameters', 'callback_url'].each do |key|
-        it "includes the #{key} key" do
-          expect(parsed_response).to have_key(key)
+      context 'when using legacy sec_key' do
+        it 'puts in the original sec_key security stuff, and not the new signature stuff' do
+          connection.instance_variable_set(:@use_legacy_sec_key, true)
+
+          expect(parsed_response).to match(hash_including(
+            'timestamp' => instance_of(Integer),
+            'sec_key' => instance_of(String),
+            ))
+          expect(parsed_response).not_to have_key 'signature'
         end
       end
     end
@@ -374,8 +410,6 @@ RSpec.describe SmileIdentityCore::WebApi do
       before(:each) {
         connection.instance_variable_set("@id_info", 'a value for @id_info')
         connection.instance_variable_set("@images", images)
-        connection.instance_variable_set("@sec_key", 'some sec key| key')
-        connection.instance_variable_set("@timestamp", 123454321)
       }
 
       let(:configure_info_json) { connection.send(:configure_info_json, 'the server information url') }
@@ -404,12 +438,25 @@ RSpec.describe SmileIdentityCore::WebApi do
             partner_params: 'partner params',
             smile_client_id: 'partner id',
             callback_url: 'example.com',
-            sec_key: 'some sec key| key',
-            timestamp: 123454321,
+            timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!,
+            signature: instance_of(String), # new signature!
             userData: instance_of(Hash), # hard-coded, and spec'd below
             retry: 'false', # hard-coded
             file_name: 'selfie.zip', # hard-coded
             )
+          expect(configure_info_json.fetch(:misc_information)).not_to have_key(:sec_key)
+        end
+
+        context 'when using the legacy sec_key' do
+          it 'has the sec_key stuff' do
+            connection.instance_variable_set(:@use_legacy_sec_key, true)
+
+            expect(configure_info_json.fetch(:misc_information)).to match(hash_including(
+              timestamp: instance_of(Integer), # new signature!,
+              sec_key: instance_of(String),
+              ))
+            expect(configure_info_json.fetch(:misc_information)).not_to have_key(:signature)
+          end
         end
 
         it 'includes the relevant keys for the nested userData' do

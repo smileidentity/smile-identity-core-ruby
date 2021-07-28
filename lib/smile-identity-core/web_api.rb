@@ -35,8 +35,6 @@ module SmileIdentityCore
       end
 
       self.images = images
-      @timestamp = Time.now
-
       self.id_info = symbolize_keys id_info
       self.options = symbolize_keys options
 
@@ -136,6 +134,7 @@ module SmileIdentityCore
       updated_options[:return_job_status] = check_boolean(:return_job_status, options)
       updated_options[:return_image_links] = check_boolean(:return_image_links, options)
       updated_options[:return_history] = check_boolean(:return_history, options)
+      @use_legacy_sec_key = updated_options.fetch(:use_legacy_sec_key, true)
 
       @options = updated_options
     end
@@ -178,23 +177,30 @@ module SmileIdentityCore
       end
     end
 
-    def determine_sec_key
-      @sec_key = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key]
+    def request_security(timestamp = Time.now, use_legacy_sec_key: true)
+      if use_legacy_sec_key
+        @timestamp = timestamp.to_i
+        {
+          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
+          timestamp: @timestamp,
+        }
+      else
+        @timestamp = timestamp.to_s
+        {
+          signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
+          timestamp: @timestamp,
+        }
+      end
     end
 
-    def configure_prep_upload_json
-
-      body = {
+    def upload_request
+      request_security(use_legacy_sec_key: @use_legacy_sec_key).merge(
         file_name: 'selfie.zip',
-        timestamp: @timestamp.to_s,
-        signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
         callback_url: @callback_url
-      }
-      p @timestamp
-      JSON.generate(body)
+      ).to_json
     end
 
     def setup_requests
@@ -204,11 +210,17 @@ module SmileIdentityCore
         url,
         method: 'POST',
         headers: {'Content-Type'=> "application/json"},
-        body: configure_prep_upload_json
+        body: upload_request
       )
 
       request.on_complete do |response|
         if response.success?
+          # TODO: if/when we sign these responses, verify the signature here and raise if it's off.
+          # if updated_options[:use_legacy_sec_key]
+          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
+          # else
+          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)
+          # end
 
           prep_upload_response = JSON.parse(response.body)
           info_json = configure_info_json(prep_upload_response)
@@ -239,11 +251,9 @@ module SmileIdentityCore
           },
           "language": "ruby"
         },
-        "misc_information": {
-          "sec_key": @sec_key,
+        "misc_information": request_security(use_legacy_sec_key: @use_legacy_sec_key).merge(
           "retry": "false",
           "partner_params": @partner_params,
-          "timestamp": @timestamp,
           "file_name": "selfie.zip", # figure out what to do here
           "smile_client_id": @partner_id,
           "callback_url": @callback_url,
@@ -259,7 +269,7 @@ module SmileIdentityCore
             "countryCode": "+",
             "countryName": ""
           }
-        },
+        ),
         "id_info": @id_info,
         "images": configure_image_payload,
         "server_information": server_information
