@@ -147,12 +147,10 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         it 'validates the id_info' do
           [:country, :id_type, :id_number].each do |key|
-            amended_id_info = id_info.clone
-            amended_id_info[key] = ''
+            amended_id_info = id_info.merge(key => '')
 
             expect { connection.submit_job(partner_params, images, amended_id_info, options) }
               .to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
-            amended_id_info = id_info.clone
           end
         end
 
