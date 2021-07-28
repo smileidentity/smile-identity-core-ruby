@@ -168,32 +168,36 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'updates the callback_url when optional_callback is defined' do
-        url = 'https://www.example.com'
-        connection.instance_variable_set("@url", url)
+        # This is really about setting config...from options to an ivar. It's confused because all the other
+        # config is good, so we fire off two HTTP requests, and we need to mock them.
 
-        body = "{\"upload_url\":\"https://smile-uploads-development02.s3.us-west-2.amazonaws.com/videos/125/125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww/selfie.zip?AWSAccessKeyId=ASIA4OAOFXPAFYEKFDUS&Content-Type=application%2Fzip&Expires=1563197197&Signature=ex8KUeQ4lwzHazjMtkx1VgME1xM%3D&x-amz-security-token=AgoJb3JpZ2luX2VjEK3%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJIMEYCIQDJ%2FrmDuvLR1nEKN2gmtWXBHAiWox0SeajZ%2B%2BKFDM8IcgIhAMXHHXbynxFFKxnIwhwuXeg0kGQyu4aHOe1ZA2YAsYBXKo0CCBYQABoMODU0NzI4MjI3Nzc2Igy%2B5DyaYrE4KGQH30Iq6gFKOBX4H3JW5Bm29RshsbRaETdYeVPJvmyChJJEX1gJ9fmXX7STBvogGmuTNJxynyH0ejQJ4R69zFc4bvcElkBSYPDFSimInOEaROQQsfFiWnNVUzCJcY87lG1VSc5rj%2FYfBU%2Fm9%2FoHASZ1oUJUvX4uKpYdvmliq47c0UDJC7zvqZVf%2FueC6cPzzCOI0LONlRyBsqhS5OEn3xpRjT4rliwZfrqptnDd73ENTLcHI3NgKsmnkah5q%2BVsGtm%2FjHO%2FRTU3PAvI97WQSXs%2BD4Z2%2FVkyRDtVKt5Um6Y%2BuLesLje6oximsUQdbsmmIlswvPCx6QU6swG8X1b%2FMByB5X0mlYUB4%2BzxLm6WLYndKqYaSdPad6ZaRWs66rckKJru1ofaIYTNZ4iVwzqBG6Yc0d8L19g3AwmLLVv78EmcsAhl69be8KaRDo%2Fn18fRo6Bx0egHdC00QTeELQafyKC4%2BLq5vaGFjiKaKX%2FKSGVYe3CPlBC3fGQ8hoF0W9jvso2hkJONP3%2FwZQ7m2uNh7MkFwLIVufdvGHlulCh1PtXWyujvqXYh8HdokjIbHQ%3D%3D&x-amz-server-side-encryption=AES256\",\"ref_id\":\"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww\",\"smile_job_id\":\"0000000583\",\"camera_config\":\"null\",\"code\":\"2202\"}"
+        # Set everything up:
+        connection.instance_variable_set("@url", 'https://www.example.com')
 
-        prep_upload_response = Typhoeus::Response.new(code: 200, body: body)
-        Typhoeus.stub("#{url}/upload").and_return(prep_upload_response)
+        response_upload_url = "https://smile-uploads-somewhere.amazonaws.com/videos/a_signed_url"
+        body = {
+          "upload_url"=> response_upload_url,
+          "ref_id"=>"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww",
+          "smile_job_id"=>"0000000583",
+          "camera_config"=>"null",
+          "code"=>"2202"
+        }.to_json
+
+        Typhoeus.stub("https://www.example.com/upload").and_return(Typhoeus::Response.new(code: 200, body: body))
 
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
 
-        connection.instance_variable_set("@sec_key", 'some sec key| key')
-        connection.instance_variable_set("@partner_params", partner_params)
-        connection.instance_variable_set("@images", images)
-        connection.instance_variable_set("@timestamp", timestamp)
-        connection.instance_variable_set("@partner_id", partner_id)
-        connection.instance_variable_set("@options", options)
-        connection.instance_variable_set("@id_info", id_info)
+        Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
 
-        upload_response = Typhoeus::Response.new(code: 200)
-        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
+        # Test the preconditions! `default_callback` is what `connection` was instantiated with.
+        expect(connection.instance_variable_get(:@callback_url)).to eq(default_callback)
 
-        connection.submit_job(partner_params, images, id_info, options)
+        # Run the code, passing the `optional_callback` option:
+        connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com'))
 
-        expect(connection.instance_variable_get(:@callback_url)).to eq(options[:optional_callback])
-        expect(connection.instance_variable_get(:@callback_url)).to_not eq(default_callback)
+        # Make sure @callback_url gets set:
+        expect(connection.instance_variable_get(:@callback_url)).to eq('https://zombo.com')
       end
 
       # xit 'ensures that we only except a png or jpg' do
@@ -318,28 +322,28 @@ RSpec.describe SmileIdentityCore::WebApi do
       }
 
       it 'should return a json object if it runs successfully' do
-        body = "{\"upload_url\":\"https://some-url/selfie.zip\",\"ref_id\":\"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww\",\"smile_job_id\":\"0000000583\",\"camera_config\":\"null\",\"code\":\"2202\"}"
+        response_upload_url = "https://some-url/selfie.zip"
+        response_smile_job_id = "0000000583"
+        body = {
+          "upload_url" => response_upload_url,
+           "ref_id" => "125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww",
+           "smile_job_id" => response_smile_job_id,
+           "camera_config" => "null",
+           "code" => "2202"
+        }.to_json
 
-        prep_upload_response = Typhoeus::Response.new(code: 200, body: body)
-        Typhoeus.stub("#{url}/upload").and_return(prep_upload_response)
+        Typhoeus.stub("#{url}/upload").and_return(Typhoeus::Response.new(code: 200, body: body))
 
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
 
-        connection.instance_variable_set("@sec_key", 'some sec key| key')
-        connection.instance_variable_set("@partner_params", partner_params)
         connection.instance_variable_set("@images", images)
-        connection.instance_variable_set("@timestamp", timestamp)
-        connection.instance_variable_set("@partner_id", partner_id)
-        connection.instance_variable_set("@callback_url", default_callback)
-        connection.instance_variable_set("@id_info", id_info)
         connection.instance_variable_set("@options", options)
 
-        upload_response = Typhoeus::Response.new(code: 200)
-        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
+        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(Typhoeus::Response.new(code: 200))
 
         setup_requests = connection.send(:setup_requests)
-        expect(setup_requests).to eq({success: true, smile_job_id: JSON.load(body)['smile_job_id']}.to_json)
+        expect(JSON.parse(setup_requests)).to eq('success' => true, 'smile_job_id' => response_smile_job_id)
       end
 
       it 'returns the correct message if we could not get an http response' do
