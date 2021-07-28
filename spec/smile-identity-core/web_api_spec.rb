@@ -372,50 +372,49 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe "#configure_info_json" do
       # NOTE: we can perhaps still test that the instance variables that are set in teh payload are the ones set in the connection
       before(:each) {
+        connection.instance_variable_set("@id_info", 'a value for @id_info')
         connection.instance_variable_set("@images", images)
         connection.instance_variable_set("@sec_key", 'some sec key| key')
+        connection.instance_variable_set("@timestamp", 123454321)
       }
 
-      it 'returns the correct data type' do
-        expect(connection.send(:configure_info_json, 'the server information url')).to be_kind_of(Hash)
-      end
+      let(:configure_info_json) { connection.send(:configure_info_json, 'the server information url') }
 
       it "includes the relevant keys on the root level" do
-          [:package_information, :misc_information, :id_info, :images, :server_information].each do |key|
-          expect(connection.send(:configure_info_json, 'the server information url')).to have_key(key)
-        end
+        expect(configure_info_json.fetch(:images)).to be_kind_of(Array)
+        expect(configure_info_json.fetch(:id_info)).to eq('a value for @id_info')
+        expect(configure_info_json.fetch(:server_information)).to eq('the server information url')
       end
 
       describe "the package_information inner payload" do
-        it 'includes its relevant keys' do
-          [:apiVersion].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:package_information]).to have_key(key)
-          end
-        end
-
-        it 'includes the relevant keys for the nested apiVersion' do
-          [:buildNumber, :majorVersion, :minorVersion].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion]).to have_key(key)
-          end
-        end
-
-        it 'sets the correct version information' do
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:buildNumber]).to be(0)
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:majorVersion]).to be(2)
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(0)
+        it 'sets the correct version information and language' do
+          expect(configure_info_json.fetch(:package_information)).to eq(
+            apiVersion: { buildNumber: 0, majorVersion: 2, minorVersion: 0 },
+            language: 'ruby')
         end
       end
 
       describe "the misc_information inner payload" do
         it 'includes its relevant keys' do
-          [:sec_key, :retry, :partner_params, :timestamp, :file_name, :smile_client_id, :callback_url, :userData].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:misc_information]).to have_key(key)
-          end
+          connection.instance_variable_set(:@partner_id, 'partner id')
+          connection.instance_variable_set(:@partner_params, 'partner params')
+          connection.instance_variable_set(:@callback_url, 'example.com')
+
+          expect(configure_info_json.fetch(:misc_information)).to match(
+            partner_params: 'partner params',
+            smile_client_id: 'partner id',
+            callback_url: 'example.com',
+            sec_key: 'some sec key| key',
+            timestamp: 123454321,
+            userData: instance_of(Hash), # hard-coded, and spec'd below
+            retry: 'false', # hard-coded
+            file_name: 'selfie.zip', # hard-coded
+            )
         end
 
         it 'includes the relevant keys for the nested userData' do
           [:isVerifiedProcess, :name, :fbUserID, :firstName, :lastName, :gender, :email, :phone, :countryCode, :countryName].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:misc_information][:userData]).to have_key(key)
+            expect(configure_info_json.fetch(:misc_information).fetch(:userData)).to have_key(key)
           end
         end
       end
