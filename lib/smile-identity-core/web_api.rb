@@ -276,7 +276,7 @@ module SmileIdentityCore
 
     def configure_image_payload
       @images.map { |i|
-        if isImageFile?i[:image_type_id]
+        if image_file?(i[:image_type_id])
           {
             image_type_id: i[:image_type_id],
             image: '',
@@ -292,7 +292,7 @@ module SmileIdentityCore
       }
     end
 
-    def isImageFile?type
+    def image_file?(type)
       type.to_i == 0 || type.to_i == 1
     end
 
