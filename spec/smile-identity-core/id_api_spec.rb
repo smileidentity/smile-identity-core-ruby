@@ -83,6 +83,24 @@ RSpec.describe SmileIdentityCore::IDApi do
             .to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
         end
       end
+
+      describe 'setting whether to use the legacy sec_key' do
+        def flag_when_submitted_with_options(options)
+          connection.submit_job(partner_params, id_info, options)
+          connection.instance_variable_get(:@use_legacy_sec_key)
+        end
+
+        it 'sets it from a new options hash, defaulting to true' do
+          # It'll call #setup_requests and try to hit the request, so stop it:
+          Typhoeus.stub("https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test/id_verification")
+            .and_return(Typhoeus::Response.new(code: 200, body: {}.to_json))
+
+          expect(flag_when_submitted_with_options(nil)).to eq(true)
+          expect(flag_when_submitted_with_options({})).to eq(true)
+          expect(flag_when_submitted_with_options(use_legacy_sec_key: (val = [true, false].sample))).to eq(val)
+          expect(flag_when_submitted_with_options('use_legacy_sec_key' => (val = [true, false].sample))).to eq(val)
+        end
+      end
     end
   end
 
@@ -131,7 +149,8 @@ RSpec.describe SmileIdentityCore::IDApi do
         Typhoeus.stub("#{url}/id_verification").and_return(response)
 
         setup_response = connection.send(:setup_requests)
-
+        expect(setup_response).to eq(body) # NB: we assert against it below, but this is the fact of it.
+        # These v just come from the `body` mock above:
         expect(JSON.parse(setup_response)['PartnerParams']['user_id']).to eq(partner_params[:user_id])
         expect(JSON.parse(setup_response)['PartnerParams']['job_id']).to eq(partner_params[:job_id])
         expect(JSON.parse(setup_response)['PartnerParams']['job_type']).to eq(partner_params[:job_type])
@@ -147,22 +166,39 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
     end
 
-    describe '#configure_json' do
-      it "returns a hash formatted for the request" do
+    describe '#id_verification_request' do
+      before do
         connection.instance_variable_set(:@id_info, { id: 'info', is_merged: 'in, too' })
-        connection.instance_variable_set(:@timestamp, 123456789)
         connection.instance_variable_set(:@partner_id, '004')
         connection.instance_variable_set(:@partner_params, 'any partner params')
+      end
 
-        parsed_response = JSON.parse(connection.send(:configure_json))
+      it "returns a hash formatted for the request" do
+        connection.instance_variable_set(:@use_legacy_sec_key, false)
+
+        parsed_response = JSON.parse(connection.send(:id_verification_request))
         expect(parsed_response).to match(
-          'timestamp' => 123456789,
-          'sec_key' => instance_of(String),
+          'timestamp' => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} -\d{4}/, # new signature!,
+          'signature' => instance_of(String),
           'partner_id' => '004',
           'partner_params' => 'any partner params',
           'id' => 'info',
           'is_merged' => 'in, too'
           )
+        expect(parsed_response).not_to have_key 'sec_key'
+      end
+
+      context 'when using legacy sec_key' do
+        it 'puts in the original sec_key security stuff, and not the new signature stuff' do
+          connection.instance_variable_set(:@use_legacy_sec_key, true)
+
+          parsed_response = JSON.parse(connection.send(:id_verification_request))
+          expect(parsed_response).to match(hash_including(
+            'timestamp' => instance_of(Integer),
+            'sec_key' => instance_of(String),
+            ))
+          expect(parsed_response).not_to have_key 'signature'
+        end
       end
     end
   end
