@@ -40,7 +40,6 @@ RSpec.describe SmileIdentityCore::IDApi do
         connection = SmileIdentityCore::IDApi.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
       end
-
     end
 
     describe '#submit_job' do
@@ -53,32 +52,41 @@ RSpec.describe SmileIdentityCore::IDApi do
           job_type: nil,
         }
 
-        expect { connection.submit_job(no_partner_parameters, id_info) }.to raise_error(ArgumentError, 'Please ensure that you send through partner params')
+        expect { connection.submit_job(no_partner_parameters, id_info) }
+          .to raise_error(ArgumentError, 'Please ensure that you send through partner params')
 
-        expect { connection.submit_job(array_partner_params, id_info) }.to raise_error(ArgumentError, 'Partner params needs to be a hash')
+        expect { connection.submit_job(array_partner_params, id_info) }
+          .to raise_error(ArgumentError, 'Partner params needs to be a hash')
 
-        expect { connection.submit_job(missing_partner_params, id_info) }.to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
+        expect { connection.submit_job(missing_partner_params, id_info) }
+          .to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
       end
 
       it 'validates that a job type 5 was submitted' do
-        expect { connection.submit_job({ user_id: 'dmKaJazQCziLc6Tw9lwcgzLo', job_id: 'DeXyJOGtaACFFfbZ2kxjuICE', job_type: 1 }, id_info) }.to raise_error(ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api')
+        expect {
+          connection.submit_job(
+            { user_id: 'dmKaJazQCziLc6Tw9lwcgzLo', job_id: 'DeXyJOGtaACFFfbZ2kxjuICE', job_type: 1 },
+            id_info)
+        }.to raise_error(ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api')
       end
 
       it 'validates the id_info' do
-        expect{ connection.submit_job(partner_params, nil) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
-        expect{ connection.submit_job(partner_params, {}) }.to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
+        expect { connection.submit_job(partner_params, nil) }
+          .to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
+        expect { connection.submit_job(partner_params, {}) }
+          .to raise_error(ArgumentError, "Please make sure that id_info not empty or nil")
 
         [:country, :id_type, :id_number].each do |key|
           amended_id_info = id_info.clone
           amended_id_info[key] = ''
 
-          expect{ connection.submit_job(partner_params, amended_id_info) }.to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
+          expect { connection.submit_job(partner_params, amended_id_info) }
+            .to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
           amended_id_info = id_info.clone
         end
       end
     end
   end
-
 
   context 'ensure that the private methods behave correctly' do
     describe '#symbolize_keys' do
@@ -132,9 +140,12 @@ RSpec.describe SmileIdentityCore::IDApi do
         expect(JSON.parse(setup_response)['IDType']).to eq(id_info[:id_type])
         expect(JSON.parse(setup_response)['IDNumber']).to eq(id_info[:id_number])
 
-        # this test does not directly relate to the implementation of the library but it will help us to debug if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array(['JSONVersion', 'SmileJobID', 'PartnerParams', 'ResultType', 'ResultText', 'ResultCode', 'IsFinalResult', 'Actions', 'Country', 'IDType', 'IDNumber', 'ExpirationDate', 'FullName', 'DOB', 'Photo', 'sec_key', 'timestamp'])
-
+        # this test does not directly relate to the implementation of the library but it will help us to debug
+        # if any keys get removed from the response which will affect the partner.
+        expect(JSON.parse(setup_response).keys).to match_array([
+          'JSONVersion', 'SmileJobID', 'PartnerParams', 'ResultType', 'ResultText', 'ResultCode',
+          'IsFinalResult', 'Actions', 'Country', 'IDType', 'IDNumber', 'ExpirationDate', 'FullName',
+          'DOB', 'Photo', 'sec_key', 'timestamp'])
       end
     end
 
@@ -162,8 +173,5 @@ RSpec.describe SmileIdentityCore::IDApi do
         expect(connection.send(:determine_sec_key)).to include('|')
       end
     end
-
-
   end
-
 end
