@@ -82,6 +82,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
   context 'ensure that the private methods behave correctly' do
     describe '#symbolize_keys' do
+      it 'deeply symbolizes the keys'
     end
 
     describe '#setup_requests' do
