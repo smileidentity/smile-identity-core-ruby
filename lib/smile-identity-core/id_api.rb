@@ -105,15 +105,15 @@ module SmileIdentityCore
         .to_json
     end
 
-    def request_security(timestamp = Time.now, use_legacy_sec_key: true)
+    def request_security(use_legacy_sec_key: true)
       if use_legacy_sec_key
-        @timestamp = timestamp.to_i
+        @timestamp = Time.now.to_i
         {
           sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
           timestamp: @timestamp,
         }
       else
-        @timestamp = timestamp.to_s
+        @timestamp = Time.now.to_s
         {
           signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
           timestamp: @timestamp,

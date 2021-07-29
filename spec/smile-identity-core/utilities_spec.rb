@@ -140,36 +140,6 @@ RSpec.describe SmileIdentityCore::Utilities do
     end
   end
 
-  describe '#request_security' do
-    let(:request_time) { Time.now }
-    context 'for a legacy sec_key' do
-      it 'should give a sec_key and timestamp' do
-        expect_any_instance_of(SmileIdentityCore::Signature).to receive(:generate_sec_key) do
-          { sec_key: 'a sec key', timestamp: request_time.to_i }
-        end
-
-        expect(connection.send(:request_security, request_time, use_legacy_sec_key: true))
-          .to eq(sec_key: 'a sec key', timestamp: request_time.to_i)
-
-        expect(connection.instance_variable_get(:@timestamp)).to eq(request_time.to_i)
-        # is that crucial? not sure
-      end
-    end
-    context 'for a newer signature' do
-      it 'should give a signature and timestamp' do
-        expect_any_instance_of(SmileIdentityCore::Signature).to receive(:generate_signature) do
-          { signature: 'a signature', timestamp: request_time.to_s }
-        end
-
-        expect(connection.send(:request_security, request_time, use_legacy_sec_key: false))
-          .to eq(signature: 'a signature', timestamp: request_time.to_s)
-
-        expect(connection.instance_variable_get(:@timestamp)).to eq(request_time.to_s)
-        # is that crucial? not sure
-      end
-    end
-  end
-
   describe '#configure_job_query' do
     let(:partner_id) { 4242 }
     let(:return_history) { [true, false].sample }
