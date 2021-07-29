@@ -193,7 +193,7 @@ module SmileIdentityCore
       end
     end
 
-    def upload_request
+    def configure_prep_upload_json
       request_security(use_legacy_sec_key: @use_legacy_sec_key).merge(
         file_name: 'selfie.zip',
         smile_client_id: @partner_id,
@@ -210,7 +210,7 @@ module SmileIdentityCore
         url,
         method: 'POST',
         headers: {'Content-Type'=> "application/json"},
-        body: upload_request
+        body: configure_prep_upload_json
       )
 
       request.on_complete do |response|

@@ -25,7 +25,7 @@ module SmileIdentityCore
       options[:return_image_links] ||= false
 
       security = request_security(use_legacy_sec_key: options.fetch(:use_legacy_sec_key, true))
-      query_job_status(job_status_request(user_id, job_id, options).merge(security))
+      query_job_status(configure_job_query(user_id, job_id, options).merge(security))
     end
 
     private
@@ -88,7 +88,7 @@ module SmileIdentityCore
       end
     end
 
-    def job_status_request(user_id, job_id, options)
+    def configure_job_query(user_id, job_id, options)
       {
         user_id: user_id,
         job_id: job_id,

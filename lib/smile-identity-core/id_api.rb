@@ -77,7 +77,7 @@ module SmileIdentityCore
         url,
         method: 'POST',
         headers: {'Content-Type'=> "application/json"},
-        body: id_verification_request
+        body: configure_json
       )
 
       request.on_complete do |response|
@@ -96,7 +96,7 @@ module SmileIdentityCore
       request.run
     end
 
-    def id_verification_request
+    def configure_json
       request_security(use_legacy_sec_key: @use_legacy_sec_key)
         .merge(@id_info)
         .merge(

@@ -166,7 +166,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
     end
 
-    describe '#id_verification_request' do
+    describe '#configure_json' do
       before do
         connection.instance_variable_set(:@id_info, { id: 'info', is_merged: 'in, too' })
         connection.instance_variable_set(:@partner_id, '004')
@@ -176,7 +176,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       it "returns a hash formatted for the request" do
         connection.instance_variable_set(:@use_legacy_sec_key, false)
 
-        parsed_response = JSON.parse(connection.send(:id_verification_request))
+        parsed_response = JSON.parse(connection.send(:configure_json))
         expect(parsed_response).to match(
           'timestamp' => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
           'signature' => instance_of(String),
@@ -192,7 +192,7 @@ RSpec.describe SmileIdentityCore::IDApi do
         it 'puts in the original sec_key security stuff, and not the new signature stuff' do
           connection.instance_variable_set(:@use_legacy_sec_key, true)
 
-          parsed_response = JSON.parse(connection.send(:id_verification_request))
+          parsed_response = JSON.parse(connection.send(:configure_json))
           expect(parsed_response).to match(hash_including(
             'timestamp' => instance_of(Integer),
             'sec_key' => instance_of(String),

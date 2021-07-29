@@ -170,7 +170,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     end
   end
 
-  describe '#job_status_request' do
+  describe '#configure_job_query' do
     let(:partner_id) { 4242 }
     let(:return_history) { [true, false].sample }
     let(:return_image_links) { [true, false].sample }
@@ -178,7 +178,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     it 'should set the correct keys on the payload' do
       connection.instance_variable_set(:@timestamp, "we only care here that it comes through")
 
-      result = connection.send(:job_status_request,
+      result = connection.send(:configure_job_query,
         111, 222, { return_history: return_history, return_image_links: return_image_links })
 
       expect(result[:user_id]).to eq(111)

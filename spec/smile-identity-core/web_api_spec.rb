@@ -315,8 +315,8 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
     end
 
-    describe '#upload_request' do
-      let(:parsed_response) { JSON.parse(connection.send(:upload_request)) }
+    describe '#configure_prep_upload_json' do
+      let(:parsed_response) { JSON.parse(connection.send(:configure_prep_upload_json)) }
 
       it 'returns the correct data type' do
         connection.instance_variable_set(:@partner_id, '001')
