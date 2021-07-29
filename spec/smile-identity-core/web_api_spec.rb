@@ -170,7 +170,7 @@ RSpec.describe SmileIdentityCore::WebApi do
               .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
           end
 
-          describe 'setting use_legacy_sec_key' do
+          describe 'setting whether to use the legacy sec_key or the new signature' do
             before do
               # If all's valid, it'll send the request, so use `#setup_requests` as a seam to stop it:
               allow(connection).to receive(:setup_requests) { }
@@ -178,13 +178,13 @@ RSpec.describe SmileIdentityCore::WebApi do
 
             def flag_with_options(options)
               connection.submit_job(partner_params, images, id_info, options)
-              connection.instance_variable_get(:@use_legacy_sec_key)
+              connection.instance_variable_get(:@use_new_signature)
             end
 
-            it 'defaults use_legacy_sec_key to true' do
-              expect(flag_with_options(good_options)).to eq(true) # it's unspecified in good_options
-              expect(flag_with_options(good_options.merge(use_legacy_sec_key: (val = [true, false].sample)))).to eq(val)
-              expect(flag_with_options(good_options.merge('use_legacy_sec_key' => (val = [true, false].sample)))).to eq(val)
+            it 'defaults to the legacy sec_key, from a new signature option' do
+              expect(flag_with_options(good_options)).to eq(false) # it's unspecified in good_options
+              expect(flag_with_options(good_options.merge(signature: (val = [true, false].sample)))).to eq(val)
+              expect(flag_with_options(good_options.merge('signature' => (val = [true, false].sample)))).to eq(val)
             end
           end
         end
@@ -322,7 +322,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection.instance_variable_set(:@partner_id, '001')
         connection.instance_variable_set(:@partner_params, 'some partner params')
         connection.instance_variable_set(:@callback_url, 'www.example.com')
-        connection.instance_variable_set(:@use_legacy_sec_key, false)
+        connection.instance_variable_set(:@use_new_signature, true)
 
         expect(parsed_response).to match(
           "signature" => instance_of(String),
@@ -338,7 +338,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when using legacy sec_key' do
         it 'puts in the original sec_key security stuff, and not the new signature stuff' do
-          connection.instance_variable_set(:@use_legacy_sec_key, true)
+          connection.instance_variable_set(:@use_new_signature, false)
 
           expect(parsed_response).to match(hash_including(
             'timestamp' => instance_of(Integer),
@@ -433,6 +433,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           connection.instance_variable_set(:@partner_id, 'partner id')
           connection.instance_variable_set(:@partner_params, 'partner params')
           connection.instance_variable_set(:@callback_url, 'example.com')
+          connection.instance_variable_set(:@use_new_signature, true)
 
           expect(configure_info_json.fetch(:misc_information)).to match(
             partner_params: 'partner params',
@@ -449,7 +450,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         context 'when using the legacy sec_key' do
           it 'has the sec_key stuff' do
-            connection.instance_variable_set(:@use_legacy_sec_key, true)
+            connection.instance_variable_set(:@use_new_signature, false)
 
             expect(configure_info_json.fetch(:misc_information)).to match(hash_including(
               timestamp: instance_of(Integer), # new signature!,

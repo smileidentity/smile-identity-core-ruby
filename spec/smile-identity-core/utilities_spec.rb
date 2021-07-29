@@ -42,7 +42,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       connection.get_job_status(
         user_id,
         job_id,
-        { return_history: return_history, return_image_links: return_image_links, use_legacy_sec_key: false })
+        { return_history: return_history, return_image_links: return_image_links, signature: true })
     end
 
     context 'when options are missing' do
@@ -72,11 +72,11 @@ RSpec.describe SmileIdentityCore::Utilities do
           connection.get_job_status(user_id, job_id)
         end
       end
-      context 'because it is specified' do
+      context 'because the `signature` option is false' do
         it 'uses the legacy sec_key' do
           expect(connection).to receive(:query_job_status).with(hash_including(
             timestamp: instance_of(Integer), sec_key: instance_of(String)))
-          connection.get_job_status(user_id, job_id, use_legacy_sec_key: true)
+          connection.get_job_status(user_id, job_id, signature: false)
         end
       end
     end

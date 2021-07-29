@@ -134,7 +134,7 @@ module SmileIdentityCore
       updated_options[:return_job_status] = check_boolean(:return_job_status, options)
       updated_options[:return_image_links] = check_boolean(:return_image_links, options)
       updated_options[:return_history] = check_boolean(:return_history, options)
-      @use_legacy_sec_key = updated_options.fetch(:use_legacy_sec_key, true)
+      @use_new_signature = updated_options.fetch(:signature, false)
 
       @options = updated_options
     end
@@ -177,24 +177,24 @@ module SmileIdentityCore
       end
     end
 
-    def request_security(use_legacy_sec_key: true)
-      if use_legacy_sec_key
-        @timestamp = Time.now.to_i
-        {
-          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
-          timestamp: @timestamp,
-        }
-      else
+    def request_security(use_new_signature: true)
+      if use_new_signature
         @timestamp = Time.now.to_s
         {
           signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
+          timestamp: @timestamp,
+        }
+      else
+        @timestamp = Time.now.to_i
+        {
+          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
           timestamp: @timestamp,
         }
       end
     end
 
     def configure_prep_upload_json
-      request_security(use_legacy_sec_key: @use_legacy_sec_key).merge(
+      request_security(use_new_signature: @use_new_signature).merge(
         file_name: 'selfie.zip',
         smile_client_id: @partner_id,
         partner_params: @partner_params,
@@ -216,10 +216,10 @@ module SmileIdentityCore
       request.on_complete do |response|
         if response.success?
           # TODO: if/when we sign these responses, verify the signature here and raise if it's off.
-          # if updated_options[:use_legacy_sec_key]
-          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
-          # else
+          # if updated_options[:signature]
           #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)
+          # else
+          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
           # end
 
           prep_upload_response = JSON.parse(response.body)
@@ -251,7 +251,7 @@ module SmileIdentityCore
           },
           "language": "ruby"
         },
-        "misc_information": request_security(use_legacy_sec_key: @use_legacy_sec_key).merge(
+        "misc_information": request_security(use_new_signature: @use_new_signature).merge(
           "retry": "false",
           "partner_params": @partner_params,
           "file_name": "selfie.zip", # figure out what to do here

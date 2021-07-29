@@ -84,21 +84,21 @@ RSpec.describe SmileIdentityCore::IDApi do
         end
       end
 
-      describe 'setting whether to use the legacy sec_key' do
+      describe 'setting whether to use the new signature or the legacy sec_key' do
         def flag_when_submitted_with_options(options)
           connection.submit_job(partner_params, id_info, options)
-          connection.instance_variable_get(:@use_legacy_sec_key)
+          connection.instance_variable_get(:@use_new_signature)
         end
 
-        it 'sets it from a new options hash, defaulting to true' do
+        it 'sets it from a new `signature` option; defaults to using sec_key' do
           # It'll call #setup_requests and try to hit the request, so stop it:
           Typhoeus.stub("https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test/id_verification")
             .and_return(Typhoeus::Response.new(code: 200, body: {}.to_json))
 
-          expect(flag_when_submitted_with_options(nil)).to eq(true)
-          expect(flag_when_submitted_with_options({})).to eq(true)
-          expect(flag_when_submitted_with_options(use_legacy_sec_key: (val = [true, false].sample))).to eq(val)
-          expect(flag_when_submitted_with_options('use_legacy_sec_key' => (val = [true, false].sample))).to eq(val)
+          expect(flag_when_submitted_with_options(nil)).to eq(false)
+          expect(flag_when_submitted_with_options({})).to eq(false)
+          expect(flag_when_submitted_with_options(signature: (val = [true, false].sample))).to eq(val)
+          expect(flag_when_submitted_with_options('signature' => (val = [true, false].sample))).to eq(val)
         end
       end
     end
@@ -174,7 +174,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
 
       it "returns a hash formatted for the request" do
-        connection.instance_variable_set(:@use_legacy_sec_key, false)
+        connection.instance_variable_set(:@use_new_signature, true)
 
         parsed_response = JSON.parse(connection.send(:configure_json))
         expect(parsed_response).to match(
@@ -190,7 +190,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
       context 'when using legacy sec_key' do
         it 'puts in the original sec_key security stuff, and not the new signature stuff' do
-          connection.instance_variable_set(:@use_legacy_sec_key, true)
+          connection.instance_variable_set(:@use_new_signature, false)
 
           parsed_response = JSON.parse(connection.send(:configure_json))
           expect(parsed_response).to match(hash_including(
