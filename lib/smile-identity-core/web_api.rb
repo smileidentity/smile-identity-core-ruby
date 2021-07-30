@@ -239,11 +239,7 @@ module SmileIdentityCore
     def configure_info_json(server_information)
       info = {
         "package_information": {
-          "apiVersion": {
-            "buildNumber": 0,
-            "majorVersion": 2,
-            "minorVersion": 0
-          },
+          "apiVersion": SmileIdentityCore.version_as_hash,
           "language": "ruby"
         },
         "misc_information": {
