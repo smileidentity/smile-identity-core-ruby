@@ -399,9 +399,8 @@ RSpec.describe SmileIdentityCore::WebApi do
         end
 
         it 'sets the correct version information' do
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:buildNumber]).to be(0)
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:majorVersion]).to be(2)
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(0)
+          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion])
+            .to eq(SmileIdentityCore.version_as_hash)
         end
       end
 
