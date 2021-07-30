@@ -423,7 +423,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       describe "the package_information inner payload" do
         it 'sets the correct version information and language' do
           expect(configure_info_json.fetch(:package_information)).to eq(
-            apiVersion: { buildNumber: 0, majorVersion: 2, minorVersion: 0 },
+            apiVersion: SmileIdentityCore.version_as_hash,
             language: 'ruby')
         end
       end
