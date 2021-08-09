@@ -35,7 +35,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
 
       it "sets the correct @url instance variable" do
-        expect(connection.instance_variable_get(:@url)).to eq('https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test')
+        expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
         connection = SmileIdentityCore::IDApi.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
@@ -92,7 +92,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
         it 'sets it from a new `signature` option; defaults to using sec_key' do
           # It'll call #setup_requests and try to hit the request, so stop it:
-          Typhoeus.stub("https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test/id_verification")
+          Typhoeus.stub("https://testapi.smileidentity.com/v1/id_verification")
             .and_return(Typhoeus::Response.new(code: 200, body: {}.to_json))
 
           expect(flag_when_submitted_with_options(nil)).to eq(false)

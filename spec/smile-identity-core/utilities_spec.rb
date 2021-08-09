@@ -12,7 +12,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     end
 
     it "sets the correct @url instance variable" do
-      expect(connection.instance_variable_get(:@url)).to eq('https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test')
+      expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
       connection = SmileIdentityCore::Utilities.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
       expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
