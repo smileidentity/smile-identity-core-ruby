@@ -5,8 +5,8 @@ require "smile-identity-core/version"
 Gem::Specification.new do |spec|
   spec.name          = "smile-identity-core"
   spec.version       = SmileIdentityCore::VERSION
-  spec.authors       = ["Ridhwana"]
-  spec.email         = ["ridhwana.khan16@gmail.com"]
+  spec.authors       = ["Smile Identity"]
+  spec.email         = ["support@smileidentity.com"]
 
   spec.summary       = "The Smile Identity Web API allows the user to access most of the features of the Smile Identity system through direct server to server queries."
   spec.description   = "The Official Smile Identity gem"
