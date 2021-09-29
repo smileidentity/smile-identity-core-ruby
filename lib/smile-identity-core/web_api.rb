@@ -18,8 +18,8 @@ module SmileIdentityCore
       @sid_server = sid_server
       if !(sid_server =~ URI::regexp)
         sid_server_mapping = {
-          0 => 'https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test',
-          1 => 'https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod'
+          0 => 'https://testapi.smileidentity.com/v1',
+          1 => 'https://api.smileidentity.com/v1',
         }
         @url = sid_server_mapping[sid_server.to_i]
       else
@@ -35,8 +35,6 @@ module SmileIdentityCore
       end
 
       self.images = images
-      @timestamp = Time.now.to_i
-
       self.id_info = symbolize_keys id_info
       self.options = symbolize_keys options
 
@@ -130,19 +128,13 @@ module SmileIdentityCore
     end
 
     def options=(options)
-      updated_options = options
+      updated_options = options || {}
 
-      if updated_options.nil?
-        updated_options = {}
-      end
-
-      [:optional_callback, :return_job_status, :return_image_links, :return_history].map do |key|
-        if key != :optional_callback
-          updated_options[key] = check_boolean(key, options)
-        else
-          updated_options[key] = check_string(key, options)
-        end
-      end
+      updated_options[:optional_callback] = check_string(:optional_callback, options)
+      updated_options[:return_job_status] = check_boolean(:return_job_status, options)
+      updated_options[:return_image_links] = check_boolean(:return_image_links, options)
+      updated_options[:return_history] = check_boolean(:return_history, options)
+      @use_new_signature = updated_options.fetch(:signature, false)
 
       @options = updated_options
     end
@@ -185,23 +177,30 @@ module SmileIdentityCore
       end
     end
 
-    def determine_sec_key
-      @sec_key = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key]
+    def request_security(use_new_signature: true)
+      if use_new_signature
+        @timestamp = Time.now.to_s
+        {
+          signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
+          timestamp: @timestamp,
+        }
+      else
+        @timestamp = Time.now.to_i
+        {
+          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
+          timestamp: @timestamp,
+        }
+      end
     end
 
     def configure_prep_upload_json
-
-      body = {
+      request_security(use_new_signature: @use_new_signature).merge(
         file_name: 'selfie.zip',
-        timestamp: @timestamp,
-        sec_key: determine_sec_key,
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
         callback_url: @callback_url
-      }
-
-      JSON.generate(body)
+      ).to_json
     end
 
     def setup_requests
@@ -216,6 +215,12 @@ module SmileIdentityCore
 
       request.on_complete do |response|
         if response.success?
+          # TODO: if/when we sign these responses, verify the signature here and raise if it's off.
+          # if updated_options[:signature]
+          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)
+          # else
+          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
+          # end
 
           prep_upload_response = JSON.parse(response.body)
           info_json = configure_info_json(prep_upload_response)
@@ -242,11 +247,9 @@ module SmileIdentityCore
           "apiVersion": SmileIdentityCore.version_as_hash,
           "language": "ruby"
         },
-        "misc_information": {
-          "sec_key": @sec_key,
+        "misc_information": request_security(use_new_signature: @use_new_signature).merge(
           "retry": "false",
           "partner_params": @partner_params,
-          "timestamp": @timestamp,
           "file_name": "selfie.zip", # figure out what to do here
           "smile_client_id": @partner_id,
           "callback_url": @callback_url,
@@ -262,7 +265,7 @@ module SmileIdentityCore
             "countryCode": "+",
             "countryName": ""
           }
-        },
+        ),
         "id_info": @id_info,
         "images": configure_image_payload,
         "server_information": server_information
@@ -272,7 +275,7 @@ module SmileIdentityCore
 
     def configure_image_payload
       @images.map { |i|
-        if isImageFile?i[:image_type_id]
+        if image_file?(i[:image_type_id])
           {
             image_type_id: i[:image_type_id],
             image: '',
@@ -288,7 +291,7 @@ module SmileIdentityCore
       }
     end
 
-    def isImageFile?type
+    def image_file?(type)
       type.to_i == 0 || type.to_i == 1
     end
 

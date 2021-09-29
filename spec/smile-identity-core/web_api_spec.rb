@@ -80,17 +80,10 @@ RSpec.describe SmileIdentityCore::WebApi do
 
   context 'ensure that the public methods behave correctly' do
     describe '#initialize' do
-      it "receives the correct attributes and returns an instance" do
-        expect(SmileIdentityCore::WebApi).to receive(:new).with(partner_id, default_callback, api_key, sid_server).and_return(connection)
-
-        connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
-      end
-
-      [:@partner_id, :@api_key, :@sid_server].each do |instance_variable|
-        it "sets the #{instance_variable} instance variable" do
-          value = eval(instance_variable.slice(1..instance_variable.length-1))
-          expect(connection.instance_variable_get(instance_variable)).to eq(value)
-        end
+      it "sets the partner_id, api_key, and sid_server instance variables" do
+        expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id)
+        expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
+        expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
       end
 
       it 'sets the @callback_url instance variable' do
@@ -99,17 +92,16 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it "sets the correct @url instance variable" do
-        expect(connection.instance_variable_get(:@url)).to eq('https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test')
+        expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
-        connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
+        connection = SmileIdentityCore::WebApi.new(
+          partner_id, default_callback, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
       end
-
     end
 
     describe '#submit_job' do
       context 'for validation' do
-
         it "validates the partner_params" do
           no_partner_parameters = nil
           array_partner_params = []
@@ -119,96 +111,127 @@ RSpec.describe SmileIdentityCore::WebApi do
             job_type: nil,
           }
 
-          expect { connection.submit_job(no_partner_parameters, images, id_info, options) }.to raise_error(ArgumentError, 'Please ensure that you send through partner params')
+          expect { connection.submit_job(no_partner_parameters, images, id_info, options) }
+            .to raise_error(ArgumentError, 'Please ensure that you send through partner params')
 
-          expect { connection.submit_job(array_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Partner params needs to be a hash')
+          expect { connection.submit_job(array_partner_params, images, id_info, options) }
+            .to raise_error(ArgumentError, 'Partner params needs to be a hash')
 
-          expect { connection.submit_job(missing_partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
+          expect { connection.submit_job(missing_partner_params, images, id_info, options) }
+            .to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
         end
 
         it 'validates the images' do
-         no_images = nil
-         hash_images = {}
-         empty_images = []
-         just_id_image = [
-           {
-             image_type_id: 1,
-             image_path: './tmp/id_image.png'
-           }
-         ]
+          no_images = nil
+          hash_images = {}
+          empty_images = []
+          just_id_image = [
+            {
+              image_type_id: 1,
+              image_path: './tmp/id_image.png'
+            }
+          ]
 
-         expect { connection.submit_job(partner_params, no_images, id_info, options) }.to raise_error(ArgumentError, 'Please ensure that you send through image details')
+          expect { connection.submit_job(partner_params, no_images, id_info, options) }
+           .to raise_error(ArgumentError, 'Please ensure that you send through image details')
 
-         expect { connection.submit_job(partner_params, hash_images, id_info, options) }.to raise_error(ArgumentError, 'Image details needs to be an array' )
+          expect { connection.submit_job(partner_params, hash_images, id_info, options) }
+           .to raise_error(ArgumentError, 'Image details needs to be an array' )
 
-         expect { connection.submit_job(partner_params, empty_images, id_info, options) }.to raise_error(ArgumentError, 'You need to send through at least one selfie image')
+          expect { connection.submit_job(partner_params, empty_images, id_info, options) }
+           .to raise_error(ArgumentError, 'You need to send through at least one selfie image')
 
-         expect { connection.submit_job(partner_params, just_id_image, id_info, options) }.to raise_error(ArgumentError, 'You need to send through at least one selfie image')
+          expect { connection.submit_job(partner_params, just_id_image, id_info, options) }
+           .to raise_error(ArgumentError, 'You need to send through at least one selfie image')
         end
 
         it 'validates the id_info' do
           [:country, :id_type, :id_number].each do |key|
-            amended_id_info = id_info.clone
-            amended_id_info[key] = ''
+            amended_id_info = id_info.merge(key => '')
 
-            expect{ connection.submit_job(partner_params, images, amended_id_info, options) }.to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
-            amended_id_info = id_info.clone
+            expect { connection.submit_job(partner_params, images, amended_id_info, options) }
+              .to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
           end
         end
 
-        it 'validates the options' do
-          options = {
-            optional_callback: 'wwww.optional_callback.com',
-            return_job_status: 'false',
-            return_image_links: false,
-            return_history: false
-          }
+        describe 'validating the options' do
+          let(:good_options) do
+            {
+              optional_callback: 'wwww.optional_callback.com',
+              return_job_status: false,
+              return_image_links: false,
+              return_history: false
+            }
+          end
 
-          expect{ connection.submit_job(partner_params, images, id_info, options) }.to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
+          it 'checks that return_job_status is a boolean' do
+            bad_options = good_options.merge(return_job_status: 'false')
+            expect { connection.submit_job(partner_params, images, id_info, bad_options) }
+              .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
+          end
+
+          describe 'setting whether to use the legacy sec_key or the new signature' do
+            before do
+              # If all's valid, it'll send the request, so use `#setup_requests` as a seam to stop it:
+              allow(connection).to receive(:setup_requests) { }
+            end
+
+            def flag_with_options(options)
+              connection.submit_job(partner_params, images, id_info, options)
+              connection.instance_variable_get(:@use_new_signature)
+            end
+
+            it 'defaults to the legacy sec_key, from a new signature option' do
+              expect(flag_with_options(good_options)).to eq(false) # it's unspecified in good_options
+              expect(flag_with_options(good_options.merge(signature: (val = [true, false].sample)))).to eq(val)
+              expect(flag_with_options(good_options.merge('signature' => (val = [true, false].sample)))).to eq(val)
+            end
+          end
         end
       end
 
       it 'updates the callback_url when optional_callback is defined' do
+        # This is really about setting config...from options to an ivar. It's confused because all the other
+        # config is good, so we fire off two HTTP requests, and we need to mock them.
 
-        url = 'https://www.example.com'
-        connection.instance_variable_set("@url", url)
+        # Set everything up:
+        connection.instance_variable_set("@url", 'https://www.example.com')
 
-        body = "{\"upload_url\":\"https://smile-uploads-development02.s3.us-west-2.amazonaws.com/videos/125/125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww/selfie.zip?AWSAccessKeyId=ASIA4OAOFXPAFYEKFDUS&Content-Type=application%2Fzip&Expires=1563197197&Signature=ex8KUeQ4lwzHazjMtkx1VgME1xM%3D&x-amz-security-token=AgoJb3JpZ2luX2VjEK3%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJIMEYCIQDJ%2FrmDuvLR1nEKN2gmtWXBHAiWox0SeajZ%2B%2BKFDM8IcgIhAMXHHXbynxFFKxnIwhwuXeg0kGQyu4aHOe1ZA2YAsYBXKo0CCBYQABoMODU0NzI4MjI3Nzc2Igy%2B5DyaYrE4KGQH30Iq6gFKOBX4H3JW5Bm29RshsbRaETdYeVPJvmyChJJEX1gJ9fmXX7STBvogGmuTNJxynyH0ejQJ4R69zFc4bvcElkBSYPDFSimInOEaROQQsfFiWnNVUzCJcY87lG1VSc5rj%2FYfBU%2Fm9%2FoHASZ1oUJUvX4uKpYdvmliq47c0UDJC7zvqZVf%2FueC6cPzzCOI0LONlRyBsqhS5OEn3xpRjT4rliwZfrqptnDd73ENTLcHI3NgKsmnkah5q%2BVsGtm%2FjHO%2FRTU3PAvI97WQSXs%2BD4Z2%2FVkyRDtVKt5Um6Y%2BuLesLje6oximsUQdbsmmIlswvPCx6QU6swG8X1b%2FMByB5X0mlYUB4%2BzxLm6WLYndKqYaSdPad6ZaRWs66rckKJru1ofaIYTNZ4iVwzqBG6Yc0d8L19g3AwmLLVv78EmcsAhl69be8KaRDo%2Fn18fRo6Bx0egHdC00QTeELQafyKC4%2BLq5vaGFjiKaKX%2FKSGVYe3CPlBC3fGQ8hoF0W9jvso2hkJONP3%2FwZQ7m2uNh7MkFwLIVufdvGHlulCh1PtXWyujvqXYh8HdokjIbHQ%3D%3D&x-amz-server-side-encryption=AES256\",\"ref_id\":\"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww\",\"smile_job_id\":\"0000000583\",\"camera_config\":\"null\",\"code\":\"2202\"}"
+        response_upload_url = "https://smile-uploads-somewhere.amazonaws.com/videos/a_signed_url"
+        body = {
+          "upload_url"=> response_upload_url,
+          "ref_id"=>"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww",
+          "smile_job_id"=>"0000000583",
+          "camera_config"=>"null",
+          "code"=>"2202"
+        }.to_json
 
-        prep_upload_response = Typhoeus::Response.new(code: 200, body: body)
-        Typhoeus.stub("#{url}/upload").and_return(prep_upload_response)
+        Typhoeus.stub("https://www.example.com/upload").and_return(Typhoeus::Response.new(code: 200, body: body))
 
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
 
-        connection.instance_variable_set("@sec_key", 'some sec key| key')
-        connection.instance_variable_set("@partner_params", partner_params)
-        connection.instance_variable_set("@images", images)
-        connection.instance_variable_set("@timestamp", timestamp)
-        connection.instance_variable_set("@partner_id", partner_id)
-        connection.instance_variable_set("@options", options)
-        connection.instance_variable_set("@id_info", id_info)
+        Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
 
-        upload_response = Typhoeus::Response.new(code: 200)
-        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
+        # Test the preconditions! `default_callback` is what `connection` was instantiated with.
+        expect(connection.instance_variable_get(:@callback_url)).to eq(default_callback)
 
-        connection.submit_job(partner_params, images, id_info, options)
+        # Run the code, passing the `optional_callback` option:
+        connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com'))
 
-        expect(connection.instance_variable_get(:@callback_url)).to eq(options[:optional_callback])
-        expect(connection.instance_variable_get(:@callback_url)).to_not eq(default_callback)
-
+        # Make sure @callback_url gets set:
+        expect(connection.instance_variable_get(:@callback_url)).to eq('https://zombo.com')
       end
 
       # xit 'ensures that we only except a png or jpg' do
       #   # check the image_path
       # end
-
     end
-
   end
 
   context 'ensure that the private methods behave correctly' do
-    # NOTE: In this gem, we do test the private methods because we have split up a lot of the logic into private methods that feed into the public method.
+    # NOTE: In this gem, we do test the private methods because we have split up a lot of
+    # the logic into private methods that feed into the public method.
 
     describe '#validate_return_data' do
       it 'validates that data is returned via the callback or job_status' do
@@ -216,13 +239,13 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection.instance_variable_set('@options', options_with_job_status_true)
         expect {connection.send(:validate_return_data)}.not_to raise_error
 
-
         connection.instance_variable_set('@options', options)
-        expect {connection.send(:validate_return_data)}.to raise_error(ArgumentError, 'Please choose to either get your response via the callback or job status query')
+        expect { connection.send(:validate_return_data) }
+          .to raise_error(ArgumentError, 'Please choose to either get your response via the callback or job status query')
 
         connection.instance_variable_set('@options', options_with_job_status_true)
         connection.instance_variable_set('@callback_url', default_callback)
-        expect {connection.send(:validate_return_data)}.not_to raise_error
+        expect { connection.send(:validate_return_data) }.not_to raise_error
       end
     end
 
@@ -252,7 +275,8 @@ RSpec.describe SmileIdentityCore::WebApi do
       }
 
       it 'validates the id parameters required for job_type 1' do
-        expect { connection.send(:validate_enroll_with_id) }.to raise_error(ArgumentError, 'You are attempting to complete a job type 1 without providing an id card image or id info')
+        expect { connection.send(:validate_enroll_with_id) }
+          .to raise_error(ArgumentError, 'You are attempting to complete a job type 1 without providing an id card image or id info')
 
         connection.instance_variable_set('@images', images)
         expect { connection.send(:validate_enroll_with_id) }.not_to raise_error
@@ -260,7 +284,6 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#check_boolean' do
-
       it 'returns false for the key if the object does not exist' do
         options = {}
         expect(connection.send(:check_boolean, :return_job_status, options)).to be(false)
@@ -287,27 +310,41 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the string as it is when it exists' do
-        expect(connection.send(:check_string, :optional_callback, { :optional_callback => 'www.optional_callback' } )).to eq('www.optional_callback')
-      end
-    end
-
-    describe '#determine_sec_key' do
-      # NOTE: we can possibly test more here
-      it 'contains a join in the signature' do
-        expect(connection.send(:determine_sec_key)).to include('|')
+        expect(connection.send(:check_string, :optional_callback, { :optional_callback => 'www.optional_callback' } ))
+          .to eq('www.optional_callback')
       end
     end
 
     describe '#configure_prep_upload_json' do
-      let(:parsed_response) {JSON.parse(connection.send(:configure_prep_upload_json))}
+      let(:parsed_response) { JSON.parse(connection.send(:configure_prep_upload_json)) }
 
       it 'returns the correct data type' do
-        expect(parsed_response).to be_kind_of(Hash)
+        connection.instance_variable_set(:@partner_id, '001')
+        connection.instance_variable_set(:@partner_params, 'some partner params')
+        connection.instance_variable_set(:@callback_url, 'www.example.com')
+        connection.instance_variable_set(:@use_new_signature, true)
+
+        expect(parsed_response).to match(
+          "signature" => instance_of(String),
+          "timestamp" => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
+          "file_name" => "selfie.zip", # The code hard-codes this value
+          "smile_client_id" => "001",
+          "partner_params" => 'some partner params',
+          "model_parameters" => {}, # The code hard-codes this value
+          "callback_url" => "www.example.com"
+          )
+        expect(parsed_response).not_to have_key 'sec_key'
       end
 
-      ['file_name', 'timestamp', 'sec_key', 'smile_client_id', 'partner_params', 'model_parameters', 'callback_url'].each do |key|
-        it "includes the #{key} key" do
-          expect(parsed_response).to have_key(key)
+      context 'when using legacy sec_key' do
+        it 'puts in the original sec_key security stuff, and not the new signature stuff' do
+          connection.instance_variable_set(:@use_new_signature, false)
+
+          expect(parsed_response).to match(hash_including(
+            'timestamp' => instance_of(Integer),
+            'sec_key' => instance_of(String),
+            ))
+          expect(parsed_response).not_to have_key 'signature'
         end
       end
     end
@@ -321,28 +358,28 @@ RSpec.describe SmileIdentityCore::WebApi do
       }
 
       it 'should return a json object if it runs successfully' do
-        body = "{\"upload_url\":\"https://some-url/selfie.zip\",\"ref_id\":\"125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww\",\"smile_job_id\":\"0000000583\",\"camera_config\":\"null\",\"code\":\"2202\"}"
+        response_upload_url = "https://some-url/selfie.zip"
+        response_smile_job_id = "0000000583"
+        body = {
+          "upload_url" => response_upload_url,
+           "ref_id" => "125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww",
+           "smile_job_id" => response_smile_job_id,
+           "camera_config" => "null",
+           "code" => "2202"
+        }.to_json
 
-        prep_upload_response = Typhoeus::Response.new(code: 200, body: body)
-        Typhoeus.stub("#{url}/upload").and_return(prep_upload_response)
+        Typhoeus.stub("#{url}/upload").and_return(Typhoeus::Response.new(code: 200, body: body))
 
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
 
-        connection.instance_variable_set("@sec_key", 'some sec key| key')
-        connection.instance_variable_set("@partner_params", partner_params)
         connection.instance_variable_set("@images", images)
-        connection.instance_variable_set("@timestamp", timestamp)
-        connection.instance_variable_set("@partner_id", partner_id)
-        connection.instance_variable_set("@callback_url", default_callback)
-        connection.instance_variable_set("@id_info", id_info)
         connection.instance_variable_set("@options", options)
 
-        upload_response = Typhoeus::Response.new(code: 200)
-        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(upload_response)
+        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(Typhoeus::Response.new(code: 200))
 
         setup_requests = connection.send(:setup_requests)
-        expect(setup_requests).to eq({success: true, smile_job_id: JSON.load(body)['smile_job_id']}.to_json)
+        expect(JSON.parse(setup_requests)).to eq('success' => true, 'smile_job_id' => response_smile_job_id)
       end
 
       it 'returns the correct message if we could not get an http response' do
@@ -371,49 +408,61 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe "#configure_info_json" do
       # NOTE: we can perhaps still test that the instance variables that are set in teh payload are the ones set in the connection
       before(:each) {
+        connection.instance_variable_set("@id_info", 'a value for @id_info')
         connection.instance_variable_set("@images", images)
-        connection.instance_variable_set("@sec_key", 'some sec key| key')
       }
 
-      it 'returns the correct data type' do
-        expect(connection.send(:configure_info_json, 'the server information url')).to be_kind_of(Hash)
-      end
+      let(:configure_info_json) { connection.send(:configure_info_json, 'the server information url') }
 
       it "includes the relevant keys on the root level" do
-          [:package_information, :misc_information, :id_info, :images, :server_information].each do |key|
-          expect(connection.send(:configure_info_json, 'the server information url')).to have_key(key)
-        end
+        expect(configure_info_json.fetch(:images)).to be_kind_of(Array)
+        expect(configure_info_json.fetch(:id_info)).to eq('a value for @id_info')
+        expect(configure_info_json.fetch(:server_information)).to eq('the server information url')
       end
 
       describe "the package_information inner payload" do
-        it 'includes its relevant keys' do
-          [:apiVersion].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:package_information]).to have_key(key)
-          end
-        end
-
-        it 'includes the relevant keys for the nested apiVersion' do
-          [:buildNumber, :majorVersion, :minorVersion].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion]).to have_key(key)
-          end
-        end
-
-        it 'sets the correct version information' do
-          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion])
-            .to eq(SmileIdentityCore.version_as_hash)
+        it 'sets the correct version information and language' do
+          expect(configure_info_json.fetch(:package_information)).to eq(
+            apiVersion: SmileIdentityCore.version_as_hash,
+            language: 'ruby')
         end
       end
 
       describe "the misc_information inner payload" do
         it 'includes its relevant keys' do
-          [:sec_key, :retry, :partner_params, :timestamp, :file_name, :smile_client_id, :callback_url, :userData].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:misc_information]).to have_key(key)
+          connection.instance_variable_set(:@partner_id, 'partner id')
+          connection.instance_variable_set(:@partner_params, 'partner params')
+          connection.instance_variable_set(:@callback_url, 'example.com')
+          connection.instance_variable_set(:@use_new_signature, true)
+
+          expect(configure_info_json.fetch(:misc_information)).to match(
+            partner_params: 'partner params',
+            smile_client_id: 'partner id',
+            callback_url: 'example.com',
+            timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
+            signature: instance_of(String), # new signature!
+            userData: instance_of(Hash), # hard-coded, and spec'd below
+            retry: 'false', # hard-coded
+            file_name: 'selfie.zip', # hard-coded
+            )
+          expect(configure_info_json.fetch(:misc_information)).not_to have_key(:sec_key)
+        end
+
+        context 'when using the legacy sec_key' do
+          it 'has the sec_key stuff' do
+            connection.instance_variable_set(:@use_new_signature, false)
+
+            expect(configure_info_json.fetch(:misc_information)).to match(hash_including(
+              timestamp: instance_of(Integer), # new signature!,
+              sec_key: instance_of(String),
+              ))
+            expect(configure_info_json.fetch(:misc_information)).not_to have_key(:signature)
           end
         end
 
         it 'includes the relevant keys for the nested userData' do
           [:isVerifiedProcess, :name, :fbUserID, :firstName, :lastName, :gender, :email, :phone, :countryCode, :countryName].each do |key|
-            expect(connection.send(:configure_info_json, 'the server information url')[:misc_information][:userData]).to have_key(key)
+            expect(configure_info_json.fetch(:misc_information).fetch(:userData)).to have_key(key)
           end
         end
       end
@@ -436,23 +485,18 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       it 'correctly sets the image type value' do
         expect(connection.send(:configure_image_payload)[0][:image_type_id]).to eq(images_v2[0][:image_type_id])
-
         expect(connection.send(:configure_image_payload)[1][:image_type_id]).to eq(images_v2[1][:image_type_id])
       end
 
       it 'correctly sets the image value' do
         expect(connection.send(:configure_image_payload)[0][:image]).to eq('')
-
         expect(connection.send(:configure_image_payload)[1][:image]).to eq(images_v2[1][:image])
       end
 
       it 'correctly sets the file_name value' do
         expect(connection.send(:configure_image_payload)[0][:file_name]).to eq(File.basename(images_v2[0][:image]))
-
         expect(connection.send(:configure_image_payload)[1][:file_name]).to eq('')
       end
-
-
     end
 
     describe '#zip_up_file' do
@@ -585,8 +629,6 @@ RSpec.describe SmileIdentityCore::WebApi do
           expect(file).to_not include('id_image.png')
         end
       end
-
-
     end
 
     describe '#upload_file' do
@@ -606,9 +648,9 @@ RSpec.describe SmileIdentityCore::WebApi do
           Typhoeus.stub(url).and_return(typhoeus_response)
 
           connection.instance_variable_set('@options', options)
-          expect(connection.send(:upload_file, url, info_json, smile_job_id)).to eq({success: true, smile_job_id: smile_job_id}.to_json)
+          expect(connection.send(:upload_file, url, info_json, smile_job_id))
+            .to eq({success: true, smile_job_id: smile_job_id}.to_json)
         end
-
       end
 
       context 'if unsuccessful' do
@@ -623,27 +665,26 @@ RSpec.describe SmileIdentityCore::WebApi do
           typhoeus_response = Typhoeus::Response.new(code: 512, body: 'Some error')
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          expect {connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
+          expect { connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
         end
 
         it 'returns the correct message if we could not get an http response' do
           typhoeus_response = Typhoeus::Response.new(code: 0, body: 'Some error')
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          expect {connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
+          expect { connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
         end
 
         it 'returns the correct message if we received a non-successful http response' do
           typhoeus_response = Typhoeus::Response.new(code: 403, body: 'Some error')
           Typhoeus.stub(url).and_return(typhoeus_response)
 
-          expect {connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
+          expect { connection.send(:upload_file, url, info_json, smile_job_id) }.to raise_error(RuntimeError)
         end
       end
     end
 
     describe '#query_job_status' do
-      # NOTE: this is slow, need to fix
       let (:url) { 'https://some_server.com/dev01' }
       let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
       let (:partner_id) { 1 }
@@ -664,6 +705,14 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
         @sec_key = [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
+
+        def connection.sleep(n)
+          # TODO: This isn't ideal, but it's a way to speed up these specs.
+          # #query_job_status sleeps as it retries, which adds ~8 seconds to this spec run.
+          # Monkeypatching sleep on the connection object here no-ops it so it goes faster.
+          # Don't believe me? Uncomment:
+          # puts "sleep for #{n}!"
+        end
       }
 
       it 'returns the response if job_complete is true' do
@@ -703,8 +752,6 @@ RSpec.describe SmileIdentityCore::WebApi do
       xit 'increments the counter if the counter is less than 20 and job_complete is not true' do
         # NOTE: to give more thought
       end
-
     end
   end
-
 end

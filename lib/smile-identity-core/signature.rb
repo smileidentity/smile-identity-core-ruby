@@ -3,7 +3,7 @@ module SmileIdentityCore
 
     def initialize(partner_id, api_key)
       @api_key = api_key
-      @partner_id = partner_id.to_i
+      @partner_id = partner_id
     end
 
     def generate_sec_key(timestamp=Time.now.to_i)
@@ -35,6 +35,22 @@ module SmileIdentityCore
       rescue => e
         raise e
       end
+    end
+
+    def generate_signature(timestamp=Time.now.to_s)
+      hmac = OpenSSL::HMAC.new(@api_key, 'sha256')
+      hmac.update(timestamp.to_s)
+      hmac.update(@partner_id)
+      hmac.update("sid_request")
+      signature = Base64.strict_encode64(hmac.digest())
+      return {
+        signature: signature,
+        timestamp: timestamp.to_s
+      }
+    end
+
+    def confirm_signature(timestamp, msg_signature)
+      generate_signature(timestamp)[:signature] == msg_signature
     end
   end
 end
