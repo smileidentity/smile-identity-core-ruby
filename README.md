@@ -39,7 +39,7 @@ require 'smile-identity-core'
 
 Or install it to your system as:
 
-```
+```sh
   $ gem install smile-identity-core
 ```
 
@@ -48,33 +48,33 @@ You now may use the classes as follows:
 #### Web Api Class
 
 ##### submit_job method
-```
-$ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
+```ruby
+connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
 
-$ response = connection.submit_job(partner_params, images, id_info, options)
+response = connection.submit_job(partner_params, images, id_info, options)
 ```
 
 Please note that if you do not need to pass through id_info or options, you may omit calling those class and send through nil in submit_job, as follows:
 
-```
-$ response = connection.submit_job(partner_params, images, nil, nil);
+```ruby
+response = connection.submit_job(partner_params, images, nil, nil);
 ```
 
 In the case of a Job Type 5 you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
 
-```
-$ response = connection.submit_job(partner_params, nil, id_info, nil);
+```ruby
+response = connection.submit_job(partner_params, nil, id_info, nil);
 ```
 
 **Response:**
 
 Should you choose to *set return_job_status to false*, the response will be a JSON String containing:
-```
+```ruby
 {success: true, smile_job_id: smile_job_id}
 ```
 
 However, if you have *set return_job_status to true (with image_links and history)* then you will receive JSON Object response like below:
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -150,7 +150,7 @@ However, if you have *set return_job_status to true (with image_links and histor
 ```
 
 You can also *view your response asynchronously at the callback* that you have set, it will look as follows:
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -226,7 +226,7 @@ You can also *view your response asynchronously at the callback* that you have s
 ```
 
 If you have queried a job type 5, your response be a JSON String that will contain the following:
-```
+```json
 {
    "JSONVersion":"1.0.0",
    "SmileJobID":"0000001105",
@@ -279,7 +279,7 @@ response = connection.get_job_status(partner_params, nil);
 
 Your response will return a JSON Object below with image_links and history included:
 
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -358,16 +358,16 @@ Your response will return a JSON Object below with image_links and history inclu
 
 
 ##### submit_job method
-```
-$ connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
+```ruby
+connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
 
-$ response = connection.submit_job(partner_params, id_info)
+response = connection.submit_job(partner_params, id_info)
 ```
 
 **Response**
 
 Your response will return a JSON String containing the below:
-```
+```json
 {
    "JSONVersion":"1.0.0",
    "SmileJobID":"0000001105",
@@ -400,17 +400,17 @@ Your response will return a JSON String containing the below:
 
 ##### generate_sec_key method
 
-```
-$ connection = SmileIdentityCore::Signature.new(partner_id, api_key)
+```ruby
+connection = SmileIdentityCore::Signature.new(partner_id, api_key)
 
-$ sec_key = connection.generate_sec_key(timestamp)
+sec_key = connection.generate_sec_key(timestamp)
 where timestamp is optional
 
 ```
 
 The response will be a hash:
 
-```
+```ruby
 {
   :sec_key=> "<the generated sec key>",
  :timestamp=> 1563283420
@@ -422,8 +422,8 @@ The response will be a hash:
 You can also confirm the signature that you receive when you interacting with our servers, simply use the confirm_sec_key method which returns a boolean:
 
 ```ruby
-$ connection = SmileIdentityCore::Signature.new(partner_id, api_key)
-$ sec_key = connection.confirm_sec_key(sec_key, timestamp)
+connection = SmileIdentityCore::Signature.new(partner_id, api_key)
+sec_key = connection.confirm_sec_key(sec_key, timestamp)
 ```
 
 #### Utilities Class
