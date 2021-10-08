@@ -753,5 +753,98 @@ RSpec.describe SmileIdentityCore::WebApi do
         # NOTE: to give more thought
       end
     end
+
+    describe 'get_web_token' do
+      let(:user_id) { '1' }
+      let(:job_id) { '1' }
+      let(:product) { 'ekyc_smartselfie' }
+
+      let(:callback_url) {default_callback}
+      let (:request_params) {
+        {
+          user_id: user_id,
+          job_id: job_id,
+          product: product,
+          callback_url: callback_url
+        }
+      }
+
+      let (:url) { 'https://testapi.smileidentity.com/v1/token' }
+      let (:response_body) { nil }
+      let (:response_code) {200}
+      let (:typhoeus_response) { Typhoeus::Response.new(code: response_code, body: response_body ) }
+
+      before do
+        Typhoeus.stub(url).and_return(typhoeus_response)
+        connection = described_class.new(partner_id, default_callback, api_key, sid_server)
+      end
+
+      it 'should ensure request params are present' do
+        expect{connection.get_web_token(nil)}.to raise_error(ArgumentError, 'Please ensure that you send through request params')
+      end
+
+      it 'should ensure request params is a hash' do
+        expect{connection.get_web_token(1)}.to raise_error(ArgumentError, 'Request params needs to be an object')
+      end
+
+      context "when callback_url not set on request_params or #{described_class}" do
+        let(:default_callback) {nil}
+
+        it "should raise an ArgumentError" do
+          expect{connection.get_web_token(request_params)}.to raise_error(ArgumentError, 'callback_url is required to get a web token')
+        end
+      end
+
+      context "when callback_url is an empty string on request_params and #{described_class}" do
+        let (:default_callback) { '' }
+
+        it "should raise an ArgumentError" do
+          expect{connection.get_web_token(request_params)}.to raise_error(ArgumentError, 'callback_url is required to get a web token')
+        end
+      end
+
+      context 'when request_params is passed without values' do
+        it "should raise ArgumentError with missing keys if request params is an empty hash" do
+          expect{connection.get_web_token({})}.to raise_error(ArgumentError, 'user_id, job_id, product are required to get a web token')
+        end
+
+        it "should raise ArgumentError with missing keys if request params has nil values" do
+          request_params = {
+            user_id: nil,
+            product:product,
+            job_id: job_id
+          }
+          expect{connection.get_web_token(request_params)}.to raise_error(ArgumentError, 'user_id is required to get a web token')
+        end
+      end
+
+      context 'successful http request' do
+        let (:response_body) { { token: 'xxx' } }
+        it 'should return a token' do
+          expect(connection.get_web_token(request_params)).to eq({token: 'xxx'})
+        end
+      end
+
+      context 'when http request timed out' do
+        let(:response_code) { 522 }
+        it 'should raise a RuntimeError' do
+          expect{connection.get_web_token(request_params)}.to raise_error(RuntimeError)
+        end
+      end
+
+      context 'when http response code is zero' do
+        let(:response_code) { 0 }
+        it 'should raise a RuntimeError' do
+          expect{connection.get_web_token(request_params)}.to raise_error(RuntimeError)
+        end
+      end
+
+      context 'when http response code is not 200' do
+        let(:response_code) { 400 }
+        it 'should raise a RuntimeError' do
+          expect{connection.get_web_token(request_params)}.to raise_error(RuntimeError)
+        end
+      end
+    end
   end
 end

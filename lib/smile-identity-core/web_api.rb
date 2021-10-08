@@ -139,7 +139,44 @@ module SmileIdentityCore
       @options = updated_options
     end
 
+    def get_web_token(request_params)
+      raise ArgumentError, 'Please ensure that you send through request params' if request_params.nil?
+      raise ArgumentError, 'Request params needs to be an object' unless request_params.is_a?(Hash)
+
+      callback_url = request_params[:callback_url] || @callback_url
+      request_params[:callback_url] = callback_url
+
+      keys = %i[user_id job_id product callback_url]
+      blank_keys = get_blank_keys(keys, request_params)
+      error_message = "#{blank_keys.join(', ')} #{blank_keys.length > 1 ? 'are' : 'is'} required to get a web token"
+      raise ArgumentError, error_message unless blank_keys.empty?
+
+      request_web_token(request_params)
+    end
+
     private
+
+    def request_web_token(request_params)
+      request_params.merge!({ partner_id: @partner_id }).merge!(request_security)
+      url = "#{@url}/token"
+
+      request = Typhoeus::Request.new(
+        url,
+        method: 'POST',
+        headers: { 'Content-Type' => 'application/json' },
+        body: request_params.to_json
+      )
+
+      request.on_complete do |response|
+        return response.body if response.success?
+        raise "#{response.code}: #{response.body}" if response.timed_out?
+        raise "#{response.code}: #{response.body}" if response.code.zero?
+
+        raise "#{response.code}: #{response.body}"
+      end
+
+      request.run
+    end
 
     def symbolize_keys params
       (params.is_a?(Hash)) ? Hash[params.map{ |k, v| [k.to_sym, v] }] : params
@@ -175,6 +212,16 @@ module SmileIdentityCore
       else
         return obj[key]
       end
+    end
+
+    def blank?(obj, key)
+      return obj[key].empty? if obj[key].respond_to?(:empty?)
+
+      obj[key].nil?
+    end
+
+    def get_blank_keys(keys, obj)
+      keys.select { |key| blank?(obj, key) }
     end
 
     def request_security(use_new_signature: true)

@@ -5,6 +5,7 @@ The official Smile Identity gem exposes four classes namely; the Web Api class, 
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
 - get_job_status
+- get_web_token
 
 The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submit_job
@@ -353,6 +354,40 @@ Your response will return a JSON Object below with image_links and history inclu
    "timestamp":"2019-10-10T12:32:04.622Z"
 }
 ```
+
+##### get_web_token method
+ You may want to use our hosted web integration, and create a session. The `get_web_token` method enables this.
+ You have your Web Api class initialised as follows:
+ ```ruby
+ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
+
+ ```
+
+ Next, you'll need to create your request params. This should take the following
+ structure:
+
+ ```ruby
+ {
+ 	user_id: 'user-1', # String: required
+ 	job_id: 'job-1', # String: required
+ 	product: 'authentication', # String: required one of 'authentication', 'identity_verification', 'smartselfie', 'ekyc_smartselfie', 'enhanced_kyc', 'document_verification'
+ 	callback_url: "https://smileidentity.com/callback" # String: required, optional if callback url was set during instantiation of the class
+ }
+ ```
+
+ Thereafter, call `get_web_token` with the correct parameters:
+ ```ruby
+   response = connection.get_web_token(request_params)
+ ```
+
+ **Response**
+
+ Your response will return a hash that contains
+ ```ruby
+ {
+ 	token: <token_string>
+ }
+ ```
 
 #### ID Api Class
 
