@@ -804,16 +804,12 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       context 'when request_params is passed without values' do
+        let (:user_id) {nil}
         it "should raise ArgumentError with missing keys if request params is an empty hash" do
           expect{connection.get_web_token({})}.to raise_error(ArgumentError, 'user_id, job_id, product are required to get a web token')
         end
 
         it "should raise ArgumentError with missing keys if request params has nil values" do
-          request_params = {
-            user_id: nil,
-            product:product,
-            job_id: job_id
-          }
           expect{connection.get_web_token(request_params)}.to raise_error(ArgumentError, 'user_id is required to get a web token')
         end
       end
