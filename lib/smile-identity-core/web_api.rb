@@ -64,16 +64,16 @@ module SmileIdentityCore
 
     def partner_params=(partner_params)
       if partner_params == nil
-        raise ArgumentError.new('Please ensure that you send through partner params')
+        raise ArgumentError, 'Please ensure that you send through partner params'
       end
 
       if !partner_params.is_a?(Hash)
-        raise ArgumentError.new('Partner params needs to be a hash')
+        raise ArgumentError, 'Partner params needs to be a hash'
       end
 
       [:user_id, :job_id, :job_type].each do |key|
         unless partner_params[key] && !partner_params[key].nil? && !(partner_params[key].empty? if partner_params[key].is_a?(String))
-          raise ArgumentError.new("Please make sure that #{key.to_s} is included in the partner params")
+          raise ArgumentError, "Please make sure that #{key} is included in the partner params"
         end
       end
 
@@ -82,16 +82,16 @@ module SmileIdentityCore
 
     def images=(images)
       if images == nil
-        raise ArgumentError.new('Please ensure that you send through image details')
+        raise ArgumentError, 'Please ensure that you send through image details'
       end
 
       if !images.is_a?(Array)
-        raise ArgumentError.new('Image details needs to be an array')
+        raise ArgumentError, 'Image details needs to be an array'
       end
 
       # all job types require atleast a selfie
       if images.length == 0 || images.none? {|h| h[:image_type_id] == 0 || h[:image_type_id] == 2 }
-        raise ArgumentError.new('You need to send through at least one selfie image')
+        raise ArgumentError, 'You need to send through at least one selfie image'
       end
 
       @images = images.map { |image| symbolize_keys image }
@@ -119,7 +119,7 @@ module SmileIdentityCore
       if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
         [:country, :id_type, :id_number].each do |key|
           unless id_info[key] && !id_info[key].nil? && !id_info[key].empty?
-            raise ArgumentError.new("Please make sure that #{key.to_s} is included in the id_info")
+            raise ArgumentError, "Please make sure that #{key.to_s} is included in the id_info"
           end
         end
       end
@@ -147,13 +147,13 @@ module SmileIdentityCore
 
     def validate_return_data
       if (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
-        raise ArgumentError.new("Please choose to either get your response via the callback or job status query")
+        raise ArgumentError, 'Please choose to either get your response via the callback or job status query'
       end
     end
 
     def validate_enroll_with_id
       if(((@images.none? {|h| h[:image_type_id] == 1 || h[:image_type_id] == 3 }) && @id_info[:entered] != 'true'))
-        raise ArgumentError.new("You are attempting to complete a job type 1 without providing an id card image or id info")
+        raise ArgumentError, 'You are attempting to complete a job type 1 without providing an id card image or id info'
       end
     end
 
@@ -163,7 +163,7 @@ module SmileIdentityCore
       end
 
       if !!obj[key] != obj[key]
-        raise ArgumentError.new("#{key} needs to be a boolean")
+        raise ArgumentError, "#{key} needs to be a boolean"
       end
 
       return obj[key]
@@ -229,13 +229,13 @@ module SmileIdentityCore
           return file_upload_response
 
         elsif response.timed_out?
-          raise "#{response.code.to_s}: #{response.body}"
+          raise "#{response.code}: #{response.body}"
         elsif response.code == 0
           # Could not get an http response, something's wrong.
-          raise "#{response.code.to_s}: #{response.body}"
+          raise "#{response.code}: #{response.body}"
         else
           # Received a non-successful http response.
-          raise "#{response.code.to_s}: #{response.body}"
+          raise "#{response.code}: #{response.body}"
         end
       end
       request.run
