@@ -169,8 +169,6 @@ module SmileIdentityCore
 
       request.on_complete do |response|
         return response.body if response.success?
-        raise "#{response.code}: #{response.body}" if response.timed_out?
-        raise "#{response.code}: #{response.body}" if response.code.zero?
 
         raise "#{response.code}: #{response.body}"
       end
