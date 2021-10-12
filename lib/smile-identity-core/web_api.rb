@@ -48,7 +48,7 @@ module SmileIdentityCore
 
       validate_return_data
 
-      return setup_requests
+      setup_requests
     end
 
     def get_job_status(partner_params, options)
@@ -59,7 +59,7 @@ module SmileIdentityCore
       job_id = partner_params[:job_id]
 
       utilities = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
-      return utilities.get_job_status(user_id, job_id, options);
+      utilities.get_job_status(user_id, job_id, options);
     end
 
     def partner_params=(partner_params)
@@ -166,14 +166,14 @@ module SmileIdentityCore
         raise ArgumentError, "#{key} needs to be a boolean"
       end
 
-      return obj[key]
+      obj[key]
     end
 
     def check_string(key, obj)
       if (!obj || !obj[key])
-        return ''
+        ''
       else
-        return obj[key]
+        obj[key]
       end
     end
 
@@ -270,7 +270,7 @@ module SmileIdentityCore
         "images": configure_image_payload,
         "server_information": server_information
       }
-      return info
+      info
     end
 
     def configure_image_payload
@@ -356,9 +356,9 @@ module SmileIdentityCore
       response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options)
 
       if response && (response['job_complete'] == true || counter == 20)
-        return response
+        response
       else
-        return query_job_status(counter)
+        query_job_status(counter)
       end
 
     end
