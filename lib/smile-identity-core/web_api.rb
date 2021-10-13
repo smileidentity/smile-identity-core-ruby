@@ -157,23 +157,18 @@ module SmileIdentityCore
     private
 
     def request_web_token(request_params)
-      request_params.merge!({ partner_id: @partner_id }).merge!(request_security)
+      request_params.merge!({ partner_id: @partner_id }).merge!(request_security(use_new_signature: false))
       url = "#{@url}/token"
 
-      request = Typhoeus::Request.new(
+      response = Typhoeus.post(
         url,
-        method: 'POST',
         headers: { 'Content-Type' => 'application/json' },
         body: request_params.to_json
       )
 
-      request.on_complete do |response|
-        return response.body if response.success?
+      return response.body if response.code == 200
 
-        raise "#{response.code}: #{response.body}"
-      end
-
-      request.run
+      raise "#{response.code}: #{response.body}"
     end
 
     def symbolize_keys params
