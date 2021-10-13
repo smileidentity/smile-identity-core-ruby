@@ -157,7 +157,7 @@ module SmileIdentityCore
     private
 
     def request_web_token(request_params)
-      request_params.merge!({ partner_id: @partner_id }).merge!(request_security(use_new_signature: false))
+      request_params.merge!({ partner_id: @partner_id }).merge!(request_security)
       url = "#{@url}/token"
 
       response = Typhoeus.post(
