@@ -14,7 +14,7 @@ module SmileIdentityCore
         public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
         @sec_key = [Base64.encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
 
-        return {
+        {
           sec_key: @sec_key,
           timestamp: @timestamp
         }
@@ -31,7 +31,7 @@ module SmileIdentityCore
         public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
         decrypted = public_key.public_decrypt(Base64.decode64(encrypted))
 
-        return decrypted == hash_signature
+        decrypted == hash_signature
       rescue => e
         raise e
       end
@@ -43,7 +43,7 @@ module SmileIdentityCore
       hmac.update(@partner_id)
       hmac.update("sid_request")
       signature = Base64.strict_encode64(hmac.digest())
-      return {
+      {
         signature: signature,
         timestamp: timestamp.to_s
       }

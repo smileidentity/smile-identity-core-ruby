@@ -26,7 +26,7 @@ module SmileIdentityCore
         raise ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api'
       end
 
-      return setup_requests
+      setup_requests
     end
 
     def partner_params=(partner_params)
