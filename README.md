@@ -5,6 +5,7 @@ The official Smile Identity gem exposes four classes namely; the Web Api class, 
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
 - get_job_status
+- get_web_token
 
 The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submit_job
@@ -39,7 +40,7 @@ require 'smile-identity-core'
 
 Or install it to your system as:
 
-```
+```sh
   $ gem install smile-identity-core
 ```
 
@@ -48,33 +49,33 @@ You now may use the classes as follows:
 #### Web Api Class
 
 ##### submit_job method
-```
-$ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
+```ruby
+connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
 
-$ response = connection.submit_job(partner_params, images, id_info, options)
+response = connection.submit_job(partner_params, images, id_info, options)
 ```
 
 Please note that if you do not need to pass through id_info or options, you may omit calling those class and send through nil in submit_job, as follows:
 
-```
-$ response = connection.submit_job(partner_params, images, nil, nil);
+```ruby
+response = connection.submit_job(partner_params, images, nil, nil);
 ```
 
 In the case of a Job Type 5 you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
 
-```
-$ response = connection.submit_job(partner_params, nil, id_info, nil);
+```ruby
+response = connection.submit_job(partner_params, nil, id_info, nil);
 ```
 
 **Response:**
 
 Should you choose to *set return_job_status to false*, the response will be a JSON String containing:
-```
+```ruby
 {success: true, smile_job_id: smile_job_id}
 ```
 
 However, if you have *set return_job_status to true (with image_links and history)* then you will receive JSON Object response like below:
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -150,7 +151,7 @@ However, if you have *set return_job_status to true (with image_links and histor
 ```
 
 You can also *view your response asynchronously at the callback* that you have set, it will look as follows:
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -226,7 +227,7 @@ You can also *view your response asynchronously at the callback* that you have s
 ```
 
 If you have queried a job type 5, your response be a JSON String that will contain the following:
-```
+```json
 {
    "JSONVersion":"1.0.0",
    "SmileJobID":"0000001105",
@@ -279,7 +280,7 @@ response = connection.get_job_status(partner_params, nil);
 
 Your response will return a JSON Object below with image_links and history included:
 
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -354,20 +355,54 @@ Your response will return a JSON Object below with image_links and history inclu
 }
 ```
 
+##### get_web_token method
+ You may want to use our hosted web integration, and create a session. The `get_web_token` method enables this.
+ You have your Web Api class initialised as follows:
+ ```ruby
+ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server)
+
+ ```
+
+ Next, you'll need to create your request params. This should take the following
+ structure:
+
+ ```ruby
+ {
+ 	user_id: 'user-1', # String: required
+ 	job_id: 'job-1', # String: required
+ 	product: 'authentication', # String: required one of 'authentication', 'identity_verification', 'smartselfie', 'ekyc_smartselfie', 'enhanced_kyc', 'document_verification'
+ 	callback_url: "https://smileidentity.com/callback" # String: required, optional if callback url was set during instantiation of the class
+ }
+ ```
+
+ Thereafter, call `get_web_token` with the correct parameters:
+ ```ruby
+   response = connection.get_web_token(request_params)
+ ```
+
+ **Response**
+
+ Your response will return a hash that contains
+ ```ruby
+ {
+ 	token: <token_string>
+ }
+ ```
+
 #### ID Api Class
 
 
 ##### submit_job method
-```
-$ connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
+```ruby
+connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
 
-$ response = connection.submit_job(partner_params, id_info)
+response = connection.submit_job(partner_params, id_info)
 ```
 
 **Response**
 
 Your response will return a JSON String containing the below:
-```
+```json
 {
    "JSONVersion":"1.0.0",
    "SmileJobID":"0000001105",
@@ -400,17 +435,17 @@ Your response will return a JSON String containing the below:
 
 ##### generate_sec_key method
 
-```
-$ connection = SmileIdentityCore::Signature.new(partner_id, api_key)
+```ruby
+connection = SmileIdentityCore::Signature.new(partner_id, api_key)
 
-$ sec_key = connection.generate_sec_key(timestamp)
+sec_key = connection.generate_sec_key(timestamp)
 where timestamp is optional
 
 ```
 
 The response will be a hash:
 
-```
+```ruby
 {
   :sec_key=> "<the generated sec key>",
  :timestamp=> 1563283420
@@ -422,8 +457,8 @@ The response will be a hash:
 You can also confirm the signature that you receive when you interacting with our servers, simply use the confirm_sec_key method which returns a boolean:
 
 ```ruby
-$ connection = SmileIdentityCore::Signature.new(partner_id, api_key)
-$ sec_key = connection.confirm_sec_key(sec_key, timestamp)
+connection = SmileIdentityCore::Signature.new(partner_id, api_key)
+sec_key = connection.confirm_sec_key(sec_key, timestamp)
 ```
 
 #### Utilities Class
