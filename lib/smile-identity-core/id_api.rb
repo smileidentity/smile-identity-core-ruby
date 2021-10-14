@@ -81,17 +81,9 @@ module SmileIdentityCore
       )
 
       request.on_complete do |response|
-        if response.success?
-          return response.body
-        elsif response.timed_out?
-          raise "#{response.code.to_s}: #{response.body}"
-        elsif response.code == 0
-          # Could not get an http response, something's wrong.
-          raise "#{response.code.to_s}: #{response.body}"
-        else
-          # Received a non-successful http response.
-          raise "#{response.code.to_s}: #{response.body}"
-        end
+        return response.body if response.success?
+
+        raise "#{response.code}: #{response.body}"
       end
       request.run
     end

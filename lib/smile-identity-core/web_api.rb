@@ -267,16 +267,9 @@ module SmileIdentityCore
 
           file_upload_response = upload_file(prep_upload_response['upload_url'], info_json, prep_upload_response['smile_job_id'])
           return file_upload_response
-
-        elsif response.timed_out?
-          raise "#{response.code}: #{response.body}"
-        elsif response.code == 0
-          # Could not get an http response, something's wrong.
-          raise "#{response.code}: #{response.body}"
-        else
-          # Received a non-successful http response.
-          raise "#{response.code}: #{response.body}"
         end
+
+        raise "#{response.code}: #{response.body}"
       end
       request.run
     end
@@ -375,15 +368,8 @@ module SmileIdentityCore
           else
             return {success: true, smile_job_id: smile_job_id}.to_json
           end
-        elsif response.timed_out?
-          raise " #{response.code.to_s}: #{response.body}"
-        elsif response.code == 0
-          # Could not get an http response, something's wrong.
-          raise " #{response.code.to_s}: #{response.body}"
-        else
-          # Received a non-successful http response.
-          raise " #{response.code.to_s}: #{response.body}"
         end
+        raise " #{response.code}: #{response.body}"
       end
       request.run
 
