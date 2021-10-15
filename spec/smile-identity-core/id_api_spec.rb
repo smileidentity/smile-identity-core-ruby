@@ -192,12 +192,11 @@ RSpec.describe SmileIdentityCore::IDApi do
         it 'puts in the original sec_key security stuff, and not the new signature stuff' do
           connection.instance_variable_set(:@use_new_signature, false)
 
-          parsed_response = JSON.parse(connection.send(:configure_json))
-          expect(parsed_response).to match(hash_including(
-            'timestamp' => instance_of(Integer),
-            'sec_key' => instance_of(String),
-            ))
-          expect(parsed_response).not_to have_key 'signature'
+          parsed_response = JSON.parse(connection.send(:configure_json), { symbolize_names: true })
+
+          keys = %i[sec_key timestamp is_merged partner_params id partner_id]
+          expect(parsed_response).to include(*keys)
+          expect(parsed_response).not_to have_key(:signature)
         end
       end
     end
