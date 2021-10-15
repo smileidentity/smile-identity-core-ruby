@@ -97,20 +97,30 @@ module SmileIdentityCore
         .to_json
     end
 
+    def signature_generator
+      SmileIdentityCore::Signature.new(@partner_id, @api_key)
+    end
+
+    def signature(timestamp: Time.now.to_s)
+      signature = signature_generator.generate_signature(timestamp)[:signature]
+      {
+        signature: signature,
+        timestamp: timestamp
+      }
+    end
+
+    def sec_key(timestamp: Time.now.to_s)
+      sec_key = signature_generator.generate_sec_key(timestamp)[:sec_key]
+      {
+        sec_key: sec_key,
+        timestamp: timestamp
+      }
+    end
+
     def request_security(use_new_signature: true)
-      if use_new_signature
-        @timestamp = Time.now.to_s
-        {
-          signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
-          timestamp: @timestamp,
-        }
-      else
-        @timestamp = Time.now.to_i
-        {
-          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
-          timestamp: @timestamp,
-        }
-      end
+      return signature if use_new_signature
+
+      sec_key
     end
   end
 end
