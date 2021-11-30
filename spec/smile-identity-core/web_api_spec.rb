@@ -421,10 +421,22 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       describe "the package_information inner payload" do
-        it 'sets the correct version information and language' do
-          expect(configure_info_json.fetch(:package_information)).to eq(
-            apiVersion: SmileIdentityCore.version_as_hash,
-            language: 'ruby')
+        it 'includes its relevant keys' do
+          [:apiVersion].each do |key|
+            expect(connection.send(:configure_info_json, 'the server information url')[:package_information]).to have_key(key)
+          end
+        end
+
+        it 'includes the relevant keys for the nested apiVersion' do
+          [:buildNumber, :majorVersion, :minorVersion].each do |key|
+            expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion]).to have_key(key)
+          end
+        end
+
+        it 'sets the correct version information' do
+          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:buildNumber]).to be(0)
+          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:majorVersion]).to be(2)
+          expect(connection.send(:configure_info_json, 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(0)
         end
       end
 
