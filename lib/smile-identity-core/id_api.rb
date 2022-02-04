@@ -5,7 +5,6 @@ module SmileIdentityCore
       @partner_id = partner_id.to_s
       @api_key = api_key
 
-      @sid_server = sid_server
       if !(sid_server =~ URI::regexp)
         sid_server_mapping = {
           0 => 'https://testapi.smileidentity.com/v1',
@@ -20,7 +19,9 @@ module SmileIdentityCore
     def submit_job(partner_params, id_info, options = {})
       self.partner_params = symbolize_keys partner_params
       self.id_info = symbolize_keys id_info
-      @use_new_signature = symbolize_keys(options || {}).fetch(:signature, false)
+      options = symbolize_keys(options || {})
+      @use_new_signature = options.fetch(:signature, false)
+      @use_async_endpoint = options.fetch(:async, false)
 
       if @partner_params[:job_type].to_i != 5
         raise ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api'
@@ -71,10 +72,8 @@ module SmileIdentityCore
     end
 
     def setup_requests
-      url = "#{@url}/id_verification"
-
       request = Typhoeus::Request.new(
-        url,
+        "#{@url}/#{endpoint}",
         method: 'POST',
         headers: {'Content-Type'=> "application/json"},
         body: configure_json
@@ -86,6 +85,10 @@ module SmileIdentityCore
         raise "#{response.code}: #{response.body}"
       end
       request.run
+    end
+
+    def endpoint
+      @use_async_endpoint ? 'async_id_verification' : 'id_verification'
     end
 
     def configure_json

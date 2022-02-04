@@ -31,7 +31,6 @@ RSpec.describe SmileIdentityCore::IDApi do
       it "sets the partner_id, api_key, and sid_server instance variables" do
         expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id)
         expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
-        expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
       end
 
       it "sets the correct @url instance variable" do
@@ -99,6 +98,30 @@ RSpec.describe SmileIdentityCore::IDApi do
           expect(flag_when_submitted_with_options({})).to eq(false)
           expect(flag_when_submitted_with_options(signature: (val = [true, false].sample))).to eq(val)
           expect(flag_when_submitted_with_options('signature' => (val = [true, false].sample))).to eq(val)
+        end
+      end
+
+      describe 'setting whether to use the async endpoint' do
+        before do
+          Typhoeus.stub(endpoint).and_return(Typhoeus::Response.new(code: 200, body: response))
+        end
+
+        context 'with use_async: false (default)' do
+          let(:response) { { test_async: false }.to_json }
+          let(:endpoint) { "https://testapi.smileidentity.com/v1/id_verification" }
+
+          it 'calls sync endpoint' do
+            expect(connection.submit_job(partner_params, id_info)).to eq(response)
+          end
+        end
+
+        context 'with use_async: true' do
+          let(:response) { { test_async: true }.to_json }
+          let(:endpoint) { "https://testapi.smileidentity.com/v1/async_id_verification" }
+
+          it 'calls async endpoint' do
+            expect(connection.submit_job(partner_params, id_info, { async: true })).to eq(response)
+          end
         end
       end
     end
