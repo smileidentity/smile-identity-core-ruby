@@ -1,8 +1,18 @@
 RSpec.describe SmileIdentityCore::IDApi do
+
   let (:partner_id) {'001'}
   let (:api_key) {Base64.encode64( OpenSSL::PKey::RSA.new(1024).public_key.to_pem)}
   let (:sid_server) {0}
-  let (:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)}
+
+  before do
+    SmileIdentityCore.configure do |config|
+      config.partner_id = partner_id
+      config.api_key = api_key
+      config.sid_server = sid_server
+    end
+  end
+
+  let (:connection) { SmileIdentityCore::IDApi.new }
 
   let (:partner_params) {
     {
@@ -32,13 +42,16 @@ RSpec.describe SmileIdentityCore::IDApi do
         expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id)
         expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
         expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
+        expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
       end
 
-      it "sets the correct @url instance variable" do
-        expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
+      context 'setting url' do
+        let(:sid_server) {'https://something34.api.us-west-2.amazonaws.com/something'}
 
-        connection = SmileIdentityCore::IDApi.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
-        expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
+        it "sets the correct @url instance variable" do
+          connection = SmileIdentityCore::IDApi.new
+          expect(connection.instance_variable_get(:@url)).to eq(sid_server)
+        end
       end
     end
 

@@ -1,19 +1,20 @@
 module SmileIdentityCore
   class IDApi
 
-    def initialize(partner_id, api_key, sid_server)
-      @partner_id = partner_id.to_s
-      @api_key = api_key
+    def initialize()
+      config = SmileIdentityCore.config
+      @partner_id = config.partner_id.to_s
+      @api_key = config.api_key
 
-      @sid_server = sid_server
-      if !(sid_server =~ URI::regexp)
+      @sid_server = config.sid_server
+      if !(@sid_server =~ URI::regexp)
         sid_server_mapping = {
           0 => 'https://testapi.smileidentity.com/v1',
           1 => 'https://api.smileidentity.com/v1',
         }
-        @url = sid_server_mapping[sid_server.to_i]
+        @url = sid_server_mapping[@sid_server.to_i]
       else
-        @url = sid_server
+        @url = @sid_server
       end
     end
 
