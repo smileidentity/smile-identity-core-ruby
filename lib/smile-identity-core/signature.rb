@@ -14,7 +14,6 @@ module SmileIdentityCore
         hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, @timestamp].join(":"))
         public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
         @sec_key = [Base64.encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
-
         {
           sec_key: @sec_key,
           timestamp: @timestamp
@@ -44,9 +43,9 @@ module SmileIdentityCore
       hmac.update(timestamp.to_s)
       hmac.update(@partner_id)
       hmac.update("sid_request")
-      signature = Base64.strict_encode64(hmac.digest())
+      @signature = Base64.strict_encode64(hmac.digest())
       {
-        signature: signature,
+        signature: @signature,
         timestamp: timestamp.to_s
       }
     end

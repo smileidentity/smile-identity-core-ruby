@@ -37,7 +37,9 @@ RSpec.describe SmileIdentityCore::Utilities do
         image_links: return_image_links,
         timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!
         signature: instance_of(String), # new signature!
-        )
+        source_sdk: SmileIdentityCore::SOURCE_SDK,
+        source_sdk_version: SmileIdentityCore::VERSION
+      )
 
       connection.get_job_status(
         user_id,

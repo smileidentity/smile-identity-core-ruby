@@ -171,8 +171,6 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
 
       it "returns a hash formatted for the request" do
-        connection.instance_variable_set(:api_key)
-
         parsed_response = JSON.parse(connection.send(:configure_json))
         expect(parsed_response).to match(
           'timestamp' => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
@@ -180,8 +178,10 @@ RSpec.describe SmileIdentityCore::IDApi do
           'partner_id' => '004',
           'partner_params' => 'any partner params',
           'id' => 'info',
-          'is_merged' => 'in, too'
-          )
+          'is_merged' => 'in, too',
+          'source_sdk' => SmileIdentityCore::SOURCE_SDK,
+          'source_sdk_version' => SmileIdentityCore::VERSION
+        )
         expect(parsed_response).not_to have_key 'sec_key'
       end
     end
