@@ -93,7 +93,9 @@ module SmileIdentityCore
         .merge(@id_info)
         .merge(
           partner_id: @partner_id,
-          partner_params: @partner_params)
+          partner_params: @partner_params,
+          source_sdk: SmileIdentityCore::SOURCE_SDK,
+          source_sdk_version: SmileIdentityCore::VERSION)
         .to_json
     end
 

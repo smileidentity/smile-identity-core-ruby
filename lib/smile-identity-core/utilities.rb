@@ -94,7 +94,9 @@ module SmileIdentityCore
         job_id: job_id,
         partner_id: @partner_id,
         image_links: options[:return_image_links],
-        history:  options[:return_history]
+        history:  options[:return_history],
+        source_sdk: SmileIdentityCore::SOURCE_SDK,
+        source_sdk_version: SmileIdentityCore::VERSION
       }
     end
   end

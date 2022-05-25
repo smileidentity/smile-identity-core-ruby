@@ -157,7 +157,7 @@ module SmileIdentityCore
     private
 
     def request_web_token(request_params)
-      request_params.merge!({ partner_id: @partner_id }).merge!(request_security)
+      request_params.merge!({ partner_id: @partner_id, source_sdk: SmileIdentityCore::SOURCE_SDK, source_sdk_version: SmileIdentityCore::VERSION }).merge!(request_security)
       url = "#{@url}/token"
 
       response = Typhoeus.post(
@@ -239,7 +239,9 @@ module SmileIdentityCore
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
-        callback_url: @callback_url
+        callback_url: @callback_url,
+        source_sdk: SmileIdentityCore::SOURCE_SDK,
+        source_sdk_version: SmileIdentityCore::VERSION
       ).to_json
     end
 
