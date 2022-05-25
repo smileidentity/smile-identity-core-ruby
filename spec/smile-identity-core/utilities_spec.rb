@@ -42,7 +42,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       connection.get_job_status(
         user_id,
         job_id,
-        { return_history: return_history, return_image_links: return_image_links, signature: true })
+        { return_history: return_history, return_image_links: return_image_links })
     end
 
     context 'when options are missing' do
@@ -61,23 +61,6 @@ RSpec.describe SmileIdentityCore::Utilities do
           hash_including(history: return_history, image_links: return_image_links))
         connection.get_job_status(
           user_id, job_id, { 'return_history' => return_history, 'return_image_links' => return_image_links })
-      end
-    end
-
-    context 'when using the legacy sec_key' do
-      context 'because it is defaulted' do
-        it 'uses the legacy sec_key' do
-          expect(connection).to receive(:query_job_status).with(hash_including(
-            timestamp: instance_of(Integer), sec_key: instance_of(String)))
-          connection.get_job_status(user_id, job_id)
-        end
-      end
-      context 'because the `signature` option is false' do
-        it 'uses the legacy sec_key' do
-          expect(connection).to receive(:query_job_status).with(hash_including(
-            timestamp: instance_of(Integer), sec_key: instance_of(String)))
-          connection.get_job_status(user_id, job_id, signature: false)
-        end
       end
     end
   end
@@ -114,17 +97,6 @@ RSpec.describe SmileIdentityCore::Utilities do
       Typhoeus.stub(@url).and_return(typhoeus_response)
 
       expect(connection.send(:query_job_status, { some: 'json data' })).to eq(JSON.load(response_body))
-    end
-
-    context 'for a legacy sec_key' do
-      it 'returns the response' do
-        response_body = a_signed_response(signature: good_sec_key, timestamp: timestamp.to_i)
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: response_body)
-        Typhoeus.stub(@url).and_return(typhoeus_response)
-
-        expect(connection.send(:query_job_status, { some: 'json data', sec_key: 'present' }))
-          .to eq(JSON.load(response_body))
-      end
     end
 
     context 'when the signature is invalid' do

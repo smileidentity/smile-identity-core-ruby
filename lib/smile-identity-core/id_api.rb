@@ -89,7 +89,7 @@ module SmileIdentityCore
     end
 
     def configure_json
-      signature()
+      signature
         .merge(@id_info)
         .merge(
           partner_id: @partner_id,

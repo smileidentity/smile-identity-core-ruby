@@ -159,10 +159,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array([
-          'JSONVersion', 'SmileJobID', 'PartnerParams', 'ResultType', 'ResultText', 'ResultCode',
-          'IsFinalResult', 'Actions', 'Country', 'IDType', 'IDNumber', 'ExpirationDate', 'FullName',
-          'DOB', 'Photo', 'sec_key', 'timestamp'])
+        expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText ResultCode IsFinalResult Actions Country IDType IDNumber ExpirationDate FullName DOB Photo sec_key timestamp])
       end
     end
 
@@ -174,7 +171,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
 
       it "returns a hash formatted for the request" do
-        connection.instance_variable_set(:@use_new_signature, true)
+        connection.instance_variable_set(:api_key)
 
         parsed_response = JSON.parse(connection.send(:configure_json))
         expect(parsed_response).to match(
@@ -186,18 +183,6 @@ RSpec.describe SmileIdentityCore::IDApi do
           'is_merged' => 'in, too'
           )
         expect(parsed_response).not_to have_key 'sec_key'
-      end
-
-      context 'when using legacy sec_key' do
-        it 'puts in the original sec_key security stuff, and not the new signature stuff' do
-          connection.instance_variable_set(:@use_new_signature, false)
-
-          parsed_response = JSON.parse(connection.send(:configure_json), { symbolize_names: true })
-
-          keys = %i[sec_key timestamp is_merged partner_params id partner_id]
-          expect(parsed_response).to include(*keys)
-          expect(parsed_response).not_to have_key(:signature)
-        end
       end
     end
   end

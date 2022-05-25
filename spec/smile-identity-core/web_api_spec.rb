@@ -829,6 +829,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       context 'successful http request' do
         let (:response_body) { { token: 'xxx' } }
         let (:security) {{timestamp: 'time', signature: 'key'}}
+        let (:version) {{source_sdk: SmileIdentityCore::SOURCE_SDK, source_sdk_version: SmileIdentityCore::VERSION}}
 
         before do
           allow_any_instance_of(described_class).to receive(:request_security).and_return(security)
