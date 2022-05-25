@@ -217,24 +217,16 @@ module SmileIdentityCore
       keys.select { |key| blank?(obj, key) }
     end
 
-    def request_security(use_new_signature: true)
-      if use_new_signature
-        @timestamp = Time.now.to_s
-        {
-          signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
-          timestamp: @timestamp,
-        }
-      else
-        @timestamp = Time.now.to_i
-        {
-          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
-          timestamp: @timestamp,
-        }
-      end
+    def request_security
+      @timestamp = Time.now.to_s
+      {
+        signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
+        timestamp: @timestamp,
+      }
     end
 
     def configure_prep_upload_json
-      request_security(use_new_signature: @use_new_signature).merge(
+      request_security().merge(
         file_name: 'selfie.zip',
         smile_client_id: @partner_id,
         partner_params: @partner_params,
@@ -286,7 +278,7 @@ module SmileIdentityCore
           },
           "language": "ruby"
         },
-        "misc_information": request_security(use_new_signature: @use_new_signature).merge(
+        "misc_information": request_security().merge(
           "retry": "false",
           "partner_params": @partner_params,
           "file_name": "selfie.zip", # figure out what to do here

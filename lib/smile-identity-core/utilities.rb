@@ -24,8 +24,7 @@ module SmileIdentityCore
       options[:return_history] ||= false
       options[:return_image_links] ||= false
 
-      security = request_security(use_new_signature: options.fetch(:signature, false))
-      query_job_status(configure_job_query(user_id, job_id, options).merge(security))
+      query_job_status(configure_job_query(user_id, job_id, options).merge(request_security))
     end
 
     private
@@ -72,20 +71,12 @@ module SmileIdentityCore
       request.run
     end
 
-    def request_security(use_new_signature: false)
-      if use_new_signature
-        @timestamp = Time.now.to_s
-        {
-          signature: @signature_connection.generate_signature(@timestamp)[:signature],
-          timestamp: @timestamp,
-        }
-      else
-        @timestamp = Time.now.to_i
-        {
-          sec_key: @signature_connection.generate_sec_key(@timestamp)[:sec_key],
-          timestamp: @timestamp,
-        }
-      end
+    def request_security
+      @timestamp = Time.now.to_s
+      {
+        signature: @signature_connection.generate_signature(@timestamp)[:signature],
+        timestamp: @timestamp,
+      }
     end
 
     def configure_job_query(user_id, job_id, options)

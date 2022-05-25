@@ -6,6 +6,7 @@ module SmileIdentityCore
       @partner_id = partner_id
     end
 
+    # @deprecated since SDK version 2.0.0
     def generate_sec_key(timestamp=Time.now.to_i)
       begin
         @timestamp = timestamp
@@ -23,6 +24,7 @@ module SmileIdentityCore
       end
     end
 
+    # @deprecated since SDK version 2.0.0
     def confirm_sec_key(timestamp, sec_key)
       begin
         hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, timestamp].join(":"))

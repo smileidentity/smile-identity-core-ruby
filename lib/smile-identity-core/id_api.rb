@@ -89,7 +89,7 @@ module SmileIdentityCore
     end
 
     def configure_json
-      request_security(use_new_signature: @use_new_signature)
+      signature()
         .merge(@id_info)
         .merge(
           partner_id: @partner_id,
@@ -109,20 +109,6 @@ module SmileIdentityCore
         signature: signature,
         timestamp: timestamp
       }
-    end
-
-    def sec_key(timestamp: Time.now.to_s)
-      sec_key = signature_generator.generate_sec_key(timestamp)[:sec_key]
-      {
-        sec_key: sec_key,
-        timestamp: timestamp
-      }
-    end
-
-    def request_security(use_new_signature: true)
-      return signature if use_new_signature
-
-      sec_key
     end
   end
 end
