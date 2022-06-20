@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0] - 2022-04-28
 
 ### Added
-* Added source and version of number to all requests
+* Added source and version number to all requests
 
 ### Changed
 * Enforced the use of signature on all API calls
