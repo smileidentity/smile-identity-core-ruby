@@ -52,11 +52,7 @@ module SmileIdentityCore
           # of signature in the "signature" field. The best way to know what
           # kind of validation to perform is by remembering which kind of
           # security we started with.
-          if request_json_data.has_key?(:sec_key)
-            valid = @signature_connection.confirm_sec_key(body['timestamp'], body['signature'])
-          else
-            valid = @signature_connection.confirm_signature(body['timestamp'], body['signature'])
-          end
+          valid = @signature_connection.confirm_signature(body['timestamp'], body['signature'])
 
           if(!valid)
             raise "Unable to confirm validity of the job_status response"

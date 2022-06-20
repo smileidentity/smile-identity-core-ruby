@@ -20,7 +20,6 @@ module SmileIdentityCore
     def submit_job(partner_params, id_info, options = {})
       self.partner_params = symbolize_keys partner_params
       self.id_info = symbolize_keys id_info
-      @use_new_signature = symbolize_keys(options || {}).fetch(:signature, false)
 
       if @partner_params[:job_type].to_i != 5
         raise ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api'
@@ -89,7 +88,7 @@ module SmileIdentityCore
     end
 
     def configure_json
-      signature
+      signature()
         .merge(@id_info)
         .merge(
           partner_id: @partner_id,

@@ -83,32 +83,10 @@ RSpec.describe SmileIdentityCore::IDApi do
             .to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
         end
       end
-
-      describe 'setting whether to use the new signature or the legacy sec_key' do
-        def flag_when_submitted_with_options(options)
-          connection.submit_job(partner_params, id_info, options)
-          connection.instance_variable_get(:@use_new_signature)
-        end
-
-        it 'sets it from a new `signature` option; defaults to using sec_key' do
-          # It'll call #setup_requests and try to hit the request, so stop it:
-          Typhoeus.stub("https://testapi.smileidentity.com/v1/id_verification")
-            .and_return(Typhoeus::Response.new(code: 200, body: {}.to_json))
-
-          expect(flag_when_submitted_with_options(nil)).to eq(false)
-          expect(flag_when_submitted_with_options({})).to eq(false)
-          expect(flag_when_submitted_with_options(signature: (val = [true, false].sample))).to eq(val)
-          expect(flag_when_submitted_with_options('signature' => (val = [true, false].sample))).to eq(val)
-        end
-      end
     end
   end
 
   context 'ensure that the private methods behave correctly' do
-    describe '#symbolize_keys' do
-      it 'deeply symbolizes the keys'
-    end
-
     describe '#setup_requests' do
       let(:url) {'https://www.example.com'}
 
