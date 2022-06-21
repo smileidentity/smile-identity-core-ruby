@@ -82,56 +82,10 @@ RSpec.describe SmileIdentityCore::IDApi do
             .to raise_error(ArgumentError, "Please make sure that #{key.to_s} is included in the id_info")
         end
       end
-
-      describe 'setting whether to use the new signature or the legacy sec_key' do
-        def flag_when_submitted_with_options(options)
-          connection.submit_job(partner_params, id_info, options)
-          connection.instance_variable_get(:@use_new_signature)
-        end
-
-        it 'sets it from a new `signature` option; defaults to using sec_key' do
-          # It'll call #setup_requests and try to hit the request, so stop it:
-          Typhoeus.stub("https://testapi.smileidentity.com/v1/id_verification")
-            .and_return(Typhoeus::Response.new(code: 200, body: {}.to_json))
-
-          expect(flag_when_submitted_with_options(nil)).to eq(false)
-          expect(flag_when_submitted_with_options({})).to eq(false)
-          expect(flag_when_submitted_with_options(signature: (val = [true, false].sample))).to eq(val)
-          expect(flag_when_submitted_with_options('signature' => (val = [true, false].sample))).to eq(val)
-        end
-      end
-
-      describe 'setting whether to use the async endpoint' do
-        before do
-          Typhoeus.stub(endpoint).and_return(Typhoeus::Response.new(code: 200, body: response))
-        end
-
-        context 'with use_async: false (default)' do
-          let(:response) { { test_async: false }.to_json }
-          let(:endpoint) { "https://testapi.smileidentity.com/v1/id_verification" }
-
-          it 'calls sync endpoint' do
-            expect(connection.submit_job(partner_params, id_info)).to eq(response)
-          end
-        end
-
-        context 'with use_async: true' do
-          let(:response) { { test_async: true }.to_json }
-          let(:endpoint) { "https://testapi.smileidentity.com/v1/async_id_verification" }
-
-          it 'calls async endpoint' do
-            expect(connection.submit_job(partner_params, id_info, { async: true })).to eq(response)
-          end
-        end
-      end
     end
   end
 
   context 'ensure that the private methods behave correctly' do
-    describe '#symbolize_keys' do
-      it 'deeply symbolizes the keys'
-    end
-
     describe '#setup_requests' do
       let(:url) {'https://www.example.com'}
 
@@ -182,10 +136,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array([
-          'JSONVersion', 'SmileJobID', 'PartnerParams', 'ResultType', 'ResultText', 'ResultCode',
-          'IsFinalResult', 'Actions', 'Country', 'IDType', 'IDNumber', 'ExpirationDate', 'FullName',
-          'DOB', 'Photo', 'sec_key', 'timestamp'])
+        expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText ResultCode IsFinalResult Actions Country IDType IDNumber ExpirationDate FullName DOB Photo sec_key timestamp])
       end
     end
 
@@ -197,8 +148,6 @@ RSpec.describe SmileIdentityCore::IDApi do
       end
 
       it "returns a hash formatted for the request" do
-        connection.instance_variable_set(:@use_new_signature, true)
-
         parsed_response = JSON.parse(connection.send(:configure_json))
         expect(parsed_response).to match(
           'timestamp' => /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!,
@@ -206,21 +155,11 @@ RSpec.describe SmileIdentityCore::IDApi do
           'partner_id' => '004',
           'partner_params' => 'any partner params',
           'id' => 'info',
-          'is_merged' => 'in, too'
-          )
+          'is_merged' => 'in, too',
+          'source_sdk' => SmileIdentityCore::SOURCE_SDK,
+          'source_sdk_version' => SmileIdentityCore::VERSION
+        )
         expect(parsed_response).not_to have_key 'sec_key'
-      end
-
-      context 'when using legacy sec_key' do
-        it 'puts in the original sec_key security stuff, and not the new signature stuff' do
-          connection.instance_variable_set(:@use_new_signature, false)
-
-          parsed_response = JSON.parse(connection.send(:configure_json), { symbolize_names: true })
-
-          keys = %i[sec_key timestamp is_merged partner_params id partner_id]
-          expect(parsed_response).to include(*keys)
-          expect(parsed_response).not_to have_key(:signature)
-        end
       end
     end
   end

@@ -134,7 +134,6 @@ module SmileIdentityCore
       updated_options[:return_job_status] = check_boolean(:return_job_status, options)
       updated_options[:return_image_links] = check_boolean(:return_image_links, options)
       updated_options[:return_history] = check_boolean(:return_history, options)
-      @use_new_signature = updated_options.fetch(:signature, false)
 
       @options = updated_options
     end
@@ -157,7 +156,13 @@ module SmileIdentityCore
     private
 
     def request_web_token(request_params)
-      request_params.merge!({ partner_id: @partner_id }).merge!(request_security)
+      request_params
+      .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
+      .merge!(
+        { partner_id: @partner_id,
+          source_sdk: SmileIdentityCore::SOURCE_SDK,
+          source_sdk_version: SmileIdentityCore::VERSION }
+      )
       url = "#{@url}/token"
 
       response = Typhoeus.post(
@@ -217,29 +222,15 @@ module SmileIdentityCore
       keys.select { |key| blank?(obj, key) }
     end
 
-    def request_security(use_new_signature: true)
-      if use_new_signature
-        @timestamp = Time.now.to_s
-        {
-          signature: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)[:signature],
-          timestamp: @timestamp,
-        }
-      else
-        @timestamp = Time.now.to_i
-        {
-          sec_key: SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)[:sec_key],
-          timestamp: @timestamp,
-        }
-      end
-    end
-
     def configure_prep_upload_json
-      request_security(use_new_signature: @use_new_signature).merge(
+      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s).merge(
         file_name: 'selfie.zip',
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
-        callback_url: @callback_url
+        callback_url: @callback_url,
+        source_sdk: SmileIdentityCore::SOURCE_SDK,
+        source_sdk_version: SmileIdentityCore::VERSION
       ).to_json
     end
 
@@ -284,7 +275,8 @@ module SmileIdentityCore
           },
           "language": "ruby"
         },
-        "misc_information": request_security(use_new_signature: @use_new_signature).merge(
+        "misc_information": SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s)
+        .merge(
           "retry": "false",
           "partner_params": @partner_params,
           "file_name": "selfie.zip", # figure out what to do here

@@ -6,49 +6,26 @@ module SmileIdentityCore
       @partner_id = partner_id
     end
 
-    def generate_sec_key(timestamp=Time.now.to_i)
-      begin
-        @timestamp = timestamp
-
-        hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, @timestamp].join(":"))
-        public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
-        @sec_key = [Base64.encode64(public_key.public_encrypt(hash_signature)), hash_signature].join('|')
-
-        {
-          sec_key: @sec_key,
-          timestamp: @timestamp
-        }
-      rescue => e
-        raise e
-      end
-    end
-
-    def confirm_sec_key(timestamp, sec_key)
-      begin
-        hash_signature = Digest::SHA256.hexdigest([@partner_id.to_i, timestamp].join(":"))
-        encrypted = sec_key.split('|')[0]
-
-        public_key = OpenSSL::PKey::RSA.new(Base64.decode64(@api_key))
-        decrypted = public_key.public_decrypt(Base64.decode64(encrypted))
-
-        decrypted == hash_signature
-      rescue => e
-        raise e
-      end
-    end
-
+    # Generates a signature based on the specified timestamp (uses the current time by default)
+    #
+    # @return [Hash] containing both the signature and related timestamp
     def generate_signature(timestamp=Time.now.to_s)
       hmac = OpenSSL::HMAC.new(@api_key, 'sha256')
       hmac.update(timestamp.to_s)
       hmac.update(@partner_id)
       hmac.update("sid_request")
-      signature = Base64.strict_encode64(hmac.digest())
+      @signature = Base64.strict_encode64(hmac.digest())
       {
-        signature: signature,
+        signature: @signature,
         timestamp: timestamp.to_s
       }
     end
 
+    # Confirms the signature against a newly generated signature based on the same timestamp
+    #
+    # @param [String] timestamp the timestamp to generate the signature from
+    # @param [String] msg_signature a previously generated signature, to be confirmed
+    # @return [Boolean] TRUE or FALSE
     def confirm_signature(timestamp, msg_signature)
       generate_signature(timestamp)[:signature] == msg_signature
     end

@@ -169,24 +169,6 @@ RSpec.describe SmileIdentityCore::WebApi do
             expect { connection.submit_job(partner_params, images, id_info, bad_options) }
               .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
           end
-
-          describe 'setting whether to use the legacy sec_key or the new signature' do
-            before do
-              # If all's valid, it'll send the request, so use `#setup_requests` as a seam to stop it:
-              allow(connection).to receive(:setup_requests) { }
-            end
-
-            def flag_with_options(options)
-              connection.submit_job(partner_params, images, id_info, options)
-              connection.instance_variable_get(:@use_new_signature)
-            end
-
-            it 'defaults to the legacy sec_key, from a new signature option' do
-              expect(flag_with_options(good_options)).to eq(false) # it's unspecified in good_options
-              expect(flag_with_options(good_options.merge(signature: (val = [true, false].sample)))).to eq(val)
-              expect(flag_with_options(good_options.merge('signature' => (val = [true, false].sample)))).to eq(val)
-            end
-          end
         end
       end
 
@@ -322,7 +304,6 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection.instance_variable_set(:@partner_id, '001')
         connection.instance_variable_set(:@partner_params, 'some partner params')
         connection.instance_variable_set(:@callback_url, 'www.example.com')
-        connection.instance_variable_set(:@use_new_signature, true)
 
         expect(parsed_response).to match(
           "signature" => instance_of(String),
@@ -331,21 +312,11 @@ RSpec.describe SmileIdentityCore::WebApi do
           "smile_client_id" => "001",
           "partner_params" => 'some partner params',
           "model_parameters" => {}, # The code hard-codes this value
-          "callback_url" => "www.example.com"
+          "callback_url" => "www.example.com",
+          "source_sdk" => SmileIdentityCore::SOURCE_SDK,
+          "source_sdk_version" => SmileIdentityCore::VERSION
           )
-        expect(parsed_response).not_to have_key 'sec_key'
-      end
-
-      context 'when using legacy sec_key' do
-        it 'puts in the original sec_key security stuff, and not the new signature stuff' do
-          connection.instance_variable_set(:@use_new_signature, false)
-
-          expect(parsed_response).to match(hash_including(
-            'timestamp' => instance_of(Integer),
-            'sec_key' => instance_of(String),
-            ))
-          expect(parsed_response).not_to have_key 'signature'
-        end
+        expect(parsed_response).to have_key 'signature'
       end
     end
 
@@ -445,7 +416,6 @@ RSpec.describe SmileIdentityCore::WebApi do
           connection.instance_variable_set(:@partner_id, 'partner id')
           connection.instance_variable_set(:@partner_params, 'partner params')
           connection.instance_variable_set(:@callback_url, 'example.com')
-          connection.instance_variable_set(:@use_new_signature, true)
 
           expect(configure_info_json.fetch(:misc_information)).to match(
             partner_params: 'partner params',
@@ -457,19 +427,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             retry: 'false', # hard-coded
             file_name: 'selfie.zip', # hard-coded
             )
-          expect(configure_info_json.fetch(:misc_information)).not_to have_key(:sec_key)
-        end
-
-        context 'when using the legacy sec_key' do
-          it 'has the sec_key stuff' do
-            connection.instance_variable_set(:@use_new_signature, false)
-
-            expect(configure_info_json.fetch(:misc_information)).to match(hash_including(
-              timestamp: instance_of(Integer), # new signature!,
-              sec_key: instance_of(String),
-              ))
-            expect(configure_info_json.fetch(:misc_information)).not_to have_key(:signature)
-          end
+          expect(configure_info_json.fetch(:misc_information)).to have_key(:signature)
         end
 
         it 'includes the relevant keys for the nested userData' do
@@ -699,9 +657,8 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe '#query_job_status' do
       let (:url) { 'https://some_server.com/dev01' }
       let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
-      let (:partner_id) { 1 }
-      let (:api_key) { Base64.encode64(rsa.public_key.to_pem) }
-      let (:timestamp)   { Time.now.to_i }
+      let (:api_key) { 'API_KEY' }
+      let (:timestamp) { Time.now.to_i }
 
       before(:each) {
         connection.instance_variable_set('@partner_params', {
@@ -715,8 +672,11 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection.instance_variable_set('@partner_id', partner_id)
         connection.instance_variable_set('@utilies_connection', SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
 
-        hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp].join(":"))
-        @sec_key = [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
+        hmac = OpenSSL::HMAC.new(api_key, 'sha256')
+        hmac.update(timestamp.to_s)
+        hmac.update(partner_id)
+        hmac.update("sid_request")
+        @signature = Base64.strict_encode64(hmac.digest())
 
         def connection.sleep(n)
           # TODO: This isn't ideal, but it's a way to speed up these specs.
@@ -730,12 +690,14 @@ RSpec.describe SmileIdentityCore::WebApi do
       it 'returns the response if job_complete is true' do
         body = {
           timestamp: "#{timestamp}",
-          signature: "#{@sec_key}",
+          signature: "#{@signature}",
           job_complete: true,
           job_success: false,
           code: "2302",
           success: true,
-          smile_job_id: "123"
+          smile_job_id: "123",
+          source_sdk: instance_of(String),
+          source_sdk_version: instance_of(String)
         }.to_json
 
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
@@ -747,12 +709,14 @@ RSpec.describe SmileIdentityCore::WebApi do
       it 'returns the response if the counter is 20' do
         body = {
           timestamp: "#{timestamp}",
-          signature: "#{@sec_key}",
+          signature: "#{@signature}",
           job_complete: false,
           job_success: false,
           code: "2302",
           success: true,
-          smile_job_id: "123"
+          smile_job_id: "123",
+          source_sdk: SmileIdentityCore::SOURCE_SDK,
+          source_sdk_version: SmileIdentityCore::VERSION
         }.to_json
 
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
@@ -761,7 +725,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body.to_s))
       end
 
-      xit 'increments the counter if the counter is less than 20 and job_complete is not true' do
+      it 'increments the counter if the counter is less than 20 and job_complete is not true' do
         # NOTE: to give more thought
       end
     end
@@ -829,13 +793,14 @@ RSpec.describe SmileIdentityCore::WebApi do
       context 'successful http request' do
         let (:response_body) { { token: 'xxx' } }
         let (:security) {{timestamp: 'time', signature: 'key'}}
+        let (:version) {{source_sdk: SmileIdentityCore::SOURCE_SDK, source_sdk_version: SmileIdentityCore::VERSION}}
 
         before do
           allow_any_instance_of(described_class).to receive(:request_security).and_return(security)
         end
 
         it 'should send a signature, timestamp and partner_id as part of request' do
-          request_body = request_params.merge({partner_id: partner_id}).merge(security).to_json
+          request_body = request_params.merge!(partner_id: partner_id).to_json
           headers = {"Content-Type" => "application/json"}
 
           expect(Typhoeus).to receive(:post).with(url, {body: request_body, headers: headers}).and_return(typhoeus_response)
