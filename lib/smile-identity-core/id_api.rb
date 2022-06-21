@@ -92,7 +92,7 @@ module SmileIdentityCore
     end
 
     def configure_json
-      signature()
+      signature_generator.generate_signature(Time.now.to_s)
         .merge(@id_info)
         .merge(
           partner_id: @partner_id,
@@ -104,14 +104,6 @@ module SmileIdentityCore
 
     def signature_generator
       SmileIdentityCore::Signature.new(@partner_id, @api_key)
-    end
-
-    def signature(timestamp: Time.now.to_s)
-      signature = signature_generator.generate_signature(timestamp)[:signature]
-      {
-        signature: signature,
-        timestamp: timestamp
-      }
     end
   end
 end
