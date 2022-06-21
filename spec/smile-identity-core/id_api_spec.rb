@@ -31,7 +31,6 @@ RSpec.describe SmileIdentityCore::IDApi do
       it "sets the partner_id, api_key, and sid_server instance variables" do
         expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id)
         expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
-        expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
       end
 
       it "sets the correct @url instance variable" do
