@@ -42,7 +42,7 @@ require 'smile-identity-core'
 Or install it to your system as:
 
 ```sh
-  $ gem install smile-identity-core
+$ gem install smile-identity-core
 ```
 
 ## License
