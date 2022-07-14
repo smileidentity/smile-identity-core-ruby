@@ -313,13 +313,8 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe 'setup_requests' do
       # all the methods called in setup requests are already being tested individually
-      let(:url) { 'https://www.example.com' }
 
-      before do
-        connection.instance_variable_set('@url', url)
-      end
-
-      it 'should return a json object if it runs successfully' do
+      it 'returns a json object if it runs successfully' do
 
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
@@ -645,15 +640,11 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe '#query_job_status' do
       let(:url) { 'https://some_server.com/dev01' }
       let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
-      let(:api_key) { 'API_KEY' }
+      # let (:api_key) { 'API_KEY' }
       let(:timestamp) { Time.now.to_i }
 
       before do
-        connection.instance_variable_set('@partner_params', {
-                                           user_id: '1',
-                                           job_id: '2',
-                                           job_type: 1
-                                         })
+        connection.instance_variable_set('@partner_params', partner_params)
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
@@ -742,7 +733,12 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       let(:callback_url) { default_callback }
       let(:request_params) do
-        partner_params.merge(product: product, callback_url: callback_url)
+        {
+          user_id: user_id,
+          job_id: job_id,
+          product: partner_params,
+          callback_url: callback_url
+        }
       end
 
       let(:url) { 'https://testapi.smileidentity.com/v1/token' }
@@ -796,8 +792,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         it 'should raise ArgumentError with missing keys if request params has nil values' do
           expect do
             connection.get_web_token(request_params.merge(user_id: nil))
-          end.to raise_error(ArgumentError,
-                             'user_id is required to get a web token')
+          end.to raise_error(ArgumentError, 'user_id is required to get a web token')
         end
       end
 
@@ -810,7 +805,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           allow_any_instance_of(described_class).to receive(:request_security).and_return(security)
         end
 
-        it 'should send a signature, timestamp and partner_id as part of request' do
+        it 'sends a signature, timestamp and partner_id as part of request' do
           request_body = request_params
           headers = { 'Content-Type' => 'application/json' }
 
@@ -833,7 +828,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           end
         end
 
-        it 'should return a token' do
+        it 'returns a token' do
           VCR.use_cassette('webapi_verification_web_token') do
             connection.instance_variable_set(:@partner_id, partner_id)
             token_response = connection.get_web_token(request_params)
