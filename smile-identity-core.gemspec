@@ -32,6 +32,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency 'simplecov', '~> 0.12.0'
+  spec.add_development_dependency 'timecop', '~> 0.9.5'
+  spec.add_development_dependency 'vcr', '~> 6.1'
+  spec.add_development_dependency 'webmock', '~> 3.14.0'
 
   spec.add_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
   spec.add_dependency 'rubyzip', '~> 1.2', '>= 1.2.3'
