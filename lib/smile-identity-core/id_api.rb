@@ -31,14 +31,14 @@ module SmileIdentityCore
     def partner_params=(partner_params)
       raise ArgumentError, 'Please ensure that you send through partner params' if partner_params.nil?
 
-      raise ArgumentError, 'Partner params needs to be a hash' unless partner_params.is_a?(Hash)
+      if !partner_params.is_a?(Hash)
+        raise ArgumentError, 'Partner params needs to be a hash'
+      end
 
-      %i[user_id job_id job_type].each do |key|
-        next if partner_params[key] && !partner_params[key].nil? && !(if partner_params[key].is_a?(String)
-                                                                        partner_params[key].empty?
-                                                                      end)
-
-        raise ArgumentError, "Please make sure that #{key} is included in the partner params"
+      [:user_id, :job_id, :job_type].each do |key|
+        unless partner_params[key] && !partner_params[key].nil? && !(partner_params[key].empty? if partner_params[key].is_a?(String))
+          raise ArgumentError, "Please make sure that #{key} is included in the partner params"
+        end
       end
 
       @partner_params = partner_params
