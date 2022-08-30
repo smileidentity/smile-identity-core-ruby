@@ -156,8 +156,9 @@ module SmileIdentityCore
     private
 
     def request_web_token(request_params)
+      @signature = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s)
       request_params
-      .merge!(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
+      .merge!()
       .merge!(
         { partner_id: @partner_id,
           source_sdk: SmileIdentityCore::SOURCE_SDK,

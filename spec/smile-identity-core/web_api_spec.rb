@@ -792,7 +792,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'successful http request' do
         let (:response_body) { { token: 'xxx' } }
-        let (:security) {{timestamp: 'time', signature: 'key'}}
+        let (:security) {{timestamp: "#{@timestamp}", signature: "#{@signature}"}}
         let (:version) {{source_sdk: SmileIdentityCore::SOURCE_SDK, source_sdk_version: SmileIdentityCore::VERSION}}
 
         before do
@@ -800,10 +800,10 @@ RSpec.describe SmileIdentityCore::WebApi do
         end
 
         it 'should send a signature, timestamp and partner_id as part of request' do
-          request_body = request_params.merge!(partner_id: partner_id).to_json
+          # request_body = request_params.merge!(partner_id: partner_id).merge!(security).merge!(version).to_json
           headers = {"Content-Type" => "application/json"}
 
-          expect(Typhoeus).to receive(:post).with(url, {body: request_body, headers: headers}).and_return(typhoeus_response)
+          expect(Typhoeus).to receive(:post).with(url, {body: request_params.merge!(partner_id: partner_id).merge!(version).merge!(security).to_json, headers: headers}).and_return(typhoeus_response)
 
           connection.get_web_token(request_params)
         end
