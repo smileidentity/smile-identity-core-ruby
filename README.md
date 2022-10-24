@@ -22,7 +22,7 @@ confirm_signature - ensure a response is truly from the Smile Identity server by
 
 The Utilities Class allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
 get_job_status - retrieve information & results of a job. Read more on job status in the Smile Identity documentation.
-get_smile_id_services - general information about different smile identity products such as required inputs for each supported id type.
+~~get_smile_id_services - general information about different smile identity products such as required inputs for each supported id type.~~
 
 ## Installation
 
