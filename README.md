@@ -3,7 +3,7 @@
 Smile Identity provides the best solutions for real time Digital KYC, identity verification, user onboarding, and user authentication across Africa. Our server side libraries make it easy to integrate us on the server-side. Since the library is server-side, you will be required to pass the images (if required) to the library.
 If you haven’t already, sign up for a free Smile Identity account, which comes with Sandbox access.
 
-Please see [changelog.md](CHANGELOG.md) for release versions and changes
+Please see [CHANGELOG.md](CHANGELOG.md) for release versions and changes.
 
 ## Features
 
@@ -32,6 +32,7 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'smile-identity-core'
 ```
+
 and require the package:
 
 ```ruby
@@ -40,8 +41,8 @@ require 'smile-identity-core'
 
 Or install it to your system as:
 
-```sh
-  $ gem install smile-identity-core
+```shell
+gem install smile-identity-core
 ```
 
 ## License
@@ -58,4 +59,4 @@ For usage questions, the best resource is [our official documentation](docs.smil
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/smileidentity/smile-identity-core
+Bug reports and pull requests are welcome on GitHub [here](https://github.com/smileidentity/smile-identity-core-ruby).
