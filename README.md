@@ -55,7 +55,7 @@ For extensive instructions on usage of the library and sample codes, please refe
 
 ## Getting Help
 
-For usage questions, the best resource is [our official documentation](docs.smileidentity.com). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.smileidentity.com/partner/support/tickets) or visit the [contact us page](https://portal.smileidentity.com/partner/support/tickets) on our website.
+For usage questions, the best resource is [our official documentation](https://docs.smileidentity.com). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.smileidentity.com/partner/support/tickets) or visit the [contact us page](https://portal.smileidentity.com/partner/support/tickets) on our website.
 
 ## Contributing
 
