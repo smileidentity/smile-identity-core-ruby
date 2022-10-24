@@ -4,7 +4,7 @@ RSpec.describe SmileIdentityCore::IDApi do
   let(:partner_id) { '001' }
   let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
   let(:sid_server) { 0 }
-  let(:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server) }
+  let(:connection) { described_class.new(partner_id, api_key, sid_server) }
 
   let(:partner_params) do
     {
@@ -37,7 +37,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       it 'sets the correct @url instance variable' do
         expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
-        connection = SmileIdentityCore::IDApi.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
+        connection = described_class.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
       end
     end
@@ -91,12 +91,12 @@ RSpec.describe SmileIdentityCore::IDApi do
     describe '#setup_requests' do
       let(:url) { 'https://www.example.com' }
 
-      before(:each) do
+      before do
         connection.instance_variable_set('@id_info', id_info)
         connection.instance_variable_set('@url', url)
       end
 
-      it 'should return a correct json object if it runs successfully' do
+      it 'returns a correct json object if it runs successfully' do
         body = {
           "JSONVersion": '1.0.0',
           "SmileJobID": '0000001096',

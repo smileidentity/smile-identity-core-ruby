@@ -5,7 +5,7 @@ RSpec.describe SmileIdentityCore::Utilities do
   let(:sid_server) { 0 }
   let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
   let(:api_key) { Base64.encode64(rsa.public_key.to_pem) }
-  let(:connection) { SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server) }
+  let(:connection) { described_class.new(partner_id, api_key, sid_server) }
 
   describe '#initialize' do
     it 'sets the partner_id and api_key instance variables' do
@@ -16,7 +16,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     it 'sets the correct @url instance variable' do
       expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
-      connection = SmileIdentityCore::Utilities.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
+      connection = described_class.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
       expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
     end
   end
@@ -86,7 +86,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       SmileIdentityCore::Signature.new(partner_id.to_s, api_key).generate_signature(timestamp.to_s)[:signature]
     end
 
-    before(:each) do
+    before do
       connection.instance_variable_set('@url', url)
       connection.instance_variable_set('@api_key', api_key)
       connection.instance_variable_set('@partner_id', partner_id)
@@ -124,7 +124,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     let(:return_history) { [true, false].sample }
     let(:return_image_links) { [true, false].sample }
 
-    it 'should set the correct keys on the payload' do
+    it 'sets the correct keys on the payload' do
       connection.instance_variable_set(:@timestamp, 'we only care here that it comes through')
 
       result = connection.send(:configure_job_query,

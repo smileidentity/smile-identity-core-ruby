@@ -6,7 +6,7 @@ RSpec.describe SmileIdentityCore::WebApi do
   let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
   let(:sid_server) { 0 }
 
-  let(:connection) { SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server) }
+  let(:connection) { described_class.new(partner_id, default_callback, api_key, sid_server) }
 
   let(:partner_params) do
     {
@@ -95,7 +95,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       it 'sets the correct @url instance variable' do
         expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
-        connection = SmileIdentityCore::WebApi.new(
+        connection = described_class.new(
           partner_id, default_callback, api_key, 'https://something34.api.us-west-2.amazonaws.com/something'
         )
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
@@ -235,7 +235,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#validate_enroll_with_id' do
-      before(:each) do
+      before do
         connection.instance_variable_set('@images', [
                                            {
                                              image_type_id: 0,
@@ -327,11 +327,11 @@ RSpec.describe SmileIdentityCore::WebApi do
       # all the methods called in setup requests are already being tested individually
       let(:url) { 'https://www.example.com' }
 
-      before(:each) do
+      before do
         connection.instance_variable_set('@url', url)
       end
 
-      it 'should return a json object if it runs successfully' do
+      it 'returns a json object if it runs successfully' do
         response_upload_url = 'https://some-url/selfie.zip'
         response_smile_job_id = '0000000583'
         body = {
@@ -381,7 +381,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#configure_info_json' do
       # NOTE: we can perhaps still test that the instance variables that are set in teh payload are the ones set in the connection
-      before(:each) do
+      before do
         connection.instance_variable_set('@id_info', 'a value for @id_info')
         connection.instance_variable_set('@images', images)
       end
@@ -448,7 +448,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#configure_image_payload' do
-      before(:each) do
+      before do
         connection.instance_variable_set('@images', images_v2)
       end
 
@@ -479,7 +479,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#zip_up_file' do
-      before(:each) do
+      before do
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
         connection.instance_variable_set('@images', images)
@@ -550,7 +550,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       context 'with a combination of physical and base 64 files' do
-        before(:each) do
+        before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           connection.instance_variable_set('@images', images_v2)
@@ -604,7 +604,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           file = zip_up_file.read
           expect(file).to include('info.json')
           expect(file).to include('selfie.png')
-          expect(file).to_not include('id_image.png')
+          expect(file).not_to include('id_image.png')
         end
       end
     end
@@ -615,7 +615,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:smile_job_id) { '0000000583' }
 
       context 'if successful' do
-        before(:each) do
+        before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           connection.instance_variable_set('@images', images)
@@ -632,7 +632,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       context 'if unsuccessful' do
-        before(:each) do
+        before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           connection.instance_variable_set('@options', options)
@@ -668,7 +668,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:api_key) { 'API_KEY' }
       let(:timestamp) { Time.now.to_i }
 
-      before(:each) do
+      before do
         connection.instance_variable_set('@partner_params', {
                                            user_id: '1',
                                            job_id: '2',
@@ -764,20 +764,20 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection = described_class.new(partner_id, default_callback, api_key, sid_server)
       end
 
-      it 'should ensure request params are present' do
+      it 'ensures request params are present' do
         expect do
           connection.get_web_token(nil)
         end.to raise_error(ArgumentError, 'Please ensure that you send through request params')
       end
 
-      it 'should ensure request params is a hash' do
+      it 'ensures request params is a hash' do
         expect { connection.get_web_token(1) }.to raise_error(ArgumentError, 'Request params needs to be an object')
       end
 
       context "when callback_url not set on request_params or #{described_class}" do
         let(:default_callback) { nil }
 
-        it 'should raise an ArgumentError' do
+        it 'raises an ArgumentError' do
           expect do
             connection.get_web_token(request_params)
           end.to raise_error(ArgumentError, 'callback_url is required to get a web token')
@@ -787,7 +787,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       context "when callback_url is an empty string on request_params and #{described_class}" do
         let(:default_callback) { '' }
 
-        it 'should raise an ArgumentError' do
+        it 'raises an ArgumentError' do
           expect do
             connection.get_web_token(request_params)
           end.to raise_error(ArgumentError, 'callback_url is required to get a web token')
@@ -796,13 +796,14 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when request_params is passed without values' do
         let(:user_id) { nil }
-        it 'should raise ArgumentError with missing keys if request params is an empty hash' do
+
+        it 'raises ArgumentError with missing keys if request params is an empty hash' do
           expect do
             connection.get_web_token({})
           end.to raise_error(ArgumentError, 'user_id, job_id, product are required to get a web token')
         end
 
-        it 'should raise ArgumentError with missing keys if request params has nil values' do
+        it 'raises ArgumentError with missing keys if request params has nil values' do
           expect do
             connection.get_web_token(request_params)
           end.to raise_error(ArgumentError, 'user_id is required to get a web token')
@@ -818,7 +819,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           allow_any_instance_of(described_class).to receive(:request_security).and_return(security)
         end
 
-        it 'should send a signature, timestamp and partner_id as part of request' do
+        it 'sends a signature, timestamp and partner_id as part of request' do
           request_body = request_params.merge!(partner_id: partner_id).to_json
           headers = { 'Content-Type' => 'application/json' }
 
@@ -829,28 +830,31 @@ RSpec.describe SmileIdentityCore::WebApi do
           connection.get_web_token(request_params)
         end
 
-        it 'should return a token' do
+        it 'returns a token' do
           expect(connection.get_web_token(request_params)).to eq({ token: 'xxx' })
         end
       end
 
       context 'when http request timed out' do
         let(:response_code) { 522 }
-        it 'should raise a RuntimeError' do
+
+        it 'raises a RuntimeError' do
           expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
         end
       end
 
       context 'when http response code is zero' do
         let(:response_code) { 0 }
-        it 'should raise a RuntimeError' do
+
+        it 'raises a RuntimeError' do
           expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
         end
       end
 
       context 'when http response code is not 200' do
         let(:response_code) { 400 }
-        it 'should raise a RuntimeError' do
+
+        it 'raises a RuntimeError' do
           expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
         end
       end

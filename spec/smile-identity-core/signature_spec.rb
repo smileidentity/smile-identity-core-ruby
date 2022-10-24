@@ -4,10 +4,10 @@ RSpec.describe SmileIdentityCore::Signature do
   let(:partner_id) { '001' }
   let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
   let(:api_key) { Base64.encode64(rsa.public_key.to_pem) }
-  let(:connection) { SmileIdentityCore::Signature.new(partner_id, api_key) }
+  let(:connection) { described_class.new(partner_id, api_key) }
 
   describe '#generate_signature' do
-    it 'should return the defined keys' do
+    it 'returns the defined keys' do
       payload = connection.generate_signature
       %i[signature timestamp].each do |key|
         expect(payload).to be_kind_of(Hash)
@@ -16,7 +16,7 @@ RSpec.describe SmileIdentityCore::Signature do
       end
     end
 
-    it 'should create a signature for the server' do
+    it 'creates a signature for the server' do
       payload = connection.generate_signature
       hmac = OpenSSL::HMAC.new(api_key, 'sha256')
       hmac.update(payload[:timestamp])
@@ -28,7 +28,7 @@ RSpec.describe SmileIdentityCore::Signature do
   end
 
   describe '#confirm_signature' do
-    it 'should confirm an incoming signature from the server' do
+    it 'confirms an incoming signature from the server' do
       timestamp = Time.now.to_s
       hmac = OpenSSL::HMAC.new(api_key, 'sha256')
       hmac.update(timestamp)
