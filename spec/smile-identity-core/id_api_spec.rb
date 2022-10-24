@@ -1,13 +1,13 @@
 RSpec.describe SmileIdentityCore::IDApi do
-  let(:partner_id) { ENV.fetch('PARTNER_ID') }
-  let(:api_key) { ENV.fetch('API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
-  let(:sid_server) { 0 }
+  let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
+  let(:api_key) { ENV.fetch('SMILE_API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
+  let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
   let(:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server) }
 
   let(:partner_params) do
     {
-      user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
-      job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
+      user_id: ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo'),
+      job_id: ENV.fetch('SMILE_USER_ID', 'DeXyJOGtaACFFfbZ2kxjuICE'),
       job_type: 5
     }
   end

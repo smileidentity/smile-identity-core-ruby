@@ -4,6 +4,7 @@ require 'bundler/setup'
 require 'simplecov'
 require 'vcr'
 require 'timecop'
+require 'securerandom'
 
 SimpleCov.start do
   add_filter '/spec/'

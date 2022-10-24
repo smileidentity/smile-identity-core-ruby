@@ -17,11 +17,11 @@ module SmileIdentityCore
       @api_key = api_key
 
       @sid_server = sid_server
-      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        @url = Configuration::SID_SERVER_MAPPING[sid_server.to_s]
-      else
-        @url = sid_server
-      end
+      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+              SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
+             else
+               sid_server
+             end
     end
 
     def submit_job(partner_params, images, id_info, options)
@@ -245,7 +245,7 @@ module SmileIdentityCore
           "apiVersion": {
             "buildNumber": 0,
             "majorVersion": 2,
-            "minorVersion": 0
+            "minorVersion": 1
           },
           "language": 'ruby'
         },
