@@ -103,7 +103,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       typhoeus_response = Typhoeus::Response.new(code: 200, body: response_body)
       Typhoeus.stub(@url).and_return(typhoeus_response)
 
-      expect(connection.send(:query_job_status, { some: 'json data' })).to eq(JSON.load(response_body))
+      expect(connection.send(:query_job_status, { some: 'json data' })).to eq(JSON.parse(response_body))
     end
 
     context 'when the signature is invalid' do

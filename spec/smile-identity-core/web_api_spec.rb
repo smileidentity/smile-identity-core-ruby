@@ -350,7 +350,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection.instance_variable_set('@images', images)
         connection.instance_variable_set('@options', options)
 
-        Typhoeus.stub(JSON.load(body)['upload_url']).and_return(Typhoeus::Response.new(code: 200))
+        Typhoeus.stub(JSON.parse(body)['upload_url']).and_return(Typhoeus::Response.new(code: 200))
 
         setup_requests = connection.send(:setup_requests)
         expect(JSON.parse(setup_requests)).to eq('success' => true, 'smile_job_id' => response_smile_job_id)
@@ -712,7 +712,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status)).to eq(JSON.load(body.to_s))
+        expect(connection.send(:query_job_status)).to eq(JSON.parse(body.to_s))
       end
 
       it 'returns the response if the counter is 20' do
@@ -731,7 +731,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect(connection.send(:query_job_status, 19)).to eq(JSON.load(body.to_s))
+        expect(connection.send(:query_job_status, 19)).to eq(JSON.parse(body.to_s))
       end
 
       it 'increments the counter if the counter is less than 20 and job_complete is not true' do
