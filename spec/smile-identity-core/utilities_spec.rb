@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 RSpec.describe SmileIdentityCore::Utilities do
-  let (:partner_id) {1}
-  let (:sid_server) {0}
-  let (:rsa) { OpenSSL::PKey::RSA.new(1024) }
-  let (:api_key) {Base64.encode64(rsa.public_key.to_pem)}
-  let (:connection) { SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server)}
+  let(:partner_id) { 1 }
+  let(:sid_server) { 0 }
+  let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
+  let(:api_key) { Base64.encode64(rsa.public_key.to_pem) }
+  let(:connection) { SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server) }
 
   describe '#initialize' do
-    it "sets the partner_id and api_key instance variables" do
+    it 'sets the partner_id and api_key instance variables' do
       expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id.to_s)
       expect(connection.instance_variable_get(:@api_key)).to eq(api_key)
     end
 
-    it "sets the correct @url instance variable" do
+    it 'sets the correct @url instance variable' do
       expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
       connection = SmileIdentityCore::Utilities.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
@@ -20,8 +22,8 @@ RSpec.describe SmileIdentityCore::Utilities do
   end
 
   describe '#get_job_status' do
-    let(:user_id) { rand(100000) }
-    let(:job_id) { rand(100000) }
+    let(:user_id) { rand(100_000) }
+    let(:job_id) { rand(100_000) }
     let(:return_history) { [true, false].sample }
     let(:return_image_links) { [true, false].sample }
 
@@ -44,7 +46,8 @@ RSpec.describe SmileIdentityCore::Utilities do
       connection.get_job_status(
         user_id,
         job_id,
-        { return_history: return_history, return_image_links: return_image_links })
+        { return_history: return_history, return_image_links: return_image_links }
+      )
     end
 
     context 'when options are missing' do
@@ -60,9 +63,11 @@ RSpec.describe SmileIdentityCore::Utilities do
     context 'when options are provided as strings' do
       it 'symbolizes them' do
         expect(connection).to receive(:query_job_status).with(
-          hash_including(history: return_history, image_links: return_image_links))
+          hash_including(history: return_history, image_links: return_image_links)
+        )
         connection.get_job_status(
-          user_id, job_id, { 'return_history' => return_history, 'return_image_links' => return_image_links })
+          user_id, job_id, { 'return_history' => return_history, 'return_image_links' => return_image_links }
+        )
       end
     end
   end
@@ -74,22 +79,22 @@ RSpec.describe SmileIdentityCore::Utilities do
     let(:api_key) { Base64.encode64(rsa.public_key.to_pem) }
     let(:timestamp) { Time.now }
     let(:good_sec_key) do
-      hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp.to_i].join(":"))
+      hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp.to_i].join(':'))
       [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
     end
     let(:good_signature) do
       SmileIdentityCore::Signature.new(partner_id.to_s, api_key).generate_signature(timestamp.to_s)[:signature]
     end
 
-    before(:each) {
-      connection.instance_variable_set('@url', url )
+    before(:each) do
+      connection.instance_variable_set('@url', url)
       connection.instance_variable_set('@api_key', api_key)
       connection.instance_variable_set('@partner_id', partner_id)
-    }
+    end
 
     def a_signed_response(signature:, timestamp:)
       {
-        timestamp: timestamp, signature: signature, job_complete: true, job_success: false, code: "2302"
+        timestamp: timestamp, signature: signature, job_complete: true, job_success: false, code: '2302'
       }.to_json
     end
 
@@ -103,13 +108,13 @@ RSpec.describe SmileIdentityCore::Utilities do
 
     context 'when the signature is invalid' do
       it 'raises' do
-        response_body = a_signed_response(signature: "fake signature", timestamp: timestamp.to_s)
+        response_body = a_signed_response(signature: 'fake signature', timestamp: timestamp.to_s)
         typhoeus_response = Typhoeus::Response.new(code: 200, body: response_body)
         Typhoeus.stub(@url).and_return(typhoeus_response)
 
-        expect {
+        expect do
           connection.send(:query_job_status, { some: 'json data' })
-        }.to raise_error('Unable to confirm validity of the job_status response')
+        end.to raise_error('Unable to confirm validity of the job_status response')
       end
     end
   end
@@ -120,10 +125,10 @@ RSpec.describe SmileIdentityCore::Utilities do
     let(:return_image_links) { [true, false].sample }
 
     it 'should set the correct keys on the payload' do
-      connection.instance_variable_set(:@timestamp, "we only care here that it comes through")
+      connection.instance_variable_set(:@timestamp, 'we only care here that it comes through')
 
       result = connection.send(:configure_job_query,
-        111, 222, { return_history: return_history, return_image_links: return_image_links })
+                               111, 222, { return_history: return_history, return_image_links: return_image_links })
 
       expect(result[:user_id]).to eq(111)
       expect(result[:job_id]).to eq(222)
