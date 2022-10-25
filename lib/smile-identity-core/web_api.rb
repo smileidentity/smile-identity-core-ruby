@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'tempfile'
 require 'base64'
@@ -9,14 +11,13 @@ require 'zip'
 
 module SmileIdentityCore
   class WebApi
-
     def initialize(partner_id, default_callback, api_key, sid_server)
       @partner_id = partner_id.to_s
       @callback_url = default_callback
       @api_key = api_key
 
       @sid_server = sid_server
-      if !(sid_server =~ URI::regexp)        
+      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
         @url = Configuration::SID_SERVER_MAPPING[sid_server.to_s]
       else
         @url = sid_server
@@ -24,7 +25,6 @@ module SmileIdentityCore
     end
 
     def submit_job(partner_params, images, id_info, options)
-
       self.partner_params = symbolize_keys partner_params
       if @partner_params[:job_type].to_i == 5
         return SmileIdentityCore::IDApi.new(@partner_id, @api_key, @sid_server).submit_job(partner_params, id_info)
@@ -34,13 +34,9 @@ module SmileIdentityCore
       self.id_info = symbolize_keys id_info
       self.options = symbolize_keys options
 
-      if @options[:optional_callback] && @options[:optional_callback].length > 0
-        @callback_url = @options[:optional_callback]
-      end
+      @callback_url = @options[:optional_callback] if @options[:optional_callback]&.length&.positive?
 
-      if @partner_params[:job_type].to_i == 1
-        validate_enroll_with_id
-      end
+      validate_enroll_with_id if @partner_params[:job_type].to_i == 1
 
       validate_return_data
 
@@ -55,67 +51,53 @@ module SmileIdentityCore
       job_id = partner_params[:job_id]
 
       utilities = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
-      utilities.get_job_status(user_id, job_id, options);
+      utilities.get_job_status(user_id, job_id, options)
     end
 
     def partner_params=(partner_params)
-      if partner_params == nil
-        raise ArgumentError, 'Please ensure that you send through partner params'
-      end
+      raise ArgumentError, 'Please ensure that you send through partner params' if partner_params.nil?
 
-      if !partner_params.is_a?(Hash)
-        raise ArgumentError, 'Partner params needs to be a hash'
-      end
+      raise ArgumentError, 'Partner params needs to be a hash' unless partner_params.is_a?(Hash)
 
-      [:user_id, :job_id, :job_type].each do |key|
-        unless partner_params[key] && !partner_params[key].nil? && !(partner_params[key].empty? if partner_params[key].is_a?(String))
-          raise ArgumentError, "Please make sure that #{key} is included in the partner params"
-        end
+      %i[user_id job_id job_type].each do |key|
+        next if partner_params[key] && !partner_params[key].nil? && !(if partner_params[key].is_a?(String)
+                                                                        partner_params[key].empty?
+                                                                      end)
+
+        raise ArgumentError, "Please make sure that #{key} is included in the partner params"
       end
 
       @partner_params = partner_params
     end
 
     def images=(images)
-      if images == nil
-        raise ArgumentError, 'Please ensure that you send through image details'
-      end
+      raise ArgumentError, 'Please ensure that you send through image details' if images.nil?
 
-      if !images.is_a?(Array)
-        raise ArgumentError, 'Image details needs to be an array'
-      end
+      raise ArgumentError, 'Image details needs to be an array' unless images.is_a?(Array)
 
       # all job types require atleast a selfie
-      if images.length == 0 || images.none? {|h| h[:image_type_id] == 0 || h[:image_type_id] == 2 }
+      if images.length.zero? || images.none? { |h| (h[:image_type_id]).zero? || h[:image_type_id] == 2 }
         raise ArgumentError, 'You need to send through at least one selfie image'
       end
 
       @images = images.map { |image| symbolize_keys image }
-
     end
 
     def id_info=(id_info)
-
       updated_id_info = id_info
 
-      if updated_id_info.nil?
-        updated_id_info = {}
-      end
+      updated_id_info = {} if updated_id_info.nil?
 
       # if it doesnt exist, set it false
-      if(!updated_id_info.key?(:entered) || id_info[:entered].empty?)
-        updated_id_info[:entered] = "false"
-      end
+      updated_id_info[:entered] = 'false' if !updated_id_info.key?(:entered) || id_info[:entered].empty?
 
       # if it's a boolean
-      if(!!updated_id_info[:entered] == updated_id_info[:entered])
-        updated_id_info[:entered] = id_info[:entered].to_s
-      end
+      updated_id_info[:entered] = id_info[:entered].to_s if !updated_id_info[:entered].nil? == updated_id_info[:entered]
 
       if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
-        [:country, :id_type, :id_number].each do |key|
+        %i[country id_type id_number].each do |key|
           unless id_info[key] && !id_info[key].nil? && !id_info[key].empty?
-            raise ArgumentError, "Please make sure that #{key.to_s} is included in the id_info"
+            raise ArgumentError, "Please make sure that #{key} is included in the id_info"
           end
         end
       end
@@ -153,12 +135,12 @@ module SmileIdentityCore
 
     def request_web_token(request_params)
       request_params
-      .merge!(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
-      .merge!(
-        { partner_id: @partner_id,
-          source_sdk: SmileIdentityCore::SOURCE_SDK,
-          source_sdk_version: SmileIdentityCore::VERSION }
-      )
+        .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
+        .merge!(
+          { partner_id: @partner_id,
+            source_sdk: SmileIdentityCore::SOURCE_SDK,
+            source_sdk_version: SmileIdentityCore::VERSION }
+        )
       url = "#{@url}/token"
 
       response = Typhoeus.post(
@@ -172,8 +154,8 @@ module SmileIdentityCore
       raise "#{response.code}: #{response.body}"
     end
 
-    def symbolize_keys params
-      (params.is_a?(Hash)) ? Hash[params.map{ |k, v| [k.to_sym, v] }] : params
+    def symbolize_keys(params)
+      params.is_a?(Hash) ? params.transform_keys(&:to_sym) : params
     end
 
     def validate_return_data
@@ -183,25 +165,21 @@ module SmileIdentityCore
     end
 
     def validate_enroll_with_id
-      if(((@images.none? {|h| h[:image_type_id] == 1 || h[:image_type_id] == 3 }) && @id_info[:entered] != 'true'))
+      if (@images.none? { |h| h[:image_type_id] == 1 || h[:image_type_id] == 3 }) && @id_info[:entered] != 'true'
         raise ArgumentError, 'You are attempting to complete a job type 1 without providing an id card image or id info'
       end
     end
 
     def check_boolean(key, obj)
-      if (!obj || !obj[key])
-        return false
-      end
+      return false if !obj || !obj[key]
 
-      if !!obj[key] != obj[key]
-        raise ArgumentError, "#{key} needs to be a boolean"
-      end
+      raise ArgumentError, "#{key} needs to be a boolean" if !obj[key].nil? != obj[key]
 
       obj[key]
     end
 
     def check_string(key, obj)
-      if (!obj || !obj[key])
+      if !obj || !obj[key]
         ''
       else
         obj[key]
@@ -231,12 +209,11 @@ module SmileIdentityCore
     end
 
     def setup_requests
-
       url = "#{@url}/upload"
       request = Typhoeus::Request.new(
         url,
         method: 'POST',
-        headers: {'Content-Type'=> "application/json"},
+        headers: { 'Content-Type' => 'application/json' },
         body: configure_prep_upload_json
       )
 
@@ -252,7 +229,8 @@ module SmileIdentityCore
           prep_upload_response = JSON.parse(response.body)
           info_json = configure_info_json(prep_upload_response)
 
-          file_upload_response = upload_file(prep_upload_response['upload_url'], info_json, prep_upload_response['smile_job_id'])
+          file_upload_response = upload_file(prep_upload_response['upload_url'], info_json,
+                                             prep_upload_response['smile_job_id'])
           return file_upload_response
         end
 
@@ -262,44 +240,43 @@ module SmileIdentityCore
     end
 
     def configure_info_json(server_information)
-      info = {
+      {
         "package_information": {
           "apiVersion": {
             "buildNumber": 0,
             "majorVersion": 2,
             "minorVersion": 0
           },
-          "language": "ruby"
+          "language": 'ruby'
         },
         "misc_information": SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s)
-        .merge(
-          "retry": "false",
-          "partner_params": @partner_params,
-          "file_name": "selfie.zip", # figure out what to do here
-          "smile_client_id": @partner_id,
-          "callback_url": @callback_url,
-          "userData": { # TO ASK what goes here
-            "isVerifiedProcess": false,
-            "name": "",
-            "fbUserID": "",
-            "firstName": "Bill",
-            "lastName": "",
-            "gender": "",
-            "email": "",
-            "phone": "",
-            "countryCode": "+",
-            "countryName": ""
-          }
-        ),
+                                                        .merge(
+                                                          "retry": 'false',
+                                                          "partner_params": @partner_params,
+                                                          "file_name": 'selfie.zip', # figure out what to do here
+                                                          "smile_client_id": @partner_id,
+                                                          "callback_url": @callback_url,
+                                                          "userData": { # TO ASK what goes here
+                                                            "isVerifiedProcess": false,
+                                                            "name": '',
+                                                            "fbUserID": '',
+                                                            "firstName": 'Bill',
+                                                            "lastName": '',
+                                                            "gender": '',
+                                                            "email": '',
+                                                            "phone": '',
+                                                            "countryCode": '+',
+                                                            "countryName": ''
+                                                          }
+                                                        ),
         "id_info": @id_info,
         "images": configure_image_payload,
         "server_information": server_information
       }
-      info
     end
 
     def configure_image_payload
-      @images.map { |i|
+      @images.map do |i|
         if image_file?(i[:image_type_id])
           {
             image_type_id: i[:image_type_id],
@@ -313,11 +290,11 @@ module SmileIdentityCore
             file_name: ''
           }
         end
-      }
+      end
     end
 
     def image_file?(type)
-      type.to_i == 0 || type.to_i == 1
+      type.to_i.zero? || type.to_i == 1
     end
 
     def zip_up_file(info_json)
@@ -326,9 +303,9 @@ module SmileIdentityCore
         zos.put_next_entry('info.json')
         zos.puts JSON.pretty_generate(info_json)
 
-        if @images.length > 0
+        if @images.length.positive?
           @images.each do |img|
-            if img[:image_type_id] == 0 || img[:image_type_id] == 1
+            if (img[:image_type_id]).zero? || img[:image_type_id] == 1
               zos.put_next_entry(File.basename(img[:image]))
               zos.print IO.read(img[:image])
             end
@@ -338,15 +315,14 @@ module SmileIdentityCore
     end
 
     def upload_file(url, info_json, smile_job_id)
-
       file = zip_up_file(info_json)
       file.rewind
 
       request = Typhoeus::Request.new(
         url,
         method: 'PUT',
-        headers: {'Content-Type'=> "application/zip"},
-        body: file.read,
+        headers: { 'Content-Type' => 'application/zip' },
+        body: file.read
       )
 
       request.on_complete do |response|
@@ -354,20 +330,19 @@ module SmileIdentityCore
           if @options[:return_job_status]
             @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
             job_response = query_job_status
-            job_response["success"] = true
-            job_response["smile_job_id"] = smile_job_id
+            job_response['success'] = true
+            job_response['smile_job_id'] = smile_job_id
             return job_response
           else
-            return {success: true, smile_job_id: smile_job_id}.to_json
+            return { success: true, smile_job_id: smile_job_id }.to_json
           end
         end
         raise " #{response.code}: #{response.body}"
       end
       request.run
-
     end
 
-    def query_job_status(counter=0)
+    def query_job_status(counter = 0)
       counter < 4 ? (sleep 2) : (sleep 6)
       counter += 1
 
@@ -378,7 +353,6 @@ module SmileIdentityCore
       else
         query_job_status(counter)
       end
-
     end
   end
 end

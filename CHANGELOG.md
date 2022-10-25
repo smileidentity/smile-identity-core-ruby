@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Migrate from travis to github actions.
-- Add support for ruby 3.1.
+- Format codebase using rubocop.
+- Add support for ruby 3.1
+- Drop support for ruby 2.5.1
 
 ## [2.0.0] - 2022-04-28
 

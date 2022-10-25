@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe SmileIdentityCore::IDApi do
   let(:partner_id) { ENV.fetch('PARTNER_ID') }
   let(:api_key) { ENV.fetch('API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
@@ -35,7 +37,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       it 'sets the correct @url instance variable' do
         expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
-        connection = SmileIdentityCore::IDApi.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
+        connection = described_class.new(partner_id, api_key, 'https://something34.api.us-west-2.amazonaws.com/something')
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
       end
     end
@@ -87,7 +89,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
   context 'ensure that the private methods behave correctly' do
     describe '#submit_job' do
-      it 'should return a correct json object if it runs successfully' do
+      it 'returns a correct json object if it runs successfully' do
         parsed_response = {}
         # Make real request for the first time, we then use a saved version for extra requests
         VCR.use_cassette('id_verification') do

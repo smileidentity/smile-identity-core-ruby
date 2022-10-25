@@ -1,12 +1,17 @@
+# frozen_string_literal: true
+
 module SmileIdentityCore
   class IDApi
-
     def initialize(partner_id, api_key, sid_server)
       @partner_id = partner_id.to_s
       @api_key = api_key
 
-      if !(sid_server =~ URI::regexp)
-        @url = Configuration::SID_SERVER_MAPPING[sid_server.to_s]
+      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+        sid_server_mapping = {
+          0 => 'https://testapi.smileidentity.com/v1',
+          1 => 'https://api.smileidentity.com/v1'
+        }
+        @url = sid_server_mapping[sid_server.to_i]
       else
         @url = sid_server
       end
@@ -27,32 +32,29 @@ module SmileIdentityCore
     end
 
     def partner_params=(partner_params)
-      if partner_params == nil
-        raise ArgumentError, 'Please ensure that you send through partner params'
-      end
+      raise ArgumentError, 'Please ensure that you send through partner params' if partner_params.nil?
 
-      if !partner_params.is_a?(Hash)
-        raise ArgumentError, 'Partner params needs to be a hash'
-      end
+      raise ArgumentError, 'Partner params needs to be a hash' unless partner_params.is_a?(Hash)
 
-      [:user_id, :job_id, :job_type].each do |key|
-        unless partner_params[key] && !partner_params[key].nil? && !(partner_params[key].empty? if partner_params[key].is_a?(String))
-          raise ArgumentError, "Please make sure that #{key} is included in the partner params"
-        end
+      %i[user_id job_id job_type].each do |key|
+        next if partner_params[key] && !partner_params[key].nil? && !(if partner_params[key].is_a?(String)
+                                                                        partner_params[key].empty?
+                                                                      end)
+
+        raise ArgumentError, "Please make sure that #{key} is included in the partner params"
       end
 
       @partner_params = partner_params
     end
 
     def id_info=(id_info)
-
       updated_id_info = id_info
 
-      if updated_id_info.nil? ||  updated_id_info.keys.length == 0
+      if updated_id_info.nil? || updated_id_info.keys.length.zero?
         raise ArgumentError, 'Please make sure that id_info not empty or nil'
       end
 
-      [:country, :id_type, :id_number].each do |key|
+      %i[country id_type id_number].each do |key|
         unless updated_id_info[key] && !updated_id_info[key].nil? && !updated_id_info[key].empty?
           raise ArgumentError, "Please make sure that #{key} is included in the id_info"
         end
@@ -63,15 +65,15 @@ module SmileIdentityCore
 
     private
 
-    def symbolize_keys params
-      (params.is_a?(Hash)) ? Hash[params.map{ |k, v| [k.to_sym, v] }] : params
+    def symbolize_keys(params)
+      params.is_a?(Hash) ? params.transform_keys(&:to_sym) : params
     end
 
     def setup_requests
       request = Typhoeus::Request.new(
         "#{@url}/#{endpoint}",
         method: 'POST',
-        headers: {'Content-Type'=> "application/json"},
+        headers: { 'Content-Type' => 'application/json' },
         body: configure_json
       )
 
@@ -89,13 +91,14 @@ module SmileIdentityCore
 
     def configure_json
       signature_generator.generate_signature(Time.now.to_s)
-        .merge(@id_info)
-        .merge(
-          partner_id: @partner_id,
-          partner_params: @partner_params,
-          source_sdk: SmileIdentityCore::SOURCE_SDK,
-          source_sdk_version: SmileIdentityCore::VERSION)
-        .to_json
+                         .merge(@id_info)
+                         .merge(
+                           partner_id: @partner_id,
+                           partner_params: @partner_params,
+                           source_sdk: SmileIdentityCore::SOURCE_SDK,
+                           source_sdk_version: SmileIdentityCore::VERSION
+                         )
+                         .to_json
     end
 
     def signature_generator

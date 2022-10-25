@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe SmileIdentityCore::WebApi do
   let(:partner_id) { ENV.fetch('PARTNER_ID') }
   let(:default_callback) { 'www.default_callback.com' }
@@ -93,7 +95,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       it 'sets the correct @url instance variable' do
         expect(connection.instance_variable_get(:@url)).to eq('https://testapi.smileidentity.com/v1')
 
-        connection = SmileIdentityCore::WebApi.new(
+        connection = described_class.new(
           partner_id, default_callback, api_key, 'https://something34.api.us-west-2.amazonaws.com/something'
         )
         expect(connection.instance_variable_get(:@url)).to eq('https://something34.api.us-west-2.amazonaws.com/something')
@@ -221,7 +223,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#validate_enroll_with_id' do
-      before(:each) do
+      before do
         connection.instance_variable_set('@images', [
                                            {
                                              image_type_id: 0,
@@ -311,6 +313,11 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe 'setup_requests' do
       # all the methods called in setup requests are already being tested individually
+      let(:url) { 'https://www.example.com' }
+
+      before do
+        connection.instance_variable_set('@url', url)
+      end
 
       it 'should return a json object if it runs successfully' do
 
@@ -354,7 +361,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#configure_info_json' do
       # NOTE: we can perhaps still test that the instance variables that are set in teh payload are the ones set in the connection
-      before(:each) do
+      before do
         connection.instance_variable_set('@id_info', 'a value for @id_info')
         connection.instance_variable_set('@images', images)
       end
@@ -421,7 +428,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#configure_image_payload' do
-      before(:each) do
+      before do
         connection.instance_variable_set('@images', images_v2)
       end
 
@@ -452,7 +459,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#zip_up_file' do
-      before(:each) do
+      before do
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
         connection.instance_variable_set('@images', images)
@@ -470,7 +477,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           misc_information: {
             sec_key: "zWzSzfvXzvN0MdPHtW78a9w3Zlyy7k9UY6Li7pikHniTeuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZdZ2mEFqDAOYmP4JVZHkHZDC1ZDm4UnfUiO5lJa+Jmow5\nELLpSyJzHVaD8thGVHh2qcSfNIaMYMpAJOjjrQv9/aFEpZq+Ar0=\n|ba813d3fafa33a0edd77d968d6ba89e406a7ck1eemn5b042be0fab053723rtyu",
             retry: 'false',
-            partner_params:,
+            partner_params: partner_params,
             timestamp: 1_562_938_446,
             file_name: 'selfie.zip',
             smile_client_id: partner_id,
@@ -488,7 +495,7 @@ RSpec.describe SmileIdentityCore::WebApi do
               countryName: ''
             }
           },
-          id_info:,
+          id_info: id_info,
           images: connection.send(:configure_image_payload),
           server_information: {
             'upload_url' => 'https://some_url.com/videos/125/125-0000000549-vzegm7mb23rznn5e1lepyij444olpa/selfie.zip',
@@ -523,7 +530,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       context 'with a combination of physical and base 64 files' do
-        before(:each) do
+        before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           connection.instance_variable_set('@images', images_v2)
@@ -541,7 +548,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             misc_information: {
               sec_key: "zWzSzfvXzvN0MdPHtW7879w3Zlyy7k9UY6Li7pikHniTUuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZdZ2mEFqDAOYmP4JVZHkHZDC1ZDm4UnfUiO5lJa+Jmow5\nELLpSyHuYtaD8thGVHh2qcSfNIaMYMpAJOjjrQv9/aFEpZq+Ar0=\n|ba813d3fafa33a0edd77d968d6ba89e406a7ck1eemn5b042be0fab053723rtyu",
               retry: 'false',
-              partner_params:,
+              partner_params: partner_params,
               timestamp: 1_562_938_446,
               file_name: 'selfie.zip',
               smile_client_id: partner_id,
@@ -559,7 +566,7 @@ RSpec.describe SmileIdentityCore::WebApi do
                 countryName: ''
               }
             },
-            id_info:,
+            id_info: id_info,
             images: connection.send(:configure_image_payload),
             server_information: {
               'upload_url' => 'https://some_url/selfie.zip',
@@ -577,7 +584,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           file = zip_up_file.read
           expect(file).to include('info.json')
           expect(file).to include('selfie.png')
-          expect(file).to_not include('id_image.png')
+          expect(file).not_to include('id_image.png')
         end
       end
     end
@@ -588,7 +595,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:smile_job_id) { '0000000583' }
 
       context 'if successful' do
-        before(:each) do
+        before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           connection.instance_variable_set('@images', images)
@@ -600,12 +607,12 @@ RSpec.describe SmileIdentityCore::WebApi do
 
           connection.instance_variable_set('@options', options)
           expect(connection.send(:upload_file, url, info_json, smile_job_id))
-            .to eq({success: true, smile_job_id: smile_job_id}.to_json)
+            .to eq({ success: true, smile_job_id: smile_job_id }.to_json)
         end
       end
 
       context 'if unsuccessful' do
-        before(:each) do
+        before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           connection.instance_variable_set('@options', options)
@@ -638,11 +645,15 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe '#query_job_status' do
       let(:url) { 'https://some_server.com/dev01' }
       let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
-      # let (:api_key) { 'API_KEY' }
+      let(:api_key) { 'API_KEY' }
       let(:timestamp) { Time.now.to_i }
 
-      before(:each) do
-        connection.instance_variable_set('@partner_params', partner_params)
+      before do
+        connection.instance_variable_set('@partner_params', {
+                                           user_id: '1',
+                                           job_id: '2',
+                                           job_type: 1
+                                         })
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
@@ -731,7 +742,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       let(:callback_url) { default_callback }
       let(:request_params) do
-        partner_params.merge(product:, callback_url:)
+        partner_params.merge(product: product, callback_url: callback_url)
       end
 
       let(:url) { 'https://testapi.smileidentity.com/v1/token' }
@@ -744,7 +755,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         # connection = described_class.new(partner_id, default_callback, api_key, sid_server)
       end
 
-      it 'should ensure request params are present' do
+      it 'ensures request params are present' do
         expect do
           connection.get_web_token(nil)
         end.to raise_error(ArgumentError, 'Please ensure that you send through request params')
@@ -834,7 +845,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when http request timed out' do
         let(:response_code) { 522 }
-        it 'should raise a RuntimeError' do
+        it 'raises a RuntimeError' do
           VCR.use_cassette('webapi_verification_web_token_error') do
             expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
           end
@@ -843,7 +854,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when http response code is zero' do
         let(:response_code) { 0 }
-        it 'should raise a RuntimeError' do
+        it 'raises a RuntimeError' do
           VCR.use_cassette('webapi_verification_web_token_error') do
             expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
           end
@@ -852,7 +863,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when http response code is not 200' do
         let(:response_code) { 400 }
-        it 'should raise a RuntimeError' do
+        it 'raises a RuntimeError' do
           VCR.use_cassette('webapi_verification_web_token_error') do
             expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)
           end
