@@ -6,8 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Migrate from travis to github actions.
+### Added
 - Add support for ruby 3.1.
+
+### Changed
+- Migrate from travis to github actions.
+
+### Removed 
+- `sec_key` based authentication. Use `signature` based authentication instead.
 
 ## [2.0.0] - 2022-04-28
 

@@ -487,7 +487,6 @@ RSpec.describe SmileIdentityCore::WebApi do
             }
           },
           :misc_information => {
-            :sec_key => "zWzSzfvXzvN0MdPHtW78a9w3Zlyy7k9UY6Li7pikHniTeuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZdZ2mEFqDAOYmP4JVZHkHZDC1ZDm4UnfUiO5lJa+Jmow5\nELLpSyJzHVaD8thGVHh2qcSfNIaMYMpAJOjjrQv9/aFEpZq+Ar0=\n|ba813d3fafa33a0edd77d968d6ba89e406a7ck1eemn5b042be0fab053723rtyu",
             :retry => "false",
             :partner_params => partner_params,
             :timestamp => 1562938446,
@@ -558,7 +557,6 @@ RSpec.describe SmileIdentityCore::WebApi do
               }
             },
             :misc_information => {
-              :sec_key => "zWzSzfvXzvN0MdPHtW7879w3Zlyy7k9UY6Li7pikHniTUuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZdZ2mEFqDAOYmP4JVZHkHZDC1ZDm4UnfUiO5lJa+Jmow5\nELLpSyHuYtaD8thGVHh2qcSfNIaMYMpAJOjjrQv9/aFEpZq+Ar0=\n|ba813d3fafa33a0edd77d968d6ba89e406a7ck1eemn5b042be0fab053723rtyu",
               :retry => "false",
               :partner_params => partner_params,
               :timestamp => 1562938446,

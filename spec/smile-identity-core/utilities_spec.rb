@@ -73,10 +73,6 @@ RSpec.describe SmileIdentityCore::Utilities do
     let(:partner_id) { 1 }
     let(:api_key) { Base64.encode64(rsa.public_key.to_pem) }
     let(:timestamp) { Time.now }
-    let(:good_sec_key) do
-      hash_signature = Digest::SHA256.hexdigest([partner_id, timestamp.to_i].join(":"))
-      [Base64.encode64(rsa.private_encrypt(hash_signature)), hash_signature].join('|')
-    end
     let(:good_signature) do
       SmileIdentityCore::Signature.new(partner_id.to_s, api_key).generate_signature(timestamp.to_s)[:signature]
     end

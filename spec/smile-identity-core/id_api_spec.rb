@@ -118,7 +118,6 @@ RSpec.describe SmileIdentityCore::IDApi do
           "FullName": "some  person",
           "DOB": "NaN-NaN-NaN",
           "Photo": "Not Available",
-          "sec_key": "RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZli8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba",
           "timestamp": 1570612182124
         }.to_json
 
@@ -136,7 +135,7 @@ RSpec.describe SmileIdentityCore::IDApi do
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText ResultCode IsFinalResult Actions Country IDType IDNumber ExpirationDate FullName DOB Photo sec_key timestamp])
+        expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText ResultCode IsFinalResult Actions Country IDType IDNumber ExpirationDate FullName DOB Photo timestamp])
       end
     end
 
@@ -159,7 +158,6 @@ RSpec.describe SmileIdentityCore::IDApi do
           'source_sdk' => SmileIdentityCore::SOURCE_SDK,
           'source_sdk_version' => SmileIdentityCore::VERSION
         )
-        expect(parsed_response).not_to have_key 'sec_key'
       end
     end
   end
