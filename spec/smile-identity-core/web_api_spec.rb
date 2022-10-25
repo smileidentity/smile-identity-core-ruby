@@ -601,7 +601,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
           connection.instance_variable_set('@options', options)
           expect(connection.send(:upload_file, url, info_json, smile_job_id))
-            .to eq({ success: true, smile_job_id: smile_job_id}.to_json)
+            .to eq({ success: true, smile_job_id: smile_job_id }.to_json)
         end
       end
 
@@ -638,9 +638,16 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#query_job_status' do
       let(:url) { 'https://some_server.com/dev01' }
-      
+      let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
+      let(:api_key) { 'API_KEY' }
+      let(:timestamp) { Time.now.to_i }
+
       before do
-        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id))
+        connection.instance_variable_set('@partner_params', {
+                                           user_id: '1',
+                                           job_id: '2',
+                                           job_type: 1
+                                         })
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
@@ -839,7 +846,6 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when http response code is not 200' do
         let(:response_code) { 400 }
-
         it 'raises a RuntimeError' do
           VCR.use_cassette('webapi_verification_web_token_error') do
             expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)

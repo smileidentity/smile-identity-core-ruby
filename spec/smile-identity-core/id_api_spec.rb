@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe SmileIdentityCore::IDApi do
   let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
   let(:api_key) { ENV.fetch('SMILE_API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
