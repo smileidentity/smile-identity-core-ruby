@@ -1,8 +1,8 @@
 RSpec.describe SmileIdentityCore::IDApi do
-  let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
-  let(:api_key) { ENV.fetch('SMILE_API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
-  let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
-  let(:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server) }
+  let(:partner_id) { '001' }
+  let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
+  let(:sid_server) { 0 }
+  let(:connection) { described_class.new(partner_id, api_key, sid_server) }
 
   let(:partner_params) do
     {
