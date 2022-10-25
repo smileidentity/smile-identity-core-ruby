@@ -12,7 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['2.5.1', '2.6', '2.7', '3.0', '3.1']
+        # See https://www.ruby-lang.org/en/downloads/ for latest stable releases.
+        ruby: ['2.6', '2.7', '3.0', '3.1']
     steps:
     - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
