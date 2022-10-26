@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module SmileIdentityCore
   class Signature
-
     def initialize(partner_id, api_key)
       @api_key = api_key
       @partner_id = partner_id
@@ -9,12 +10,12 @@ module SmileIdentityCore
     # Generates a signature based on the specified timestamp (uses the current time by default)
     #
     # @return [Hash] containing both the signature and related timestamp
-    def generate_signature(timestamp=Time.now.to_s)
+    def generate_signature(timestamp = Time.now.to_s)
       hmac = OpenSSL::HMAC.new(@api_key, 'sha256')
       hmac.update(timestamp.to_s)
       hmac.update(@partner_id)
-      hmac.update("sid_request")
-      @signature = Base64.strict_encode64(hmac.digest())
+      hmac.update('sid_request')
+      @signature = Base64.strict_encode64(hmac.digest)
       {
         signature: @signature,
         timestamp: timestamp.to_s
