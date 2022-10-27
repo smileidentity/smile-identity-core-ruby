@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://testapi.smileidentity.com/v1/upload
+    body:
+      encoding: UTF-8
+      string: '{"signature":"VqkfvBEGl0wpjaBraXvs1ns+8SPKyVZSD45u/t+f7AQ=","timestamp":"2022-10-26
+        18:56:01 +0000","file_name":"selfie.zip","smile_client_id":"921","partner_params":null,"model_parameters":{},"callback_url":"www.default_callback.com","source_sdk":"Ruby","source_sdk_version":"2.0.1"}'
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 400
+      message: ''
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '43'
+      date:
+      - Wed, 26 Oct 2022 18:56:02 GMT
+      x-amzn-requestid:
+      - ba27ee17-ea9c-41c7-bade-13c239c01fac
+      access-control-allow-origin:
+      - "*"
+      allow:
+      - POST
+      access-control-allow-headers:
+      - Content-type
+      x-amz-apigw-id:
+      - aoFedHTqPHcFcig=
+      x-amzn-trace-id:
+      - Root=1-635982c2-112234bc602711706937fb52;Sampled=0
+      x-cache:
+      - Error from cloudfront
+      via:
+      - 1.1 674e965f3d2af64c7723a159d4fcb6b4.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - LHR52-C1
+      x-amz-cf-id:
+      - 9Zx55TeMZb5K40tTqeeU2DbAYiPzxWTTeDkfPnwEejlVEMMf02Zzjw==
+    body:
+      encoding: ASCII-8BIT
+      string: '{"error":"Invalid job type.","code":"2212"}'
+    http_version: '2'
+    adapter_metadata:
+      effective_url: https://testapi.smileidentity.com/v1/upload
+  recorded_at: Wed, 26 Oct 2022 18:56:02 GMT
+recorded_with: VCR 6.1.0

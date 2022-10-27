@@ -1,0 +1,177 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://testapi.smileidentity.com/v1/upload
+    body:
+      encoding: UTF-8
+      base64_string: |
+        eyJzaWduYXR1cmUiOiJjMDJJMUhlVGxqNysvYU82TktsRXBPMEZtdXhBelNs
+        d2lEYTlIbmJ3QS9rPSIsInRpbWVzdGFtcCI6IjIwMjItMTAtMjcgMTM6MjU6
+        NDYgKzAwMDAiLCJmaWxlX25hbWUiOiJzZWxmaWUuemlwIiwic21pbGVfY2xp
+        ZW50X2lkIjoiOTIxIiwicGFydG5lcl9wYXJhbXMiOnsidXNlcl9pZCI6ImRt
+        S2FKYXpRQ3ppTGM2VHc5bHdjZ3pMbyIsImpvYl9pZCI6ImExZTg2MDM0NGY3
+        NGEwZmJmMDM2Iiwiam9iX3R5cGUiOjF9LCJtb2RlbF9wYXJhbWV0ZXJzIjp7
+        fSwiY2FsbGJhY2tfdXJsIjoiaHR0cHM6Ly96b21iby5jb20iLCJzb3VyY2Vf
+        c2RrIjoiUnVieSIsInNvdXJjZV9zZGtfdmVyc2lvbiI6IjIuMC4xIn0=
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '1444'
+      date:
+      - Thu, 27 Oct 2022 13:25:48 GMT
+      x-amzn-requestid:
+      - 67aab2a1-7b8a-4615-b26f-a6815b1c09f7
+      access-control-allow-origin:
+      - "*"
+      allow:
+      - POST
+      access-control-allow-headers:
+      - Content-type
+      x-amz-apigw-id:
+      - aqoCVHHnvHcFUZw=
+      x-amzn-trace-id:
+      - Root=1-635a86db-52ec8c812271a7e14582ef8c;Sampled=0
+      x-cache:
+      - Miss from cloudfront
+      via:
+      - 1.1 8539a9444fdb758c7be5c4643e65a12e.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - LHR62-C2
+      x-amz-cf-id:
+      - DDnnk6RsxWoZ2WEhYXvPhOClt36C86aCbU9THjnNm127FlilyAWekg==
+    body:
+      encoding: ASCII-8BIT
+      base64_string: |
+        eyJ1cGxvYWRfdXJsIjoiaHR0cHM6Ly9zbWlsZS11cGxvYWRzLXRlc3QuczMu
+        dXMtd2VzdC0yLmFtYXpvbmF3cy5jb20vdmlkZW9zLzkyMS85MjEtMDAwMDAw
+        MDI2My1qZWw1cTc1MjAwNmUxaXY4aDJpNmlzNjVtdGJqb3Mvc2VsZmllLnpp
+        cD9BV1NBY2Nlc3NLZXlJZD1BU0lBNE9BT0ZYUEFJTVNPNEFYRiZDb250ZW50
+        LVR5cGU9YXBwbGljYXRpb24lMkZ6aXAmRXhwaXJlcz0xNjY2ODc4MDQ4JlNp
+        Z25hdHVyZT1KRkFoS2VmMnduV0xpZmt2biUyQnY1dzVsMTRZOCUzRCZYLUFt
+        em4tVHJhY2UtSWQ9Um9vdCUzRDEtNjM1YTg2ZGItNTJlYzhjODEyMjcxYTdl
+        MTQ1ODJlZjhjJTNCUGFyZW50JTNEN2FlZDcwZjAwMGQ1Y2QxMiUzQlNhbXBs
+        ZWQlM0QwJngtYW16LXNlY3VyaXR5LXRva2VuPUlRb0piM0pwWjJsdVgyVmpF
+        QzRhQ1hWekxYZGxjM1F0TWlKSE1FVUNJUURKUk5VdGN0eCUyRnhHRzJnOExv
+        bUdkcWNHMWFZWjh0b0YyYkwxOEV3UUQlMkZvQUlnZHFmSU52MEF3bnJTWGsz
+        WCUyQmVYYnJhd25VZkxnYUgzWXNjMFNSSlZiS0g0cTlBSUlGeEFER2d3NE5U
+        UTNNamd5TWpjM056WWlEUDRLUG9NTUZ5JTJGYkpXY1lneXJSQXJqc1RoMElp
+        NnQ3cGcyZHVrQkxkRmZxdlBwbTRxSFd6a2pLbUtCbHlNMnFsdUNFZzc2Sk1I
+        bnlPamFLcyUyRktkWGlta0toZnNUd3lBcjFza05pNmFTcFhuSU5IM1lnRDQz
+        V1hwbGlWMVhNeWtSMVMyU1hsMDA2WmpnOWRLUEglMkZxc3dEb3lCaVd0T1d3
+        cWlhRkVOWW84RXo1TFlsVEJ6R25hRGE0MFFnTW9mZXRtaGNPM0RKSm1LTjBS
+        VjdzbCUyRkVjOVVsTWpEcU9PVTBCUTdWZnRpWUVkVnNEY0tJYTNJJTJCRVNL
+        RiUyRjFFcEl2UWQyaEtBU0VnTjdFbDlJRzVwMjdiUGNmRWxjaSUyQnRaU09G
+        MFdyMVdpcHhXZnN1YmFpaGRvYm9Gd05abVl1MkgyT0JBckVQVU5aeEhYR1R5
+        WkF6WkJwJTJCdEF5c21jeGxacEdqYllnNFV0RWRtN3VYSmtzaVJsckM4SG9R
+        OWlvZ0xxZzRydmR5QWVVdzVTeXR4aHlNTkRLWDN3JTJGJTJGTWRIa0VQWEpl
+        endiRzlKYkNOQXFtNmljdWFCMGE4cVc4UUFmUGM0YTJsbm1wS24yZjYlMkJZ
+        T0RhQ2FUTWdxMDBzdzBJM3FtZ1k2bmdFTHJ6Mmx5UVVwbkdVJTJGbjhPR3dm
+        VkJvc3g5Ykp5JTJGNlVYWU9IZEllJTJGUHl0eWx0ak0wYnA3UGlGcjdCdzhH
+        bmtTQ2tFTWV3VllMTVJvMzNPZ0lJWkZZY1RKWmFPeVBlRmlqbE4yT3lUVHBU
+        SkoyU0ptQjRzdFNsYmhsTDYxbk9nTnFhaUpSWDkxYUt5eVJzY0VwSDJOem01
+        S2R3YkdSUVh4Z29lUGR4em9Db2o2ZktLU1YzWmtoUnA4ZXFqN2xOWFNHOWFB
+        dnAlMkZzUVhxcFY4ZFdPeDhRJTNEJTNEJngtYW16LXNlcnZlci1zaWRlLWVu
+        Y3J5cHRpb249QUVTMjU2IiwicmVmX2lkIjoiOTIxLTAwMDAwMDAyNjMtamVs
+        NXE3NTIwMDZlMWl2OGgyaTZpczY1bXRiam9zIiwic21pbGVfam9iX2lkIjoi
+        MDAwMDAwMDI2MyIsImNhbWVyYV9jb25maWciOiJudWxsIiwiY29kZSI6IjIy
+        MDIifQ==
+    http_version: '2'
+    adapter_metadata:
+      effective_url: https://testapi.smileidentity.com/v1/upload
+  recorded_at: Thu, 27 Oct 2022 13:25:48 GMT
+- request:
+    method: put
+    uri: https://smile-uploads-test.s3.us-west-2.amazonaws.com/videos/921/921-0000000263-jel5q752006e1iv8h2i6is65mtbjos/selfie.zip?AWSAccessKeyId=ASIA4OAOFXPAIMSO4AXF&Content-Type=application%2Fzip&Expires=1666878048&Signature=JFAhKef2wnWLifkvn%2Bv5w5l14Y8%3D&X-Amzn-Trace-Id=Root%3D1-635a86db-52ec8c812271a7e14582ef8c%3BParent%3D7aed70f000d5cd12%3BSampled%3D0&x-amz-security-token=IQoJb3JpZ2luX2VjEC4aCXVzLXdlc3QtMiJHMEUCIQDJRNUtctx%2FxGG2g8LomGdqcG1aYZ8toF2bL18EwQD%2FoAIgdqfINv0AwnrSXk3X%2BeXbrawnUfLgaH3Ysc0SRJVbKH4q9AIIFxADGgw4NTQ3MjgyMjc3NzYiDP4KPoMMFy%2FbJWcYgyrRArjsTh0Ii6t7pg2dukBLdFfqvPpm4qHWzkjKmKBlyM2qluCEg76JMHnyOjaKs%2FKdXimkKhfsTwyAr1skNi6aSpXnINH3YgD43WXpliV1XMykR1S2SXl006Zjg9dKPH%2FqswDoyBiWtOWwqiaFENYo8Ez5LYlTBzGnaDa40QgMofetmhcO3DJJmKN0RV7sl%2FEc9UlMjDqOOU0BQ7VftiYEdVsDcKIa3I%2BESKF%2F1EpIvQd2hKASEgN7El9IG5p27bPcfElci%2BtZSOF0Wr1WipxWfsubaihdoboFwNZmYu2H2OBArEPUNZxHXGTyZAzZBp%2BtAysmcxlZpGjbYg4UtEdm7uXJksiRlrC8HoQ9iogLqg4rvdyAeUw5SytxhyMNDKX3w%2F%2FMdHkEPXJezwbG9JbCNAqm6icuaB0a8qW8QAfPc4a2lnmpKn2f6%2BYODaCaTMgq00sw0I3qmgY6ngELrz2lyQUpnGU%2Fn8OGwfVBosx9bJy%2F6UXYOHdIe%2FPytyltjM0bp7PiFr7Bw8GnkSCkEMewVYLMRo33OgIIZFYcTJZaOyPeFijlN2OyTTpTJJ2SJmB4stSlbhlL61nOgNqaiJRX91aKyyRscEpH2Nzm5KdwbGRQXxgoePdxzoCoj6fKKSV3ZkhRp8eqj7lNXSG9aAvp%2FsQXqpV8dWOx8Q%3D%3D&x-amz-server-side-encryption=AES256
+    body:
+      encoding: UTF-8
+      base64_string: |
+        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
+        AAAArAYAAAAA
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/zip
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      x-amz-id-2:
+      - "+8ABoEpBjCJJeW6xrxz/B+oC+Ur8cvBhjv833W7PX64YxjaKhR+7HzUWtdJWnBoj0YdTbe9jJE6Odb1uUV7n7w=="
+      x-amz-request-id:
+      - 0FH8FHR2NYCK2SJ1
+      Date:
+      - Thu, 27 Oct 2022 13:25:50 GMT
+      x-amz-server-side-encryption:
+      - AES256
+      ETag:
+      - '"8ffeff44d0486e6d764539e19767310f"'
+      Server:
+      - AmazonS3
+      Content-Length:
+      - '0'
+    body:
+      encoding: ASCII-8BIT
+      base64_string: ''
+    http_version: '1.1'
+    adapter_metadata:
+      effective_url: https://smile-uploads-test.s3.us-west-2.amazonaws.com/videos/921/921-0000000263-jel5q752006e1iv8h2i6is65mtbjos/selfie.zip?AWSAccessKeyId=ASIA4OAOFXPAIMSO4AXF&Content-Type=application%2Fzip&Expires=1666878048&Signature=JFAhKef2wnWLifkvn%2Bv5w5l14Y8%3D&X-Amzn-Trace-Id=Root%3D1-635a86db-52ec8c812271a7e14582ef8c%3BParent%3D7aed70f000d5cd12%3BSampled%3D0&x-amz-security-token=IQoJb3JpZ2luX2VjEC4aCXVzLXdlc3QtMiJHMEUCIQDJRNUtctx%2FxGG2g8LomGdqcG1aYZ8toF2bL18EwQD%2FoAIgdqfINv0AwnrSXk3X%2BeXbrawnUfLgaH3Ysc0SRJVbKH4q9AIIFxADGgw4NTQ3MjgyMjc3NzYiDP4KPoMMFy%2FbJWcYgyrRArjsTh0Ii6t7pg2dukBLdFfqvPpm4qHWzkjKmKBlyM2qluCEg76JMHnyOjaKs%2FKdXimkKhfsTwyAr1skNi6aSpXnINH3YgD43WXpliV1XMykR1S2SXl006Zjg9dKPH%2FqswDoyBiWtOWwqiaFENYo8Ez5LYlTBzGnaDa40QgMofetmhcO3DJJmKN0RV7sl%2FEc9UlMjDqOOU0BQ7VftiYEdVsDcKIa3I%2BESKF%2F1EpIvQd2hKASEgN7El9IG5p27bPcfElci%2BtZSOF0Wr1WipxWfsubaihdoboFwNZmYu2H2OBArEPUNZxHXGTyZAzZBp%2BtAysmcxlZpGjbYg4UtEdm7uXJksiRlrC8HoQ9iogLqg4rvdyAeUw5SytxhyMNDKX3w%2F%2FMdHkEPXJezwbG9JbCNAqm6icuaB0a8qW8QAfPc4a2lnmpKn2f6%2BYODaCaTMgq00sw0I3qmgY6ngELrz2lyQUpnGU%2Fn8OGwfVBosx9bJy%2F6UXYOHdIe%2FPytyltjM0bp7PiFr7Bw8GnkSCkEMewVYLMRo33OgIIZFYcTJZaOyPeFijlN2OyTTpTJJ2SJmB4stSlbhlL61nOgNqaiJRX91aKyyRscEpH2Nzm5KdwbGRQXxgoePdxzoCoj6fKKSV3ZkhRp8eqj7lNXSG9aAvp%2FsQXqpV8dWOx8Q%3D%3D&x-amz-server-side-encryption=AES256
+  recorded_at: Thu, 27 Oct 2022 13:25:49 GMT
+recorded_with: VCR 6.1.0

@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://testapi.smileidentity.com/v1/id_verification
+    body:
+      encoding: UTF-8
+      string: '{"signature":"rego2Z6bJWJiJraORDmbIsOsLWS4VSOjpZ6ur1WSfh8=","timestamp":"2022-10-27
+        13:25:43 +0000","first_name":"John","last_name":"Doe","middle_name":"","country":"NG","id_type":"BVN","id_number":"00000000000","phone_number":"0726789065","entered":"true","partner_id":"921","partner_params":{"user_id":"dmKaJazQCziLc6Tw9lwcgzLo","job_id":"DeXyJOGtaACFFfbZ2kxjuICE","job_type":5},"source_sdk":"Ruby","source_sdk_version":"2.0.1"}'
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '568'
+      date:
+      - Thu, 27 Oct 2022 13:25:46 GMT
+      x-amzn-requestid:
+      - e55b0181-ac0e-41d3-bda0-c1217c1e88db
+      access-control-allow-origin:
+      - "*"
+      allow:
+      - POST
+      access-control-allow-headers:
+      - Content-type
+      x-amz-apigw-id:
+      - aqoB1FtKPHcFRhA=
+      x-amzn-trace-id:
+      - Root=1-635a86d8-0979377d2415c4d27bd50236;Sampled=0
+      x-cache:
+      - Miss from cloudfront
+      via:
+      - 1.1 5f945d4578713543c6bb96b797e1a0f6.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - LHR62-C2
+      x-amz-cf-id:
+      - cxzqQFS-kG2Nhl9snGhfsXePUvLlTY7TEiTwYSVljg3kxErHytk4Zg==
+    body:
+      encoding: ASCII-8BIT
+      string: '{"JSONVersion":"1.0.0","SmileJobID":"0000000262","PartnerParams":{"user_id":"dmKaJazQCziLc6Tw9lwcgzLo","job_id":"DeXyJOGtaACFFfbZ2kxjuICE","job_type":5},"ResultType":"ID
+        Verification","ResultText":"Unable to validate ID - This feature is not enabled
+        for your Smile ID account.","ResultCode":"1016","IsFinalResult":"true","Actions":{"Verify_ID_Number":"Not
+        Done","Return_Personal_Info":"Not Done"},"Country":"NG","IDType":"BVN","IDNumber":"00000000000","Source":"ID
+        API","signature":"3qWkkYkLB8kbOpep0DT+vgvwOqy6HSxrHOV8eudZx80=","timestamp":"2022-10-27T13:25:46.297Z"}'
+    http_version: '2'
+    adapter_metadata:
+      effective_url: https://testapi.smileidentity.com/v1/id_verification
+  recorded_at: Thu, 27 Oct 2022 13:25:46 GMT
+recorded_with: VCR 6.1.0

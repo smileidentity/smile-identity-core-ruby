@@ -821,9 +821,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         let(:response_code) { 522 }
 
         it 'raises a RuntimeError' do
-          VCR.use_cassette('webapi_verification_web_token_error') do
-            expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
-          end
+          expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)
         end
       end
 
@@ -832,7 +830,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         it 'raises a RuntimeError' do
           VCR.use_cassette('webapi_verification_web_token_error') do
-            expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
+            expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)
           end
         end
       end

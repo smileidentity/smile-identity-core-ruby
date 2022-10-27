@@ -1,0 +1,64 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://testapi.smileidentity.com/v1/job_status
+    body:
+      encoding: UTF-8
+      string: '{"user_id":"dmKaJazQCziLc6Tw9lwcgzLo","job_id":"52e7cd72a1ee4e0e1094","partner_id":"921","image_links":false,"history":false,"source_sdk":"Ruby","source_sdk_version":"2.0.1","signature":"x+yKXIZU43fjFX0JuH2JHlTi1Cs/GEfvzFZPz4dqhEs=","timestamp":"2022-10-27
+        13:25:52 +0000"}'
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '1296'
+      date:
+      - Thu, 27 Oct 2022 13:25:54 GMT
+      x-amzn-requestid:
+      - 2bf292aa-ab26-47cf-a77c-509a3e744a7d
+      access-control-allow-origin:
+      - "*"
+      allow:
+      - POST
+      access-control-allow-headers:
+      - Content-type
+      x-amz-apigw-id:
+      - aqoDSF9nPHcF1zA=
+      x-amzn-trace-id:
+      - Root=1-635a86e1-67b378e44b8d43ed6ab2c34a;Sampled=0
+      x-cache:
+      - Miss from cloudfront
+      via:
+      - 1.1 cd9356e27582317dbf5532faf4a88586.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - LHR62-C2
+      x-amz-cf-id:
+      - thZ68kKvJqvOcFhNZq2sz0pSyRRx3yGx0EFpJ3rmnxnBogr7Hf_TZQ==
+    body:
+      encoding: ASCII-8BIT
+      string: '{"timestamp":"2022-10-27T13:25:54.150Z","signature":"BAZBvCGvHl2zMvTqFiT+Cwf9sz/noteHnWsQwsxm4lc=","job_complete":true,"job_success":false,"code":"2302","result":{"Source":"WebAPI
+        - ruby","Actions":{"Liveness_Check":"Not Applicable","Register_Selfie":"Not
+        Applicable","Selfie_Provided":"Not Applicable","Verify_ID_Number":"Not Verified","Human_Review_Compare":"Not
+        Applicable","Return_Personal_Info":"Not Returned","Selfie_To_ID_Card_Compare":"Not
+        Applicable","Human_Review_Update_Selfie":"Not Applicable","Human_Review_Liveness_Check":"Not
+        Applicable","Selfie_To_ID_Authority_Compare":"ID Authority Photo Not Available","Update_Registered_Selfie_On_File":"Not
+        Applicable","Selfie_To_Registered_Selfie_Compare":"Not Applicable"},"ResultCode":"1016","ResultText":"Unable
+        to validate ID - This feature is not enabled for your Smile ID account.","ResultType":"SYSTEM","SmileJobID":"0000000261","JSONVersion":"1.0.0","IsFinalResult":"true","PartnerParams":{"job_id":"52e7cd72a1ee4e0e1094","user_id":"dmKaJazQCziLc6Tw9lwcgzLo","job_type":"1"},"ConfidenceValue":"0","IsMachineResult":"true"},"kyc_receipt":"https://portal.smileidentity.com/api/v3/921/job_result_summary/0000000261/generate_pdf?signature=BAZBvCGvHl2zMvTqFiT+Cwf9sz/noteHnWsQwsxm4lc=&timestamp=2022-10-27T13:25:54.150Z&environment=test"}'
+    http_version: '2'
+    adapter_metadata:
+      effective_url: https://testapi.smileidentity.com/v1/job_status
+  recorded_at: Thu, 27 Oct 2022 13:25:52 GMT
+recorded_with: VCR 6.1.0

@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://testapi.smileidentity.com/v1/token
+    body:
+      encoding: UTF-8
+      string: '{"user_id":"dmKaJazQCziLc6Tw9lwcgzLo","job_id":"88580fca9011e6f19f5b","job_type":1,"product":"123","callback_url":"www.default_callback.com","signature":"tdf3NNVeE4iUhTdSVjiFCbPKfBhqv8VsARf4UYvWBl8=","timestamp":"2022-10-27
+        13:52:38 +0000","partner_id":"921","source_sdk":"Ruby","source_sdk_version":"2.0.1"}'
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 400
+      message: ''
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '42'
+      date:
+      - Thu, 27 Oct 2022 13:52:39 GMT
+      x-amzn-requestid:
+      - ea32f22d-28cb-4b7c-aba0-c1bd48b732d1
+      access-control-allow-origin:
+      - "*"
+      allow:
+      - POST
+      access-control-allow-headers:
+      - Content-type
+      x-amz-apigw-id:
+      - aqr-NGc8vHcFymQ=
+      x-amzn-trace-id:
+      - Root=1-635a8d27-583523596580dce5059d7f8b;Sampled=0
+      x-cache:
+      - Error from cloudfront
+      via:
+      - 1.1 c91d54ce23c019ce0642e64447d9f9ba.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - LHR62-C2
+      x-amz-cf-id:
+      - JgmvEDrRIyn5G-j2jD3N1iJaPqlhCyXuD6DpdKQY66LGwIWEqPS6IQ==
+    body:
+      encoding: ASCII-8BIT
+      string: '{"error":"Invalid product.","code":"2217"}'
+    http_version: '2'
+    adapter_metadata:
+      effective_url: https://testapi.smileidentity.com/v1/token
+  recorded_at: Thu, 27 Oct 2022 13:52:39 GMT
+recorded_with: VCR 6.1.0

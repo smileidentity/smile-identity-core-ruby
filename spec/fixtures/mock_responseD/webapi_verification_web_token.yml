@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://testapi.smileidentity.com/v1/token
+    body:
+      encoding: UTF-8
+      string: '{"user_id":"dmKaJazQCziLc6Tw9lwcgzLo","job_id":"93e2c950b349f5254829","job_type":1,"product":"ekyc_smartselfie","callback_url":"www.default_callback.com","signature":"ZbQu5ugypjlAhAow4FRdHUJZZtQ8XaXWEpezZekCdso=","timestamp":"2022-10-26
+        22:44:55 +0000","partner_id":"921","source_sdk":"Ruby","source_sdk_version":"2.0.1"}'
+    headers:
+      User-Agent:
+      - Typhoeus - https://github.com/typhoeus/typhoeus
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      content-type:
+      - application/json
+      content-length:
+      - '346'
+      date:
+      - Wed, 26 Oct 2022 22:44:58 GMT
+      x-amzn-requestid:
+      - 734fecfe-df2e-4da1-ac7f-f2edd3f9d336
+      access-control-allow-origin:
+      - "*"
+      allow:
+      - POST
+      access-control-allow-headers:
+      - Content-type
+      x-amz-apigw-id:
+      - aonAYEFPPHcF7jA=
+      x-amzn-trace-id:
+      - Root=1-6359b868-02eb39df7bde90020bab9813;Sampled=0
+      x-cache:
+      - Miss from cloudfront
+      via:
+      - 1.1 38625201ad7f896d72a7ab055328881e.cloudfront.net (CloudFront)
+      x-amz-cf-pop:
+      - LHR52-C1
+      x-amz-cf-id:
+      - hjXOHiLHvO8kt2E8KWRBZC91euB0dGv5-8zr8Cs45qEEj3NqAqMj3g==
+    body:
+      encoding: ASCII-8BIT
+      string: '{"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJ0bmVyX3BhcmFtcyI6eyJ1c2VyX2lkIjoiZG1LYUphelFDemlMYzZUdzlsd2NnekxvIiwiam9iX2lkIjoiOTNlMmM5NTBiMzQ5ZjUyNTQ4MjkiLCJqb2JfdHlwZSI6MX0sImNhbGxiYWNrX3VybCI6Ind3dy5kZWZhdWx0X2NhbGxiYWNrLmNvbSIsImlhdCI6MTY2NjgyNDI5OCwiZXhwIjoxNjY4NDkxMTE1fQ.AIkzMmExaTmoHDZE3hjgNtQa_enGKiyvFRyK5MW_KYA"}'
+    http_version: '2'
+    adapter_metadata:
+      effective_url: https://testapi.smileidentity.com/v1/token
+  recorded_at: Wed, 26 Oct 2022 22:44:58 GMT
+recorded_with: VCR 6.1.0
