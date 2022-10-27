@@ -54,7 +54,7 @@ gem install smile-identity-core
 
 For extensive instructions on usage of the library and sample codes, please refer to the official Smile Identity [documentation](https://docs.smileidentity.com/server-to-server/ruby).
 
-Before that, you should take a look at the examples in the `examples` folder.
+Before that, you should take a look at the examples in the [examples](/examples) folder.
 
 ## Getting Help
 

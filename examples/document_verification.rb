@@ -21,7 +21,7 @@ partner_params = {
 }
 
 # Create image list
-# image_type_id Integer
+# image_type_id (Integer) - This infers to either a file or a base64 encoded image, but not both.
 # 0 - Selfie image jpg or png (if you have the full path of the selfie)
 # 2 - Selfie image jpg or png base64 encoded (if you have the base64image string of the selfie)
 # 4 - Liveness image jpg or png (if you have the full path of the liveness image)
@@ -59,7 +59,7 @@ id_info = {
 options = {
   return_job_status: '<true | false>', # Set to true if you want to get the job result in sync (in addition to the result been sent to your callback). If set to false, result is sent to callback url only.
   return_history: '<true | false>', # Set to true to return results of all jobs you have ran for the user in addition to current job result. You must set return_job_status to true to use this flag.
-  return_image_links: '<true |false>', # Set to true to receive selfie and liveness images you uploaded. You must set return_job_status to true to use this flag.
+  return_image_links: '<true |false>', # Set to true to receive links to the selfie and the photo it was compared to. You must set return_job_status to true to use this flag.
   signature: true
 }
 
