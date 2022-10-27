@@ -18,10 +18,10 @@ module SmileIdentityCore
 
       @sid_server = sid_server
       @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-              SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
-            else
-              sid_server
-            end
+               SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
+             else
+               sid_server
+             end
     end
 
     def submit_job(partner_params, images, id_info, options)
@@ -334,7 +334,7 @@ module SmileIdentityCore
             job_response['smile_job_id'] = smile_job_id
             return job_response
           else
-            return { success: true, smile_job_id: smile_job_id }.to_json
+            return { success: true, smile_job_id: smile_job_id}.to_json
           end
         end
         raise " #{response.code}: #{response.body}"

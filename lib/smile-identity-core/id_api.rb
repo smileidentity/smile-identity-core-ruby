@@ -6,11 +6,11 @@ module SmileIdentityCore
       @partner_id = partner_id.to_s
       @api_key = api_key
 
-      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        @url = SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
-      else
-        @url = sid_server
-      end
+      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+               SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
+             else
+               sid_server
+             end
     end
 
     def submit_job(partner_params, id_info, options = {})
