@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe SmileIdentityCore::IDApi do
-  let(:partner_id) { '001' }
-  let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
-  let(:sid_server) { 0 }
-  let(:connection) { described_class.new(partner_id, api_key, sid_server) }
+  let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
+  let(:api_key) { ENV.fetch('SMILE_API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
+  let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
+  let(:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server) }
 
   let(:partner_params) do
     {
-      user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
-      job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
+      user_id: ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo'),
+      job_id: ENV.fetch('SMILE_JOB_ID', SecureRandom.hex(10)),
       job_type: 5
     }
   end
@@ -88,58 +88,27 @@ RSpec.describe SmileIdentityCore::IDApi do
   end
 
   context 'ensure that the private methods behave correctly' do
-    describe '#setup_requests' do
-      let(:url) { 'https://www.example.com' }
-
-      before do
-        connection.instance_variable_set('@id_info', id_info)
-        connection.instance_variable_set('@url', url)
-      end
-
+    describe '#submit_job' do
       it 'returns a correct json object if it runs successfully' do
-        body = {
-          "JSONVersion": '1.0.0',
-          "SmileJobID": '0000001096',
-          "PartnerParams": {
-            "user_id": 'dmKaJazQCziLc6Tw9lwcgzLo',
-            "job_id": 'DeXyJOGtaACFFfbZ2kxjuICE',
-            "job_type": 5
-          },
-          "ResultType": 'ID Verification',
-          "ResultText": 'ID Number Validated',
-          "ResultCode": '1012',
-          "IsFinalResult": 'true',
-          "Actions": {
-            "Verify_ID_Number": 'Verified',
-            "Return_Personal_Info": 'Returned'
-          },
-          "Country": 'NG',
-          "IDType": 'BVN',
-          "IDNumber": '00000000000',
-          "ExpirationDate": 'NaN-NaN-NaN',
-          "FullName": 'some  person',
-          "DOB": 'NaN-NaN-NaN',
-          "Photo": 'Not Available',
-          "sec_key": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZli8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba',
-          "timestamp": 1_570_612_182_124
-        }.to_json
+        parsed_response = {}
+        # Make real request for the first time, we then use a saved version for extra requests
+        VCR.use_cassette('id_verification') do
+          setup_response = connection.submit_job(partner_params, id_info, { signature: true })
+          parsed_response = JSON.parse(setup_response)
+        end
 
-        response = Typhoeus::Response.new(code: 200, body: body)
-        Typhoeus.stub("#{url}/id_verification").and_return(response)
-
-        setup_response = connection.send(:setup_requests)
-        expect(setup_response).to eq(body) # NB: we assert against it below, but this is the fact of it.
-        # These v just come from the `body` mock above:
-        expect(JSON.parse(setup_response)['PartnerParams']['user_id']).to eq(partner_params[:user_id])
-        expect(JSON.parse(setup_response)['PartnerParams']['job_id']).to eq(partner_params[:job_id])
-        expect(JSON.parse(setup_response)['PartnerParams']['job_type']).to eq(partner_params[:job_type])
-        expect(JSON.parse(setup_response)['IDType']).to eq(id_info[:id_type])
-        expect(JSON.parse(setup_response)['IDNumber']).to eq(id_info[:id_number])
+        # Assert the payload against the fields that will always be present
+        expect(parsed_response['PartnerParams']['user_id']).to eq(partner_params[:user_id])
+        # check for presence since the generated will be different from the saved response in the cassette
+        expect(parsed_response['PartnerParams']['job_id']).not_to be(nil)
+        expect(parsed_response['PartnerParams']['job_type']).to eq(partner_params[:job_type])
+        expect(parsed_response['IDType']).to eq(id_info[:id_type])
+        expect(parsed_response['IDNumber']).to eq(id_info[:id_number])
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType
-                                                                  ResultText ResultCode IsFinalResult Actions Country IDType IDNumber ExpirationDate FullName DOB Photo sec_key timestamp])
+        expect(parsed_response.keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText
+                                                       ResultCode IsFinalResult Actions Country IDType IDNumber timestamp Source signature])
       end
     end
 

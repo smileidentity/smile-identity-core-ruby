@@ -17,15 +17,11 @@ module SmileIdentityCore
       @api_key = api_key
 
       @sid_server = sid_server
-      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        sid_server_mapping = {
-          0 => 'https://testapi.smileidentity.com/v1',
-          1 => 'https://api.smileidentity.com/v1'
-        }
-        @url = sid_server_mapping[sid_server.to_i]
-      else
-        @url = sid_server
-      end
+      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+              SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
+            else
+              sid_server
+            end
     end
 
     def submit_job(partner_params, images, id_info, options)
@@ -139,7 +135,7 @@ module SmileIdentityCore
 
     def request_web_token(request_params)
       request_params
-        .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
+        .merge!(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
         .merge!(
           { partner_id: @partner_id,
             source_sdk: SmileIdentityCore::SOURCE_SDK,
@@ -249,7 +245,7 @@ module SmileIdentityCore
           "apiVersion": {
             "buildNumber": 0,
             "majorVersion": 2,
-            "minorVersion": 0
+            "minorVersion": 1
           },
           "language": 'ruby'
         },

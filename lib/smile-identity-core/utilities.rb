@@ -39,7 +39,7 @@ module SmileIdentityCore
 
       request = Typhoeus::Request.new(
         url,
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type' => 'application/json', 'Accept' => 'application/json' },
         method: :post,
         body: request_json_data.to_json
       )

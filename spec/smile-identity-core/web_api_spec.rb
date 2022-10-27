@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe SmileIdentityCore::WebApi do
-  let(:partner_id) { '001' }
+  let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
   let(:default_callback) { 'www.default_callback.com' }
-  let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
-  let(:sid_server) { 0 }
-
-  let(:connection) { described_class.new(partner_id, default_callback, api_key, sid_server) }
+  let(:api_key) { ENV.fetch('SMILE_API_KEY') }
+  let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
+  let(:connection) { SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server) }
+  let(:existing_job_id) { ENV.fetch('SMILE_PROCESSED_JOB_ID', '52e7cd72a1ee4e0e1094') } 
 
   let(:partner_params) do
     {
-      user_id: '1',
-      job_id: '2',
+      user_id: ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo'),
+      job_id: SecureRandom.hex(10),
       job_type: 1
     }
   end
@@ -179,29 +179,17 @@ RSpec.describe SmileIdentityCore::WebApi do
         # config is good, so we fire off two HTTP requests, and we need to mock them.
 
         # Set everything up:
-        connection.instance_variable_set('@url', 'https://www.example.com')
-
-        response_upload_url = 'https://smile-uploads-somewhere.amazonaws.com/videos/a_signed_url'
-        body = {
-          'upload_url' => response_upload_url,
-          'ref_id' => '125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww',
-          'smile_job_id' => '0000000583',
-          'camera_config' => 'null',
-          'code' => '2202'
-        }.to_json
-
-        Typhoeus.stub('https://www.example.com/upload').and_return(Typhoeus::Response.new(code: 200, body: body))
 
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
-
-        Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
 
         # Test the preconditions! `default_callback` is what `connection` was instantiated with.
         expect(connection.instance_variable_get(:@callback_url)).to eq(default_callback)
 
         # Run the code, passing the `optional_callback` option:
-        connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com'))
+        VCR.use_cassette('webapi_verification', preserve_exact_body_bytes: true) do
+          connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com'))
+        end
 
         # Make sure @callback_url gets set:
         expect(connection.instance_variable_get(:@callback_url)).to eq('https://zombo.com')
@@ -285,12 +273,12 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#check_string' do
-      it 'returns '' for the key if the object does not exist' do
+      it "returns '' for the key if the object does not exist" do
         options = {}
         expect(connection.send(:check_string, :optional_callback, options)).to eq('')
       end
 
-      it 'returns '' if a key is nil or does not exist' do
+      it "returns '' if a key is nil or does not exist" do
         expect(connection.send(:check_string, :optional_callback, nil)).to eq('')
       end
 
@@ -325,57 +313,43 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe 'setup_requests' do
       # all the methods called in setup requests are already being tested individually
-      let(:url) { 'https://www.example.com' }
-
-      before do
-        connection.instance_variable_set('@url', url)
-      end
 
       it 'returns a json object if it runs successfully' do
-        response_upload_url = 'https://some-url/selfie.zip'
-        response_smile_job_id = '0000000583'
-        body = {
-          'upload_url' => response_upload_url,
-          'ref_id' => '125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww',
-          'smile_job_id' => response_smile_job_id,
-          'camera_config' => 'null',
-          'code' => '2202'
-        }.to_json
-
-        Typhoeus.stub("#{url}/upload").and_return(Typhoeus::Response.new(code: 200, body: body))
-
         allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
         allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
 
         connection.instance_variable_set('@images', images)
         connection.instance_variable_set('@options', options)
 
-        Typhoeus.stub(JSON.parse(body)['upload_url']).and_return(Typhoeus::Response.new(code: 200))
+        parsed_response = {}
+        VCR.use_cassette('webapi_verification') do
+          setup_response = connection.send(:setup_requests)
+          parsed_response = JSON.parse(setup_response)
+        end
 
-        setup_requests = connection.send(:setup_requests)
-        expect(JSON.parse(setup_requests)).to eq('success' => true, 'smile_job_id' => response_smile_job_id)
+        expect(parsed_response['success']).to be_truthy
       end
 
       it 'returns the correct message if we could not get an http response' do
-        response = Typhoeus::Response.new(code: 0, body: 'Some error')
-        Typhoeus.stub("#{url}/upload").and_return(response)
-
-        expect { connection.send(:setup_requests) }.to raise_error(RuntimeError)
+        VCR.use_cassette('webapi_verification_error') do
+          expect { connection.send(:setup_requests) }.to raise_error(RuntimeError)
+        end
       end
 
       it 'returns the correct message if we received a non-successful http response' do
-        response = Typhoeus::Response.new(code: 403, body: 'Some error')
-        Typhoeus.stub("#{url}/upload").and_return(response)
+        # response = Typhoeus::Response.new(code: 403, body: 'Some error')
 
-        expect { connection.send(:setup_requests) }.to raise_error(RuntimeError)
+        VCR.use_cassette('webapi_verification_error') do
+          expect { connection.send(:setup_requests) }.to raise_error(RuntimeError)
+        end
       end
 
       it 'returns the correct message if there is a timeout' do
         # find the correct code
-        response = Typhoeus::Response.new(code: 512, body: 'Some error')
-        Typhoeus.stub("#{url}/upload").and_return(response)
-
-        expect { connection.send(:setup_requests) }.to raise_error(RuntimeError)
+        # response = Typhoeus::Response.new(code: 512, body: 'Some error')
+        VCR.use_cassette('webapi_verification_error') do
+          expect { connection.send(:setup_requests) }.to raise_error(RuntimeError)
+        end
       end
     end
 
@@ -415,7 +389,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           expect(connection.send(:configure_info_json,
                                  'the server information url')[:package_information][:apiVersion][:majorVersion]).to be(2)
           expect(connection.send(:configure_info_json,
-                                 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(0)
+                                 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(1)
         end
       end
 
@@ -491,7 +465,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             apiVersion: {
               buildNumber: 0,
               majorVersion: 2,
-              minorVersion: 0
+              minorVersion: 1
             }
           },
           misc_information: {
@@ -562,7 +536,7 @@ RSpec.describe SmileIdentityCore::WebApi do
               apiVersion: {
                 buildNumber: 0,
                 majorVersion: 2,
-                minorVersion: 0
+                minorVersion: 1
               }
             },
             misc_information: {
@@ -627,7 +601,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
           connection.instance_variable_set('@options', options)
           expect(connection.send(:upload_file, url, info_json, smile_job_id))
-            .to eq({ success: true, smile_job_id: smile_job_id }.to_json)
+            .to eq({ success: true, smile_job_id: smile_job_id}.to_json)
         end
       end
 
@@ -664,28 +638,15 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#query_job_status' do
       let(:url) { 'https://some_server.com/dev01' }
-      let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
-      let(:api_key) { 'API_KEY' }
-      let(:timestamp) { Time.now.to_i }
-
+      
       before do
-        connection.instance_variable_set('@partner_params', {
-                                           user_id: '1',
-                                           job_id: '2',
-                                           job_type: 1
-                                         })
+        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id))
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
         connection.instance_variable_set('@partner_id', partner_id)
         connection.instance_variable_set('@utilies_connection',
                                          SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
-
-        hmac = OpenSSL::HMAC.new(api_key, 'sha256')
-        hmac.update(timestamp.to_s)
-        hmac.update(partner_id)
-        hmac.update('sid_request')
-        @signature = Base64.strict_encode64(hmac.digest)
 
         def connection.sleep(n)
           # TODO: This isn't ideal, but it's a way to speed up these specs.
@@ -697,41 +658,27 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the response if job_complete is true' do
-        body = {
-          timestamp: timestamp.to_s,
-          signature: @signature.to_s,
-          job_complete: true,
-          job_success: false,
-          code: '2302',
-          success: true,
-          smile_job_id: '123',
-          source_sdk: instance_of(String),
-          source_sdk_version: instance_of(String)
-        }.to_json
+        VCR.use_cassette('web_verification_get_job') do |cassette|
+          current_time = cassette.originally_recorded_at || Time.now
+          Timecop.freeze(current_time) do
+            response = connection.send(:query_job_status)
 
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
-        Typhoeus.stub(@url).and_return(typhoeus_response)
-
-        expect(connection.send(:query_job_status)).to eq(JSON.parse(body.to_s))
+            expect(response['code']).to eq('2302')
+            expect(Time.parse(response['timestamp'])).to be_within(10).of current_time
+          end
+        end
       end
 
       it 'returns the response if the counter is 20' do
-        body = {
-          timestamp: timestamp.to_s,
-          signature: @signature.to_s,
-          job_complete: false,
-          job_success: false,
-          code: '2302',
-          success: true,
-          smile_job_id: '123',
-          source_sdk: SmileIdentityCore::SOURCE_SDK,
-          source_sdk_version: SmileIdentityCore::VERSION
-        }.to_json
+        VCR.use_cassette('web_verification_get_job') do |cassette|
+          current_time = cassette.originally_recorded_at || Time.now
+          Timecop.freeze(current_time) do
+            response = connection.send(:query_job_status, 19)
 
-        typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
-        Typhoeus.stub(@url).and_return(typhoeus_response)
-
-        expect(connection.send(:query_job_status, 19)).to eq(JSON.parse(body.to_s))
+            expect(response['code']).to eq('2302')
+            expect(Time.parse(response['timestamp'])).to be_within(10).of current_time
+          end
+        end
       end
 
       it 'increments the counter if the counter is less than 20 and job_complete is not true' do
@@ -739,30 +686,48 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
     end
 
+    describe '#get_job_status' do
+      let(:url) { 'https://some_server.com/dev01' }
+      let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
+      # let (:api_key) { 'API_KEY' }
+      # let(:timestamp) { Time.now.to_i }
+
+      before do
+        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id))
+        connection.instance_variable_set('@url', url)
+        connection.instance_variable_set('@options', options)
+        connection.instance_variable_set('@api_key', api_key)
+        connection.instance_variable_set('@partner_id', partner_id)
+        connection.instance_variable_set('@utilies_connection',
+                                         SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
+      end
+
+      it 'returns the response for job status' do
+        VCR.use_cassette('web_verification_get_job_status') do |cassette|
+          current_time = cassette.originally_recorded_at || Time.now
+          Timecop.freeze(current_time) do
+            response = connection.send(:get_job_status, partner_params.merge(job_id: existing_job_id), options)
+
+            expect(response['code']).to eq('2302')
+          end
+        end
+      end
+    end
+
     describe 'get_web_token' do
-      let(:user_id) { '1' }
-      let(:job_id) { '1' }
+      # let(:user_id) { '1' }
+      # let(:job_id) { '1' }
       let(:product) { 'ekyc_smartselfie' }
 
       let(:callback_url) { default_callback }
       let(:request_params) do
-        {
-          user_id: user_id,
-          job_id: job_id,
-          product: product,
-          callback_url: callback_url
-        }
+        partner_params.merge(product: product, callback_url: callback_url)
       end
 
       let(:url) { 'https://testapi.smileidentity.com/v1/token' }
       let(:response_body) { nil }
       let(:response_code) { 200 }
       let(:typhoeus_response) { Typhoeus::Response.new(code: response_code, body: response_body) }
-
-      before do
-        Typhoeus.stub(url).and_return(typhoeus_response)
-        connection = described_class.new(partner_id, default_callback, api_key, sid_server)
-      end
 
       it 'ensures request params are present' do
         expect do
@@ -805,7 +770,7 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         it 'raises ArgumentError with missing keys if request params has nil values' do
           expect do
-            connection.get_web_token(request_params)
+            connection.get_web_token(request_params.merge(user_id: nil))
           end.to raise_error(ArgumentError, 'user_id is required to get a web token')
         end
       end
@@ -820,18 +785,35 @@ RSpec.describe SmileIdentityCore::WebApi do
         end
 
         it 'sends a signature, timestamp and partner_id as part of request' do
-          request_body = request_params.merge!(partner_id: partner_id).to_json
+          request_body = request_params
           headers = { 'Content-Type' => 'application/json' }
 
-          expect(Typhoeus).to receive(:post).with(url,
-                                                  { body: request_body,
-                                                    headers: headers }).and_return(typhoeus_response)
+          VCR.use_cassette('webapi_verification_web_token') do |cassette|
+            current_time = cassette.originally_recorded_at || Time.now
+            Timecop.freeze(current_time) do
+              request_body.merge!(SmileIdentityCore::Signature.new(partner_id,
+                                                                   api_key).generate_signature(Time.now.to_s))
+                          .merge!(
+                            { partner_id: partner_id,
+                              source_sdk: SmileIdentityCore::SOURCE_SDK,
+                              source_sdk_version: SmileIdentityCore::VERSION }
+                          )
 
-          connection.get_web_token(request_params)
+              expect(Typhoeus).to receive(:post).with(url,
+                                                      { body: request_body.to_json,
+                                                        headers: headers}).and_return(typhoeus_response)
+              connection.get_web_token(request_params)
+            end
+          end
         end
 
         it 'returns a token' do
-          expect(connection.get_web_token(request_params)).to eq({ token: 'xxx' })
+          VCR.use_cassette('webapi_verification_web_token') do
+            connection.instance_variable_set(:@partner_id, partner_id)
+            token_response = connection.get_web_token(request_params)
+            parsed_reponse = JSON.parse(token_response)
+            expect(parsed_reponse['success']).to be_truthy
+          end
         end
       end
 
@@ -839,7 +821,9 @@ RSpec.describe SmileIdentityCore::WebApi do
         let(:response_code) { 522 }
 
         it 'raises a RuntimeError' do
-          expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
+          VCR.use_cassette('webapi_verification_web_token_error') do
+            expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)
+          end
         end
       end
 
@@ -847,7 +831,9 @@ RSpec.describe SmileIdentityCore::WebApi do
         let(:response_code) { 0 }
 
         it 'raises a RuntimeError' do
-          expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
+          VCR.use_cassette('webapi_verification_web_token_error') do
+            expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)
+          end
         end
       end
 
@@ -855,7 +841,9 @@ RSpec.describe SmileIdentityCore::WebApi do
         let(:response_code) { 400 }
 
         it 'raises a RuntimeError' do
-          expect { connection.get_web_token(request_params) }.to raise_error(RuntimeError)
+          VCR.use_cassette('webapi_verification_web_token_error') do
+            expect { connection.get_web_token(request_params.merge(product: '123')) }.to raise_error(RuntimeError)
+          end
         end
       end
     end

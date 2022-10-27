@@ -13,3 +13,4 @@
 .rspec_status
 .DS_Store
 spec/.DS_Store
+spec/fixtures/mock_response

@@ -2,9 +2,18 @@
 
 require 'bundler/setup'
 require 'simplecov'
+require 'vcr'
+require 'timecop'
+require 'securerandom'
 
 SimpleCov.start do
   add_filter '/spec/'
+end
+
+VCR.configure do |config|
+  config.cassette_library_dir = "spec/fixtures/mock_response"
+  config.hook_into :typhoeus
+  config.allow_http_connections_when_no_cassette = true
 end
 
 require 'smile-identity-core'
