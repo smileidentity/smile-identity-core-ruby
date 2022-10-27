@@ -181,7 +181,7 @@ class SmartBank
   def job_options
     {
       return_job_status: true, # Set to true if you want to get the job result in sync (in addition to the result been sent to your callback). If set to false, result is sent to callback url only.
-      return_history: false, # Set to true to return results of all jobs you have ran for the user in addition to current job result. You must set return_job_status to true to use this flag.
+      return_history: false, # Set to true to receive all of the updates you would otherwise have received in your callback as opposed to only the final result. You must set return_job_status to true to use this flag.
       return_image_links: true, # Set to true to receive links to the selfie and the photo it was compared to. You must set return_job_status to true to use this flag.
       signature: true
     }
