@@ -2,7 +2,6 @@
 
 module SmileIdentityCore
   class IDApi
-
     def initialize(partner_id, api_key, sid_server)
       @partner_id = partner_id.to_s
       @api_key = api_key
