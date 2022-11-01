@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Format codebase using rubocop.
 - Add support for ruby 3.1
 - Drop support for ruby 2.5.1
+- Add "examples" folder
 
 ## [2.0.0] - 2022-04-28
 
