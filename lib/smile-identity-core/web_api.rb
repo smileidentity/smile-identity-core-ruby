@@ -245,7 +245,7 @@ module SmileIdentityCore
           "apiVersion": {
             "buildNumber": 0,
             "majorVersion": 2,
-            "minorVersion": 1
+            "minorVersion": 0
           },
           "language": 'ruby'
         },
