@@ -5,12 +5,13 @@ RSpec.describe SmileIdentityCore::WebApi do
   let(:default_callback) { 'www.default_callback.com' }
   let(:api_key) { ENV.fetch('SMILE_API_KEY') }
   let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
-  let(:connection) { SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key, sid_server) }
-  let(:existing_job_id) { ENV.fetch('SMILE_PROCESSED_JOB_ID', '52e7cd72a1ee4e0e1094') } 
+  let(:connection) { described_class.new(partner_id, default_callback, api_key, sid_server) }
+  let(:existing_job_id) { ENV.fetch('SMILE_PROCESSED_JOB_ID', '52e7cd72a1ee4e0e1094') }
+  let(:existing_user_id) { ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo') }
 
   let(:partner_params) do
     {
-      user_id: ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo'),
+      user_id: SecureRandom.uuid,
       job_id: SecureRandom.hex(10),
       job_type: 1
     }
@@ -64,17 +65,6 @@ RSpec.describe SmileIdentityCore::WebApi do
     }
   end
 
-  let(:options_with_job_status_true) do
-    {
-      optional_callback: 'wwww.optional_callback.com',
-      return_job_status: true,
-      return_image_links: false,
-      return_history: false
-    }
-  end
-
-  let(:timestamp) { Time.now.to_i }
-
   it 'has a version number' do
     expect(SmileIdentityCore::VERSION).not_to be nil
   end
@@ -103,7 +93,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#submit_job' do
-      context 'for validation' do
+      context 'with validation' do
         it 'validates the partner_params' do
           no_partner_parameters = nil
           array_partner_params = []
@@ -208,7 +198,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe '#validate_return_data' do
       it 'validates that data is returned via the callback or job_status' do
         connection.instance_variable_set('@callback_url', '')
-        connection.instance_variable_set('@options', options_with_job_status_true)
+        connection.instance_variable_set('@options', options.merge(return_job_status: true))
         expect { connection.send(:validate_return_data) }.not_to raise_error
 
         connection.instance_variable_set('@options', options)
@@ -216,7 +206,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           .to raise_error(ArgumentError,
                           'Please choose to either get your response via the callback or job status query')
 
-        connection.instance_variable_set('@options', options_with_job_status_true)
+        connection.instance_variable_set('@options', options.merge(return_job_status: true))
         connection.instance_variable_set('@callback_url', default_callback)
         expect { connection.send(:validate_return_data) }.not_to raise_error
       end
@@ -389,7 +379,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           expect(connection.send(:configure_info_json,
                                  'the server information url')[:package_information][:apiVersion][:majorVersion]).to be(2)
           expect(connection.send(:configure_info_json,
-                                 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(1)
+                                 'the server information url')[:package_information][:apiVersion][:minorVersion]).to be(0)
         end
       end
 
@@ -588,7 +578,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:info_json) { {} }
       let(:smile_job_id) { '0000000583' }
 
-      context 'if successful' do
+      context 'when successful' do
         before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
@@ -601,11 +591,11 @@ RSpec.describe SmileIdentityCore::WebApi do
 
           connection.instance_variable_set('@options', options)
           expect(connection.send(:upload_file, url, info_json, smile_job_id))
-            .to eq({ success: true, smile_job_id: smile_job_id}.to_json)
+            .to eq({ success: true, smile_job_id: smile_job_id }.to_json)
         end
       end
 
-      context 'if unsuccessful' do
+      context 'when unsuccessful' do
         before do
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
@@ -638,9 +628,9 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#query_job_status' do
       let(:url) { 'https://some_server.com/dev01' }
-      
+
       before do
-        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id))
+        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id, user_id: existing_user_id))
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
@@ -688,16 +678,10 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#get_job_status' do
       let(:url) { 'https://some_server.com/dev01' }
-      let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
-      # let (:api_key) { 'API_KEY' }
-      # let(:timestamp) { Time.now.to_i }
 
       before do
-        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id))
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
-        connection.instance_variable_set('@api_key', api_key)
-        connection.instance_variable_set('@partner_id', partner_id)
         connection.instance_variable_set('@utilies_connection',
                                          SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
       end
@@ -706,7 +690,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         VCR.use_cassette('web_verification_get_job_status') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
-            response = connection.send(:get_job_status, partner_params.merge(job_id: existing_job_id), options)
+            response = connection.send(:get_job_status, partner_params.merge(job_id: existing_job_id, user_id: existing_user_id), options)
 
             expect(response['code']).to eq('2302')
           end
@@ -810,7 +794,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         it 'returns a token' do
           VCR.use_cassette('webapi_verification_web_token') do
             connection.instance_variable_set(:@partner_id, partner_id)
-            token_response = connection.get_web_token(request_params)
+            token_response = connection.get_web_token(request_params.merge(user_id: existing_user_id))
             parsed_reponse = JSON.parse(token_response)
             expect(parsed_reponse['success']).to be_truthy
           end
