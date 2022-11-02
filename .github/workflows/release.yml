@@ -2,7 +2,7 @@ name: Publish to RubyGems
 on:
   push:
     tags:
-      - ^[0-9]+.[0-9]+.[0-9]+* # should only run when the tags matches sematic versioning
+      - v[0-9]+.[0-9]+.[0-9]+* # should only run when the tags matches sematic versioning
 jobs:
   test:
     uses: ./.github/workflows/test.yml
@@ -11,17 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1
-        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - name: Publish
-      run: |
-        mkdir -p $HOME/.gem
-        touch $HOME/.gem/credentials
-        chmod 0600 $HOME/.gem/credentials
-        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-        gem build *.gemspec
-        gem push *.gem
+    - name: Release Gem
+      uses: discourse/publish-rubygems-action@v2
       env:
-        GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
+        RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
