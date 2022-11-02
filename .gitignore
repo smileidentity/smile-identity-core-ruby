@@ -8,8 +8,8 @@
 /tmp/
 /*.gem
 /.idea/
+.env
 
 # rspec failure tracking
 .rspec_status
 .DS_Store
-spec/.DS_Store
