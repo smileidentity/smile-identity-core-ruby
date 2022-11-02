@@ -7,7 +7,7 @@ require 'smile-identity-core/signature'
 require 'smile-identity-core/utilities'
 require 'smile-identity-core/constants/image_type'
 require 'smile-identity-core/constants/job_type'
-require 'smile-identity-core/constants/server_mapping'
+require 'smile-identity-core/constants/env'
 
 module SmileIdentityCore
   class Error < StandardError; end

@@ -18,7 +18,7 @@ module SmileIdentityCore
 
       @sid_server = sid_server
       if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        @url = SmileIdentityCore::SID_SERVER_MAPPING[sid_server.to_s]
+        @url = SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
       else
         @url = sid_server
       end

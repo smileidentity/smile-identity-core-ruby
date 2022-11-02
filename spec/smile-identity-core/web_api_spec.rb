@@ -4,7 +4,7 @@ RSpec.describe SmileIdentityCore::WebApi do
   let(:partner_id) { '001' }
   let(:default_callback) { 'www.default_callback.com' }
   let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
-  let(:sid_server) { SmileIdentityCore::TEST }
+  let(:sid_server) { SmileIdentityCore::ENV::TEST }
 
   let(:connection) { described_class.new(partner_id, default_callback, api_key, sid_server) }
 
