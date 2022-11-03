@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for ruby 3.1
 - Drop support for ruby 2.5.1
 - Add "examples" folder
+- Add helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::IMAGE_TYPE, SMILE_IDENTITY_CORE::JOB_TYPE
+
 
 ## [2.0.0] - 2022-04-28
 
