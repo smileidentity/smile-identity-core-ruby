@@ -10,7 +10,7 @@ RSpec.describe SmileIdentityCore::IDApi do
     {
       user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
       job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
-      job_type: 5
+      job_type: SmileIdentityCore::JOB_TYPE::BASIC_KYC
     }
   end
 
