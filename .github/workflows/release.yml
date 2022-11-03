@@ -1,0 +1,17 @@
+name: Publish to RubyGems
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+* # should only run when the tags matches sematic versioning
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Release Gem
+      uses: discourse/publish-rubygems-action@v2
+      env:
+        RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
