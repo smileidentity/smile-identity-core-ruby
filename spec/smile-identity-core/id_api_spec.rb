@@ -10,7 +10,7 @@ RSpec.describe SmileIdentityCore::IDApi do
     {
       user_id: ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo'),
       job_id: ENV.fetch('SMILE_JOB_ID', SecureRandom.hex(10)),
-      job_type: 5
+      job_type: SmileIdentityCore::JOB_TYPE::BASIC_KYC
     }
   end
 

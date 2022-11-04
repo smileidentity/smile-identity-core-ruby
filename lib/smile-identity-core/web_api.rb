@@ -18,11 +18,7 @@ module SmileIdentityCore
 
       @sid_server = sid_server
       if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        sid_server_mapping = {
-          0 => 'https://testapi.smileidentity.com/v1',
-          1 => 'https://api.smileidentity.com/v1'
-        }
-        @url = sid_server_mapping[sid_server.to_i]
+        @url = SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
       else
         @url = sid_server
       end
