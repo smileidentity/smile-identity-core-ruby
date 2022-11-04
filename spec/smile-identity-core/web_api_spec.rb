@@ -6,13 +6,11 @@ RSpec.describe SmileIdentityCore::WebApi do
   let(:api_key) { ENV.fetch('SMILE_API_KEY') }
   let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
   let(:connection) { described_class.new(partner_id, default_callback, api_key, sid_server) }
-  let(:existing_job_id) { ENV.fetch('SMILE_PROCESSED_JOB_ID', '52e7cd72a1ee4e0e1094') }
-  let(:existing_user_id) { ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo') }
 
   let(:partner_params) do
     {
       user_id: SecureRandom.uuid,
-      job_id: SecureRandom.hex(10),
+      job_id: SecureRandom.uuid,
       job_type: 1
     }
   end
@@ -627,12 +625,9 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#query_job_status' do
-      let(:url) { 'https://some_server.com/dev01' }
-
       before do
-        connection.instance_variable_set('@partner_params', partner_params.merge(job_id: existing_job_id, user_id: existing_user_id))
-        connection.instance_variable_set('@url', url)
-        connection.instance_variable_set('@options', options)
+        connection.instance_variable_set('@partner_params', partner_params)
+        connection.instance_variable_set('@options', options.merge(optional_callback: 'https://zombo.com'))
         connection.instance_variable_set('@api_key', api_key)
         connection.instance_variable_set('@partner_id', partner_id)
         connection.instance_variable_set('@utilies_connection',
@@ -648,18 +643,32 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the response if job_complete is true' do
+        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
+        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+
+       # we create a job request first before querying for status 
+        VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
+          connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
+        end
+        
         VCR.use_cassette('web_verification_get_job') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
             response = connection.send(:query_job_status)
-
             expect(response['code']).to eq('2302')
-            expect(Time.parse(response['timestamp'])).to be_within(10).of current_time
           end
         end
       end
 
       it 'returns the response if the counter is 20' do
+        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
+        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+
+       # we create a job request first before querying for status 
+        VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
+          connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
+        end
+        
         VCR.use_cassette('web_verification_get_job') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
@@ -677,20 +686,30 @@ RSpec.describe SmileIdentityCore::WebApi do
     end
 
     describe '#get_job_status' do
-      let(:url) { 'https://some_server.com/dev01' }
 
       before do
-        connection.instance_variable_set('@url', url)
-        connection.instance_variable_set('@options', options)
+        connection.instance_variable_set('@partner_params', partner_params)
+        connection.instance_variable_set('@options', options.merge(optional_callback: 'https://zombo.com'))
+        connection.instance_variable_set('@api_key', api_key)
+        connection.instance_variable_set('@partner_id', partner_id)
         connection.instance_variable_set('@utilies_connection',
                                          SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
       end
 
       it 'returns the response for job status' do
+        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
+        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+
+       # we create a job request first before querying for status 
+        VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
+          connection.submit_job(partner_params, images, id_info \
+            ,options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
+        end
+        
         VCR.use_cassette('web_verification_get_job_status') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
-            response = connection.send(:get_job_status, partner_params.merge(job_id: existing_job_id, user_id: existing_user_id), options)
+            response = connection.send(:get_job_status, partner_params, options)
 
             expect(response['code']).to eq('2302')
           end
@@ -794,7 +813,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         it 'returns a token' do
           VCR.use_cassette('webapi_verification_web_token') do
             connection.instance_variable_set(:@partner_id, partner_id)
-            token_response = connection.get_web_token(request_params.merge(user_id: existing_user_id))
+            token_response = connection.get_web_token(request_params)
             parsed_reponse = JSON.parse(token_response)
             expect(parsed_reponse['success']).to be_truthy
           end
