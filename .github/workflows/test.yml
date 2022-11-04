@@ -27,8 +27,6 @@ jobs:
         SMILE_PARTNER_ID: ${{ secrets.SMILE_PARTNER_ID }}
         SMILE_API_KEY:  ${{ secrets.SMILE_API_KEY }}
         SMILE_SERVER_ENVIRONMENT:  ${{ secrets.SMILE_SERVER_ENVIRONMENT }}
-        SMILE_PROCESSED_JOB_ID: ${{ secrets.SMILE_PROCESSED_JOB_ID }}
-        SMILE_USER_ID: ${{ secrets.SMILE_USER_ID }}
 
   lint:
     runs-on: ubuntu-latest
