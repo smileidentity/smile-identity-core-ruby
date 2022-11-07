@@ -2,15 +2,15 @@
 
 RSpec.describe SmileIdentityCore::IDApi do
   let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
-  let(:api_key) { ENV.fetch('SMILE_API_KEY', Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem)) }
+  let(:api_key) { ENV.fetch('SMILE_API_KEY') }
   let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
   let(:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server) }
 
   let(:partner_params) do
     {
-      user_id: ENV.fetch('SMILE_USER_ID', 'dmKaJazQCziLc6Tw9lwcgzLo'),
-      job_id: ENV.fetch('SMILE_JOB_ID', SecureRandom.hex(10)),
-      job_type: SmileIdentityCore::JOB_TYPE::BASIC_KYC
+      user_id: SecureRandom.uuid,
+      job_id: SecureRandom.uuid,
+      job_type: SmileIdentityCore::JOB_TYPE::ENHANCED_KYC
     }
   end
 
@@ -92,7 +92,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       it 'returns a correct json object if it runs successfully' do
         parsed_response = {}
         # Make real request for the first time, we then use a saved version for extra requests
-        VCR.use_cassette('id_verification') do
+        VCR.use_cassette('id_verification', :record => :new_episodes, :match_requests_on => [:body]) do
           setup_response = connection.submit_job(partner_params, id_info, { signature: true })
           parsed_response = JSON.parse(setup_response)
         end
