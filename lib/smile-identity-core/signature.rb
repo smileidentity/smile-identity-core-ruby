@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
+  # Contains handy methods to generate and confirm signature for authentication
   class Signature
     def initialize(partner_id, api_key)
       @api_key = api_key

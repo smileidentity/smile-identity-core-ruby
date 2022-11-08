@@ -31,7 +31,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       # NB: testing by mocking what's passed to #query_job_status isn't ideal, because it makes
       # it harder to refactor the class' internals, but it'll have to do for now.
 
-      expect(connection).to receive(:query_job_status).with(
+      allow(connection).to receive(:query_job_status).with(
         user_id: user_id,
         job_id: job_id,
         partner_id: partner_id.to_s, # NB the .to_s
@@ -51,18 +51,20 @@ RSpec.describe SmileIdentityCore::Utilities do
     end
 
     context 'when options are missing' do
-      it 'defaults them' do
-        expect(connection).to receive(:query_job_status).with(hash_including(history: false, image_links: false))
+      it 'sets default options when nothing is passed' do
+        allow(connection).to receive(:query_job_status).with(hash_including(history: false, image_links: false))
         connection.get_job_status(user_id, job_id)
+      end
 
-        expect(connection).to receive(:query_job_status).with(hash_including(history: false, image_links: false))
+      it 'sets default options when empty hash is passed' do
+        allow(connection).to receive(:query_job_status).with(hash_including(history: false, image_links: false))
         connection.get_job_status(user_id, job_id, {})
       end
     end
 
     context 'when options are provided as strings' do
       it 'symbolizes them' do
-        expect(connection).to receive(:query_job_status).with(
+        allow(connection).to receive(:query_job_status).with(
           hash_including(history: return_history, image_links: return_image_links)
         )
         connection.get_job_status(

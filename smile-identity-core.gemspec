@@ -10,10 +10,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Smile Identity']
   spec.email         = ['support@smileidentity.com']
 
-  spec.summary       = 'The Smile Identity Web API allows the user to access most of the features of the Smile Identity system through direct server to server queries.'
+  spec.summary       = 'The Smile Identity Web API allows the user to access\
+  most of the features of the Smile Identity system through direct server to server queries.'
   spec.description   = 'The Official Smile Identity gem'
   spec.homepage      = 'https://www.smileidentity.com/'
-  spec.required_ruby_version = '>= 2.0'
+  spec.required_ruby_version = '>= 2.5'
   spec.license = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage
