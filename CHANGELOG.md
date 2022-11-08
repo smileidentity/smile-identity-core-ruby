@@ -5,17 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## [2.0.0] - 2022-04-28
-- Migrate from travis to github actions.
-- Format codebase using rubocop.
-- Add support for ruby 3.1
-- Drop support for ruby 2.5.1
-- Add "examples" folder
-- Add helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::IMAGE_TYPE, SMILE_IDENTITY_CORE::JOB_TYPE
-- Added source and version number to all requests
-- Fixed verifications with sec_key failing
- Enforced the use of signature on all API calls
-- Removed the use of sec key on all API calls
+## [2.0.0] - 2022-11-08
+- build: Adds support for ruby 3.1
+- build: Drops support for ruby 2.5.1
+- ci: Move from TravisCI to Github Actions
+- core: Enforces the use of signature on all API calls
+- core: Removes support for `sec_key` as an authentication method
+- core: Adds helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::IMAGE_TYPE, SMILE_IDENTITY_CORE::JOB_TYPE
+- docs: adds "examples" folder
   
 ## [1.2.1]
 - Revert changes to version SmileIdentityCore.version_as_hash
