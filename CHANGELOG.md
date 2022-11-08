@@ -5,25 +5,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+## [2.0.0] - 2022-04-28
 - Migrate from travis to github actions.
 - Format codebase using rubocop.
 - Add support for ruby 3.1
 - Drop support for ruby 2.5.1
 - Add "examples" folder
 - Add helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::IMAGE_TYPE, SMILE_IDENTITY_CORE::JOB_TYPE
+- Added source and version number to all requests
+- Fixed verifications with sec_key failing
+ Enforced the use of signature on all API calls
+- Removed the use of sec key on all API calls
+  
+## [1.2.1]
+- Revert changes to version SmileIdentityCore.version_as_hash
 
+## [1.2.0] 
+- Change the urls for both test and prod aa55a72d10854f05a35db4dad3ea63930e8996f6
+- Add Signature option for signing requests
 
-## [2.0.0] - 2022-04-28
-
-### Added
-* Added source and version number to all requests
-
-### Changed
-* Enforced the use of signature on all API calls
-
-### Deprecated
-* Removed the use of sec key on all API calls
+## [1.1.0]
+Set version information from SmileIdentityCore.version_as_hash
 
 ## [1.0.2] - 2020-01-16
 Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too
