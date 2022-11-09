@@ -19,11 +19,11 @@ RSpec.describe SmileIdentityCore::WebApi do
     [
       {
         image_type_id: SmileIdentityCore::IMAGE_TYPE::SELFIE_IMAGE_FILE,
-        image: './tmp/selfie.png'
+        image: File.new('./spec/fixtures/selfie.jpg')
       },
       {
         image_type_id: SmileIdentityCore::IMAGE_TYPE::ID_CARD_IMAGE_FILE,
-        image: './tmp/id_image.png'
+        image: File.new('./spec/fixtures/id_image.jpg')
       }
     ]
   end
@@ -32,7 +32,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     [
       {
         image_type_id: SmileIdentityCore::IMAGE_TYPE::SELFIE_IMAGE_FILE,
-        image: './tmp/selfie.png'
+        image: File.new('./spec/fixtures/selfie.jpg')
       },
       {
         image_type_id: SmileIdentityCore::IMAGE_TYPE::ID_CARD_BACK_IMAGE_BASE64,
@@ -47,8 +47,8 @@ RSpec.describe SmileIdentityCore::WebApi do
       first_name: 'John',
       last_name: 'Doe',
       middle_name: '',
-      country: 'NG',
-      id_type: 'BVN',
+      country: 'GH',
+      id_type: 'DRIVERS_LICENSE',
       id_number: '00000000000',
       entered: 'true'
     }
@@ -118,7 +118,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           just_id_image = [
             {
               image_type_id: SmileIdentityCore::IMAGE_TYPE::ID_CARD_BACK_IMAGE_FILE,
-              image_path: './tmp/id_image.png'
+              image_path: './tmp/id_image.jpg'
             }
           ]
 
@@ -168,8 +168,8 @@ RSpec.describe SmileIdentityCore::WebApi do
 
         # Set everything up:
 
-        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+        # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+        # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
 
         # Test the preconditions! `default_callback` is what `connection` was instantiated with.
         expect(connection.instance_variable_get(:@callback_url)).to eq(default_callback)
@@ -303,14 +303,14 @@ RSpec.describe SmileIdentityCore::WebApi do
       # all the methods called in setup requests are already being tested individually
 
       it 'returns a json object if it runs successfully' do
-        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+        # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+        # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
 
         connection.instance_variable_set('@images', images)
         connection.instance_variable_set('@options', options)
 
         parsed_response = {}
-        VCR.use_cassette('webapi_verification') do
+        VCR.use_cassette('webapi_verification', preserve_exact_body_bytes: true) do
           setup_response = connection.send(:setup_requests)
           parsed_response = JSON.parse(setup_response)
         end
@@ -442,8 +442,8 @@ RSpec.describe SmileIdentityCore::WebApi do
 
     describe '#zip_up_file' do
       before do
-        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+        # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+        # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
         connection.instance_variable_set('@images', images)
       end
 
@@ -506,15 +506,15 @@ RSpec.describe SmileIdentityCore::WebApi do
           zip_up_file.rewind
           file = zip_up_file.read
           expect(file).to include('info.json')
-          expect(file).to include('selfie.png')
-          expect(file).to include('id_image.png')
+          expect(file).to include('selfie.jpg')
+          expect(file).to include('id_image.jpg')
         end
       end
 
       context 'with a combination of physical and base 64 files' do
         before do
-          allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-          allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+          # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+          # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
           connection.instance_variable_set('@images', images_v2)
         end
 
@@ -565,8 +565,8 @@ RSpec.describe SmileIdentityCore::WebApi do
           zip_up_file.rewind
           file = zip_up_file.read
           expect(file).to include('info.json')
-          expect(file).to include('selfie.png')
-          expect(file).not_to include('id_image.png')
+          expect(file).to include('selfie.jpg')
+          expect(file).not_to include('id_image.jpg')
         end
       end
     end
@@ -578,8 +578,8 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when successful' do
         before do
-          allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-          allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+          # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+          # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
           connection.instance_variable_set('@images', images)
         end
 
@@ -595,8 +595,8 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       context 'when unsuccessful' do
         before do
-          allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-          allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+          # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+          # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
           connection.instance_variable_set('@options', options)
           connection.instance_variable_set('@images', images)
         end
@@ -643,15 +643,15 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the response if job_complete is true' do
-        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+        # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+        # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
 
        # we create a job request first before querying for status 
-        VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
+        VCR.use_cassette('webapi_verification_with_job_complete', preserve_exact_body_bytes: true) do
           connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
         end
         
-        VCR.use_cassette('web_verification_get_job') do |cassette|
+        VCR.use_cassette('webapi_query_job_status_job_complete') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
             response = connection.send(:query_job_status)
@@ -661,15 +661,15 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the response if the counter is 20' do
-        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+        # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+        # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
 
        # we create a job request first before querying for status 
-        VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
+        VCR.use_cassette('webapi_verification_with_counter', preserve_exact_body_bytes: true) do
           connection.submit_job(partner_params, images, id_info, options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
         end
         
-        VCR.use_cassette('web_verification_get_job') do |cassette|
+        VCR.use_cassette('webapi_query_job_status_with_counter') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
             response = connection.send(:query_job_status, 19)
@@ -697,16 +697,16 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the response for job status' do
-        allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
-        allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+        # allow(IO).to receive(:read).with('./spec/fixtures/selfie.jpg').and_return('')
+        # allow(IO).to receive(:read).with('./tmp/id_image.jpg').and_return('')
 
        # we create a job request first before querying for status 
-        VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
-          connection.submit_job(partner_params, images, id_info \
-            ,options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
+       VCR.use_cassette('webapi_verification_with_return_job_status', preserve_exact_body_bytes: true) do
+          connection.submit_job(partner_params, images, id_info\
+            , options.merge(optional_callback: 'https://zombo.com', return_job_status: true))
         end
-        
-        VCR.use_cassette('web_verification_get_job_status') do |cassette|
+
+        VCR.use_cassette('webapi_verification_get_job_status') do |cassette|
           current_time = cassette.originally_recorded_at || Time.now
           Timecop.freeze(current_time) do
             response = connection.send(:get_job_status, partner_params, options)

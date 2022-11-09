@@ -19,8 +19,8 @@ RSpec.describe SmileIdentityCore::IDApi do
       first_name: 'John',
       last_name: 'Doe',
       middle_name: '',
-      country: 'NG',
-      id_type: 'BVN',
+      country: 'GH',
+      id_type: 'DRIVERS_LICENSE',
       id_number: '00000000000',
       phone_number: '0726789065',
       entered: 'true'
