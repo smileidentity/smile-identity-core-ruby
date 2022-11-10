@@ -19,7 +19,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     [
       {
         image_type_id: SmileIdentityCore::IMAGE_TYPE::SELFIE_IMAGE_FILE,
-        image: File.new('./spec/fixtures/selfie.jpg')
+        image: File.new('spec/fixtures/selfie.jpg')
       },
       {
         image_type_id: SmileIdentityCore::IMAGE_TYPE::ID_CARD_IMAGE_FILE,
