@@ -47,8 +47,8 @@ RSpec.describe SmileIdentityCore::WebApi do
       first_name: 'John',
       last_name: 'Doe',
       middle_name: '',
-      country: 'GH',
-      id_type: 'DRIVERS_LICENSE',
+      country: 'NG',
+      id_type: 'BVN',
       id_number: '00000000000',
       entered: 'true'
     }
