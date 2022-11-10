@@ -9,6 +9,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+        SMILE_PARTNER_ID: ${{ secrets.SMILE_PARTNER_ID }}
+        SMILE_API_KEY:  ${{ secrets.SMILE_API_KEY }}
+        SMILE_SERVER_ENVIRONMENT:  ${{ secrets.SMILE_SERVER_ENVIRONMENT }}
     strategy:
       fail-fast: false
       matrix:
@@ -22,10 +26,6 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Set environment and run test
-      env:
-        SMILE_PARTNER_ID: ${{ secrets.SMILE_PARTNER_ID }}
-        SMILE_API_KEY:  ${{ secrets.SMILE_API_KEY }}
-        SMILE_SERVER_ENVIRONMENT:  ${{ secrets.SMILE_SERVER_ENVIRONMENT }}
       run: bundle exec rake
 
   lint:
