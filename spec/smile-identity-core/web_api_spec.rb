@@ -441,7 +441,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             apiVersion: {
               buildNumber: 0,
               majorVersion: 2,
-              minorVersion: 1
+              minorVersion: 0
             }
           },
           misc_information: {
@@ -510,7 +510,7 @@ RSpec.describe SmileIdentityCore::WebApi do
               apiVersion: {
                 buildNumber: 0,
                 majorVersion: 2,
-                minorVersion: 1
+                minorVersion: 0
               }
             },
             misc_information: {
