@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
-  module IMAGE_TYPE
+  module ImageType
     SELFIE_IMAGE_FILE = 0
     ID_CARD_IMAGE_FILE = 1
     SELFIE_IMAGE_BASE64 = 2

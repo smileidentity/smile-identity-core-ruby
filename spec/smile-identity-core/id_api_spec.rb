@@ -10,7 +10,7 @@ RSpec.describe SmileIdentityCore::IDApi do
     {
       user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
       job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
-      job_type: SmileIdentityCore::JOB_TYPE::BASIC_KYC
+      job_type: SmileIdentityCore::JobType::BASIC_KYC
     }
   end
 
@@ -27,7 +27,7 @@ RSpec.describe SmileIdentityCore::IDApi do
     }
   end
 
-  context 'ensure that the public methods behave correctly' do
+  context 'when the public methods behave correctly' do
     describe '#initialize' do
       it 'sets the partner_id, api_key, and sid_server instance variables' do
         expect(connection.instance_variable_get(:@partner_id)).to eq(partner_id)
@@ -43,21 +43,26 @@ RSpec.describe SmileIdentityCore::IDApi do
     end
 
     describe '#submit_job' do
-      it 'validates the partner_params' do
+      it 'validates the partner_params when nil' do
         no_partner_parameters = nil
+
+        expect { connection.submit_job(no_partner_parameters, id_info) }
+          .to raise_error(ArgumentError, 'Please ensure that you send through partner params')
+      end
+
+      it 'validates the partner_params empty array passed' do
         array_partner_params = []
+
+        expect { connection.submit_job(array_partner_params, id_info) }
+          .to raise_error(ArgumentError, 'Partner params needs to be a hash')
+      end
+
+      it 'validates the partner_params job_type is nil' do
         missing_partner_params = {
           user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
           job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
           job_type: nil
         }
-
-        expect { connection.submit_job(no_partner_parameters, id_info) }
-          .to raise_error(ArgumentError, 'Please ensure that you send through partner params')
-
-        expect { connection.submit_job(array_partner_params, id_info) }
-          .to raise_error(ArgumentError, 'Partner params needs to be a hash')
-
         expect { connection.submit_job(missing_partner_params, id_info) }
           .to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
       end
@@ -87,7 +92,7 @@ RSpec.describe SmileIdentityCore::IDApi do
     end
   end
 
-  context 'ensure that the private methods behave correctly' do
+  context 'when the private methods behave correctly' do
     describe '#setup_requests' do
       let(:url) { 'https://www.example.com' }
 
@@ -120,7 +125,9 @@ RSpec.describe SmileIdentityCore::IDApi do
           "FullName": 'some  person',
           "DOB": 'NaN-NaN-NaN',
           "Photo": 'Not Available',
-          "sec_key": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZli8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba',
+          "sec_key": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZl\
+          i8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2\
+          ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba',
           "timestamp": 1_570_612_182_124
         }.to_json
 
@@ -139,7 +146,9 @@ RSpec.describe SmileIdentityCore::IDApi do
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
         expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType
-                                                                  ResultText ResultCode IsFinalResult Actions Country IDType IDNumber ExpirationDate FullName DOB Photo sec_key timestamp])
+                                                                  ResultText ResultCode IsFinalResult Actions Country
+                                                                  IDType IDNumber ExpirationDate FullName DOB Photo
+                                                                  sec_key timestamp])
       end
     end
 
