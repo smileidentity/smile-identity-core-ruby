@@ -5,23 +5,22 @@ require 'tempfile'
 require 'base64'
 require 'openssl'
 require 'uri'
-
 require 'typhoeus'
 require 'zip'
 
 module SmileIdentityCore
+  # Allows Identity verifications of ids with images
   class WebApi
     def initialize(partner_id, default_callback, api_key, sid_server)
       @partner_id = partner_id.to_s
       @callback_url = default_callback
       @api_key = api_key
-
       @sid_server = sid_server
-      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        @url = SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
-      else
-        @url = sid_server
-      end
+      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
+             else
+               sid_server
+             end
     end
 
     def submit_job(partner_params, images, id_info, options)
@@ -60,11 +59,10 @@ module SmileIdentityCore
       raise ArgumentError, 'Partner params needs to be a hash' unless partner_params.is_a?(Hash)
 
       %i[user_id job_id job_type].each do |key|
-        next if partner_params[key] && !partner_params[key].nil? && !(if partner_params[key].is_a?(String)
-                                                                        partner_params[key].empty?
-                                                                      end)
-
-        raise ArgumentError, "Please make sure that #{key} is included in the partner params"
+        if partner_params[key].to_s.empty?
+          raise ArgumentError,
+                "Please make sure that #{key} is included in the partner params"
+        end
       end
 
       @partner_params = partner_params
@@ -84,9 +82,7 @@ module SmileIdentityCore
     end
 
     def id_info=(id_info)
-      updated_id_info = id_info
-
-      updated_id_info = {} if updated_id_info.nil?
+      updated_id_info = id_info.nil? ? {} : id_info
 
       # if it doesnt exist, set it false
       updated_id_info[:entered] = 'false' if !updated_id_info.key?(:entered) || id_info[:entered].empty?
@@ -96,9 +92,7 @@ module SmileIdentityCore
 
       if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
         %i[country id_type id_number].each do |key|
-          unless id_info[key] && !id_info[key].nil? && !id_info[key].empty?
-            raise ArgumentError, "Please make sure that #{key} is included in the id_info"
-          end
+            raise ArgumentError, "Please make sure that #{key} is included in the id_info" if id_info[key].to_s.empty?
         end
       end
 
@@ -141,10 +135,9 @@ module SmileIdentityCore
             source_sdk: SmileIdentityCore::SOURCE_SDK,
             source_sdk_version: SmileIdentityCore::VERSION }
         )
-      url = "#{@url}/token"
 
-      response = Typhoeus.post(
-        url,
+        response = Typhoeus.post(
+        "#{@url}/token",
         headers: { 'Content-Type' => 'application/json' },
         body: request_params.to_json
       )
@@ -249,7 +242,8 @@ module SmileIdentityCore
           },
           "language": 'ruby'
         },
-        "misc_information": SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s)
+        "misc_information": SmileIdentityCore::Signature.new(@partner_id, @api_key)
+                                                        .generate_signature(Time.now.to_s)
                                                         .merge(
                                                           "retry": 'false',
                                                           "partner_params": @partner_params,
@@ -326,18 +320,15 @@ module SmileIdentityCore
       )
 
       request.on_complete do |response|
-        if response.success?
-          if @options[:return_job_status]
-            @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
-            job_response = query_job_status
-            job_response['success'] = true
-            job_response['smile_job_id'] = smile_job_id
-            return job_response
-          else
-            return { success: true, smile_job_id: smile_job_id }.to_json
-          end
-        end
-        raise " #{response.code}: #{response.body}"
+        raise " #{response.code}: #{response.body}" unless response.success?
+
+        return { success: true, smile_job_id: smile_job_id }.to_json unless @options[:return_job_status]
+
+        @utilies_connection = SmileIdentityCore::Utilities.new(@partner_id, @api_key, @sid_server)
+        job_response = query_job_status
+        job_response['success'] = true
+        job_response['smile_job_id'] = smile_job_id
+        return job_response
       end
       request.run
     end

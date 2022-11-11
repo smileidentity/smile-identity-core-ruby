@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
-  module JOB_TYPE
+  module JobType
     BIOMETRIC_KYC = 1
     SMART_SELFIE_REGISTRATION = 2
     SMART_SELFIE_AUTHENTICATION = 4

@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
+  # A utility class to query job status
   class Utilities
     def initialize(partner_id, api_key, sid_server)
       @partner_id = partner_id.to_s
       @api_key = api_key
 
-      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        @url = SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
-      else
-        @url = sid_server
-      end
+      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
+             else
+               sid_server
+             end
 
       @signature_connection = SmileIdentityCore::Signature.new(@partner_id, @api_key)
     end
@@ -31,10 +32,8 @@ module SmileIdentityCore
     end
 
     def query_job_status(request_json_data)
-      url = "#{@url}/job_status"
-
       request = Typhoeus::Request.new(
-        url,
+        "#{@url}/job_status",
         headers: { 'Content-Type' => 'application/json', 'Accept' => 'application/json' },
         method: :post,
         body: request_json_data.to_json

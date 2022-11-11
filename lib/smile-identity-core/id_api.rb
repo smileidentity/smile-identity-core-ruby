@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
+  # Allows you to query the Identity Information for an individual using their ID number
   class IDApi
     def initialize(partner_id, api_key, sid_server)
       @partner_id = partner_id.to_s
       @api_key = api_key
 
-      if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-        @url = SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
-      else
-        @url = sid_server
-      end
+      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
+               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
+             else
+               sid_server
+             end
     end
 
     def submit_job(partner_params, id_info, options = {})
@@ -33,11 +34,10 @@ module SmileIdentityCore
       raise ArgumentError, 'Partner params needs to be a hash' unless partner_params.is_a?(Hash)
 
       %i[user_id job_id job_type].each do |key|
-        next if partner_params[key] && !partner_params[key].nil? && !(if partner_params[key].is_a?(String)
-                                                                        partner_params[key].empty?
-                                                                      end)
-
-        raise ArgumentError, "Please make sure that #{key} is included in the partner params"
+        if partner_params[key].to_s.empty?
+          raise ArgumentError,
+                "Please make sure that #{key} is included in the partner params"
+        end
       end
 
       @partner_params = partner_params
