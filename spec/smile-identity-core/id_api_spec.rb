@@ -112,10 +112,9 @@ RSpec.describe SmileIdentityCore::IDApi do
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(parsed_response.keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType
-                                                                  ResultText ResultCode IsFinalResult Actions Country
-                                                                  IDType IDNumber ExpirationDate FullName DOB Photo
-                                                                  sec_key timestamp])
+        expect(parsed_response.keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText
+                                                      ResultCode IsFinalResult Actions Country IDType IDNumber
+                                                      timestamp Source signature])
       end
     end
 
