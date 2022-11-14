@@ -5,9 +5,9 @@ This project is an example implementation of the Smile Identity Ruby SDK on the 
 ## Setup
 
 1. Run `bundle install` to install gem dependencies
-2. Copy sample.env to .env and set secrets as appropriate
+2. Copy sample.env in the root folder to .env and set secrets as appropriate
 
-```bash
+```shell
 cp sample.env .env
 ```
 
