@@ -56,13 +56,6 @@ For extensive instructions on usage of the library and sample codes, please refe
 
 Before that, you should take a look at the examples in the [examples](/examples) folder.
 
-## Testing
-To run tests, copy sample.env to .env and set secrets as appropriate
-
-```shell
-cp sample.env .env
-```
-
 ## Getting Help
 
 For usage questions, the best resource is [our official documentation](https://docs.smileidentity.com). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.smileidentity.com/partner/support/tickets) or visit the [contact us page](https://portal.smileidentity.com/partner/support/tickets) on our website.
@@ -70,6 +63,13 @@ For usage questions, the best resource is [our official documentation](https://d
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub [here](https://github.com/smileidentity/smile-identity-core-ruby).
+
+## Developing
+When before requesting pull requests, make sure all tests pass. Copy sample.env to .env and set secrets as appropriate
+
+```shell
+cp sample.env .env
+```
 
 ## License
 
