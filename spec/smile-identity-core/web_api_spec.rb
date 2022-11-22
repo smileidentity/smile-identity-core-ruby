@@ -477,7 +477,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             }
           },
           misc_information: {
-            sec_key: "zWzSzfvXzvN0MdPHtW78a9w3Zlyy7k9UY6Li7pikHniTeuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZ\
+            signature: "zWzSzfvXzvN0MdPHtW78a9w3Zlyy7k9UY6Li7pikHniTeuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZ\
             dZ2mEFqDAOYmP4JVZHkHZDC1ZDm4UnfUiO5lJa+Jmow5\nELLpSyJzHVaD8thGVHh2qcSfNIaMYMpAJOjjrQv9/aFE\
             pZq+Ar0=\n|ba813d3fafa33a0edd77d968d6ba89e406a7ck1eemn5b042be0fab053723rtyu",
             retry: 'false',
@@ -560,7 +560,7 @@ RSpec.describe SmileIdentityCore::WebApi do
               }
             },
             misc_information: {
-              sec_key: "zWzSzfvXzvN0MdPHtW7879w3Zlyy7k9UY6Li7pikHniTUuma2/9gzZsZIMVy\n/NhMyK0crjvLe\
+              signature: "zWzSzfvXzvN0MdPHtW7879w3Zlyy7k9UY6Li7pikHniTUuma2/9gzZsZIMVy\n/NhMyK0crjvLe\
               heZdZ2mEFqDAOYmP4JVZHkHZDC1ZDm4UnfUiO5lJa+Jmow5\nELLpSyHuYtaD8thGVHh2qcSfNIaMYMpAJOjjr\
               Qv9/aFEpZq+Ar0=\n|ba813d3fafa33a0edd77d968d6ba89e406a7ck1eemn5b042be0fab053723rtyu",
               retry: 'false',

@@ -18,7 +18,6 @@ module SmileIdentityCore
       self.partner_params = symbolize_keys partner_params
       self.id_info = symbolize_keys id_info
       options = symbolize_keys(options || {})
-      @use_new_signature = options.fetch(:signature, false)
       @use_async_endpoint = options.fetch(:async, false)
 
       if @partner_params[:job_type].to_i != 5
