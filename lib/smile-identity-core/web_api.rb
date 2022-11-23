@@ -30,7 +30,9 @@ module SmileIdentityCore
       end
 
       if @partner_params[:job_type].to_i == JobType::BUSINESS_VERIFICATION
-        return SmileIdentityCore::BusinessVerification.new(@partner_id, @api_key, @sid_server).submit_job(partner_params, id_info)
+        return SmileIdentityCore::BusinessVerification.new(@partner_id, @api_key, @sid_server).submit_job(
+          partner_params, id_info
+        )
       end
 
       self.images = images
@@ -96,7 +98,7 @@ module SmileIdentityCore
 
       if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
         %i[country id_type id_number].each do |key|
-            raise ArgumentError, "Please make sure that #{key} is included in the id_info" if id_info[key].to_s.empty?
+          raise ArgumentError, "Please make sure that #{key} is included in the id_info" if id_info[key].to_s.empty?
         end
       end
 
