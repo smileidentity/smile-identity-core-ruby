@@ -53,7 +53,7 @@ module SmileIdentityCore
       @partner_params = validate_partner_params(symbolize_keys(partner_params))
       @id_info = validate_id_info(symbolize_keys(id_info), REQUIRED_ID_INFO_FIELD)
 
-      if @partner_params[:job_type] != 7
+      if @partner_params[:job_type].to_i != JobType::BUSINESS_VERIFICATION
         raise ArgumentError, 'Please ensure that you are setting your job_type to 7 to query Business Verification'
       end
 
