@@ -2,8 +2,8 @@
 
 require 'smile-identity-core'
 require 'securerandom'
-# See https://docs.smileidentity.com/server-to-server/ruby/products/enhanced-kyc for
-# how to setup and retrieve configuation values for the IDApi class.
+# See https://docs.smileidentity.com/products/for-businesses-kyb/business-verification for
+# more information on business verification
 
 # Initialize
 partner_id = '<Put your partner ID here>'; # login to the Smile Identity portal to view your partner id
@@ -22,10 +22,15 @@ partner_params = {
 
 # Create ID info
 id_info = {
-  country: '<2-letter country code>', # The country where ID document was issued
-  id_type: '<id type>', # The ID document type
-  id_number: '<id number>', # The business registration or tax number
-  business_type: 'co'
+  # The country where ID document was issued
+  country: '<2-letter country code>',
+  # The ID document type
+  id_type: '<id type>',
+  # The business registration or tax number
+  id_number: '<id number>',
+  # The business incorporation type bn - business name, co - private/public limited, it - incorporated trustees
+  # Only required for BASIC_BUSINESS_REGISTRATION and BUSINESS_REGISTRATION in Nigeria
+  business_type: '<co | bn | it>'
 }
 
 # Submit the job
