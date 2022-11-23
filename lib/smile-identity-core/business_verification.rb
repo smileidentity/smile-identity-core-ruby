@@ -69,7 +69,6 @@ module SmileIdentityCore
 
     def build_payload
       @payload = generate_signature
-      puts("bus sig: #{@payload}")
       @payload.merge!(@id_info)
       add_partner_info
       add_sdk_info
