@@ -4,7 +4,7 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
   let(:partner_id) { '001' }
   let(:api_key) { Base64.encode64(OpenSSL::PKey::RSA.new(1024).public_key.to_pem) }
   let(:sid_server) { 0 }
-  let(:connection) { described_class.new(partner_id, 'www.default_callback.com', api_key, sid_server) }
+  let(:connection) { described_class.new(partner_id, api_key, sid_server) }
 
   let(:payload) do
     {
