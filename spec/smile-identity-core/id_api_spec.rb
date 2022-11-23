@@ -125,7 +125,7 @@ RSpec.describe SmileIdentityCore::IDApi do
           "FullName": 'some  person',
           "DOB": 'NaN-NaN-NaN',
           "Photo": 'Not Available',
-          "sec_key": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZl\
+          "signature": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZl\
           i8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2\
           ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba',
           "timestamp": 1_570_612_182_124
@@ -148,7 +148,7 @@ RSpec.describe SmileIdentityCore::IDApi do
         expect(JSON.parse(setup_response).keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType
                                                                   ResultText ResultCode IsFinalResult Actions Country
                                                                   IDType IDNumber ExpirationDate FullName DOB Photo
-                                                                  sec_key timestamp])
+                                                                  signature timestamp])
       end
     end
 
