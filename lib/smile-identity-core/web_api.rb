@@ -220,11 +220,7 @@ module SmileIdentityCore
       request.on_complete do |response|
         if response.success?
           # TODO: if/when we sign these responses, verify the signature here and raise if it's off.
-          # if updated_options[:signature]
           #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(@timestamp)
-          # else
-          #   SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_sec_key(@timestamp)
-          # end
 
           prep_upload_response = JSON.parse(response.body)
           info_json = configure_info_json(prep_upload_response)

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+# [2.0.0] - 2022-10-24
 ### Added
 - build: Adds support for ruby 3.1
 - docs: adds "examples" folder
