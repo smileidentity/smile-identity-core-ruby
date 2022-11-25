@@ -142,7 +142,7 @@ module SmileIdentityCore
             source_sdk_version: SmileIdentityCore::VERSION }
         )
 
-        response = Typhoeus.post(
+      response = Typhoeus.post(
         "#{@url}/token",
         headers: { 'Content-Type' => 'application/json' },
         body: request_params.to_json

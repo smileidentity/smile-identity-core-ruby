@@ -4,7 +4,7 @@ RSpec.describe SmileIdentityCore::IDApi do
   let(:partner_id) { ENV.fetch('SMILE_PARTNER_ID') }
   let(:api_key) { ENV.fetch('SMILE_API_KEY') }
   let(:sid_server) { ENV.fetch('SMILE_SERVER_ENVIRONMENT', 0) }
-  let(:connection) { SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server) }
+  let(:connection) { described_class.new(partner_id, api_key, sid_server) }
 
   let(:partner_params) do
     {
@@ -97,7 +97,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       it 'returns a correct json object if it runs successfully' do
         parsed_response = {}
         # Make real request for the first time, we then use a saved version for extra requests
-        VCR.use_cassette('id_verification', :record => :new_episodes, :match_requests_on => [:body]) do
+        VCR.use_cassette('id_verification', record: :new_episodes, match_requests_on: [:body]) do
           setup_response = connection.submit_job(partner_params, id_info, { signature: true })
           parsed_response = JSON.parse(setup_response)
         end
@@ -113,8 +113,8 @@ RSpec.describe SmileIdentityCore::IDApi do
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
         expect(parsed_response.keys).to match_array(%w[JSONVersion SmileJobID PartnerParams ResultType ResultText
-                                                      ResultCode IsFinalResult Actions Country IDType IDNumber
-                                                      timestamp Source signature])
+                                                       ResultCode IsFinalResult Actions Country IDType IDNumber
+                                                       timestamp Source signature])
       end
     end
 
