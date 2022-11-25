@@ -57,30 +57,55 @@ RSpec.describe SmileIdentityCore::IDApi do
           .to raise_error(ArgumentError, 'Partner params needs to be a hash')
       end
 
+      it 'validates that business verification is called' do
+        body = {
+          "JSONVersion": '1.0.0',
+          "SmileJobID": '0000001096'
+        }
+        response = Typhoeus::Response.new(code: 200, body: body)
+        Typhoeus.stub('https://testapi.smileidentity.com/v1/business_verification').and_return(response)
+
+        business_info = { country: 'NG', business_type: 'co', id_type: 'BUSINESS_REGISTRATION', id_number: '0000000' }
+        instance = instance_double(SmileIdentityCore::BusinessVerification)
+        class_double = class_double(SmileIdentityCore::BusinessVerification).as_stubbed_const
+
+        allow(class_double).to receive(:new).and_return(instance)
+        allow(instance).to receive(:submit_job).and_return(body)
+
+        connection.submit_job(partner_params.merge(job_type: 7), business_info)
+        expect(instance).to have_received(:submit_job).once
+      end
+
       it 'validates the partner_params job_type is nil' do
         missing_partner_params = {
           user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
           job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
-          job_type: nil
+          job_type: 5
         }
-        expect { connection.submit_job(missing_partner_params, id_info) }
-          .to raise_error(ArgumentError, 'Please make sure that job_type is included in the partner params')
+        missing_partner_params.each do |key, _|
+          expect { connection.submit_job(missing_partner_params.merge({ key => nil }), id_info) }
+            .to raise_error(ArgumentError, "Please make sure that #{key} is included in the partner params")
+        end
       end
 
-      it 'validates that a job type 5 was submitted' do
+      it 'validates that a job type 5 or 7 was submitted' do
         expect do
           connection.submit_job(
             { user_id: 'dmKaJazQCziLc6Tw9lwcgzLo', job_id: 'DeXyJOGtaACFFfbZ2kxjuICE', job_type: 1 },
             id_info
           )
-        end.to raise_error(ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api')
+        end.to raise_error(ArgumentError, 'Please ensure that you are setting your job_type to 5 or 7 to query ID Api')
       end
 
       it 'validates the id_info' do
         expect { connection.submit_job(partner_params, nil) }
-          .to raise_error(ArgumentError, 'Please make sure that id_info not empty or nil')
+          .to raise_error(ArgumentError, 'Please make sure that id_info is not empty or nil')
         expect { connection.submit_job(partner_params, {}) }
-          .to raise_error(ArgumentError, 'Please make sure that id_info not empty or nil')
+          .to raise_error(ArgumentError, 'Please make sure that id_info is not empty or nil')
+        expect { connection.submit_job(partner_params, []) }
+          .to raise_error(ArgumentError, 'Please make sure that id_info is not empty or nil')
+        expect { connection.submit_job(partner_params, [1]) }
+          .to raise_error(ArgumentError, 'Id info needs to be a hash')
 
         %i[country id_type id_number].each do |key|
           amended_id_info = id_info.merge(key => '')

@@ -85,12 +85,12 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
 
     it 'throws ArgumentError if id_info is nil' do
       expect { connection.submit_job(payload[:partner_params], nil) }
-        .to raise_error(ArgumentError, 'Please make sure that id_info not empty or nil')
+        .to raise_error(ArgumentError, 'Please make sure that id_info is not empty or nil')
     end
 
     it 'throws ArgumentError if id_info is empty' do
       expect { connection.submit_job(payload[:partner_params], {}) }
-        .to raise_error(ArgumentError, 'Please make sure that id_info not empty or nil')
+        .to raise_error(ArgumentError, 'Please make sure that id_info is not empty or nil')
     end
 
     it 'throws ArgumentError if either country id_type id_number is empty' do
