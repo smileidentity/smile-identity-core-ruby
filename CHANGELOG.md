@@ -6,11 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Changed
+- Moved Business verification to IDApi
+
 # [2.0.0] - 2022-10-24
 ### Added
 - build: Adds support for ruby 3.1
 - docs: adds "examples" folder
-- Adds Business Verfication product
+- Adds Business Verification product
 
 ### Changed
 - ci: Move from TravisCI to Github Actions

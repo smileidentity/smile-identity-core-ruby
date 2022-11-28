@@ -179,6 +179,28 @@ RSpec.describe SmileIdentityCore::WebApi do
         expect(connection.instance_variable_get(:@callback_url)).to eq('https://zombo.com')
       end
 
+      [5, 7].each do |job_type|
+        it "ensures that IDApi is called when job id is #{job_type}" do
+          body = {
+            "JSONVersion": '1.0.0',
+            "SmileJobID": '0000001096'
+          }
+          response = Typhoeus::Response.new(code: 200, body: body)
+          Typhoeus.stub('https://testapi.smileidentity.com/v1/business_verification').and_return(response)
+          Typhoeus.stub('https://testapi.smileidentity.com/v1/id_verification').and_return(response)
+
+          business_info = { country: 'NG', business_type: 'co', id_type: 'BUSINESS_REGISTRATION', id_number: '0000000' }
+          instance = instance_double(SmileIdentityCore::IDApi)
+          class_double = class_double(SmileIdentityCore::IDApi).as_stubbed_const
+
+          allow(class_double).to receive(:new).and_return(instance)
+          allow(instance).to receive(:submit_job).and_return(body)
+
+          connection.submit_job(partner_params.merge(job_type: job_type), images, id_info.merge(business_info), options.merge(optional_callback: 'https://zombo.com'))
+          expect(instance).to have_received(:submit_job).once
+        end
+      end
+
       # xit 'ensures that we only except a png or jpg' do
       #   # check the image_path
       # end

@@ -25,14 +25,9 @@ module SmileIdentityCore
 
     def submit_job(partner_params, images, id_info, options)
       self.partner_params = symbolize_keys partner_params
-      if @partner_params[:job_type].to_i == JobType::ENHANCED_KYC
-        return SmileIdentityCore::IDApi.new(@partner_id, @api_key, @sid_server).submit_job(partner_params, id_info)
-      end
 
-      if @partner_params[:job_type].to_i == JobType::BUSINESS_VERIFICATION
-        return SmileIdentityCore::BusinessVerification.new(@partner_id, @api_key, @sid_server).submit_job(
-          partner_params, id_info
-        )
+      if [JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION].include?(@partner_params[:job_type].to_i)
+        return SmileIdentityCore::IDApi.new(@partner_id, @api_key, @sid_server).submit_job(partner_params, id_info)
       end
 
       self.images = images

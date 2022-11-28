@@ -18,7 +18,7 @@ module SmileIdentityCore
     end
 
     def validate_id_info(id_info, required_id_info_fields)
-      raise ArgumentError, 'Please make sure that id_info not empty or nil' if id_info.nil? || id_info.empty?
+      raise ArgumentError, 'Please make sure that id_info is not empty or nil' if id_info.nil? || id_info.empty?
 
       raise ArgumentError, 'Id info needs to be a hash' unless id_info.is_a?(Hash)
 
