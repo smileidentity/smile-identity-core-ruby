@@ -6,16 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+# [2.1.0] - 2022-10-28
+## Changed
+- Moved Business verification to IDApi
+
 # [2.0.0] - 2022-10-24
 ### Added
 - build: Adds support for ruby 3.1
 - docs: adds "examples" folder
-- Adds Business Verfication product
+- Adds Business Verification product
 
 ### Changed
 - ci: Move from TravisCI to Github Actions
 - core: Enforces the use of signature on all API calls
-- core: Adds helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::IMAGE_TYPE, SMILE_IDENTITY_CORE::JOB_TYPE
+- core: Adds helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::ImageType, SMILE_IDENTITY_CORE::JobType
 - Fixes invalid links in gemspec
 
 ### Removed

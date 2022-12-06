@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
+require_relative 'validations'
+
 module SmileIdentityCore
   # Allows you to query the Identity Information for an individual using their ID number
   class IDApi
+    include Validations
+
+    REQUIRED_ID_INFO_FIELD = %i[country id_type id_number].freeze
+
     def initialize(partner_id, api_key, sid_server)
       @partner_id = partner_id.to_s
       @api_key = api_key
@@ -15,47 +21,23 @@ module SmileIdentityCore
     end
 
     def submit_job(partner_params, id_info, options = {})
-      self.partner_params = symbolize_keys partner_params
-      self.id_info = symbolize_keys id_info
+      @partner_params = validate_partner_params(symbolize_keys(partner_params))
+      @id_info = validate_id_info(symbolize_keys(id_info), REQUIRED_ID_INFO_FIELD)
+
+      unless [JobType::ENHANCED_KYC, JobType::BUSINESS_VERIFICATION].include?(@partner_params[:job_type].to_i)
+        raise ArgumentError, 'Please ensure that you are setting your job_type to 5 or 7 to query ID Api'
+      end
+
+      if partner_params[:job_type] == JobType::BUSINESS_VERIFICATION
+        return SmileIdentityCore::BusinessVerification
+               .new(@partner_id, @api_key, @url)
+               .submit_job(partner_params, id_info)
+      end
+
       options = symbolize_keys(options || {})
       @use_async_endpoint = options.fetch(:async, false)
 
-      if @partner_params[:job_type].to_i != 5
-        raise ArgumentError, 'Please ensure that you are setting your job_type to 5 to query ID Api'
-      end
-
       setup_requests
-    end
-
-    def partner_params=(partner_params)
-      raise ArgumentError, 'Please ensure that you send through partner params' if partner_params.nil?
-
-      raise ArgumentError, 'Partner params needs to be a hash' unless partner_params.is_a?(Hash)
-
-      %i[user_id job_id job_type].each do |key|
-        if partner_params[key].to_s.empty?
-          raise ArgumentError,
-                "Please make sure that #{key} is included in the partner params"
-        end
-      end
-
-      @partner_params = partner_params
-    end
-
-    def id_info=(id_info)
-      updated_id_info = id_info
-
-      if updated_id_info.nil? || updated_id_info.keys.length.zero?
-        raise ArgumentError, 'Please make sure that id_info not empty or nil'
-      end
-
-      %i[country id_type id_number].each do |key|
-        unless updated_id_info[key] && !updated_id_info[key].nil? && !updated_id_info[key].empty?
-          raise ArgumentError, "Please make sure that #{key} is included in the id_info"
-        end
-      end
-
-      @id_info = updated_id_info
     end
 
     private
