@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.2.0] - 2022-12-13
+## [2.1.1] - 2022-12-13
 ### Added
 - Adds UPDATE_PHOTO and COMPARE_USER_INFO to JobType
 ### Changed
