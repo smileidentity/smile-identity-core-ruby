@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## Added
+
+## [2.1.1] - 2022-12-13
+### Added
 - Adds UPDATE_PHOTO and COMPARE_USER_INFO to JobType
+### Changed
+- Fix wrong constant values for JobType SMART_SELFIE_AUTHENTICATION and SMART_SELFIE_REGISTRATION
 
 # [2.1.0] - 2022-10-28
 ## Changed
