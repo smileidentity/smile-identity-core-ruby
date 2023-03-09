@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        set-safe-directory: '/github/workspace'
+        set-safe-directory: false
     - name: Release Gem
       uses: cadwallion/publish-rubygems-action@master
       env:
