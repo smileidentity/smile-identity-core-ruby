@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        set-safe-directory: '/github/workspace'
     - name: Release Gem
       uses: cadwallion/publish-rubygems-action@master
       env:
