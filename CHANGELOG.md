@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2] - 2023-03-09
+### Changed
+- Fix `get_web_token` by ensuring signature merges to request_params
+
 ## [2.1.1] - 2022-12-13
 ### Added
 - Adds UPDATE_PHOTO and COMPARE_USER_INFO to JobType

@@ -843,11 +843,13 @@ RSpec.describe SmileIdentityCore::WebApi do
         let(:version) { { source_sdk: SmileIdentityCore::SOURCE_SDK, source_sdk_version: SmileIdentityCore::VERSION } }
 
         before do
-          allow(connection).to receive(:request_security).and_return(security)
+          instance = instance_double(SmileIdentityCore::Signature)
+          allow(SmileIdentityCore::Signature).to receive(:new).and_return(instance)
+          allow(instance).to receive(:generate_signature).and_return(security)
         end
 
         it 'sends a signature, timestamp and partner_id as part of request' do
-          request_body = request_params.merge!(partner_id: partner_id).to_json
+          request_body = request_params.merge(security).merge(partner_id: partner_id).merge(version).to_json
           headers = { 'Content-Type' => 'application/json' }
 
           allow(Typhoeus).to receive(:post).with(url, { body: request_body, headers: headers })
