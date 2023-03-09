@@ -14,7 +14,7 @@ jobs:
       with:
         set-safe-directory: false
     - name: Release Gem
-      uses: cadwallion/publish-rubygems-action@master
+      uses: powerhome/publish-rubygems-action@git-safe-directory
       env:
         RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
