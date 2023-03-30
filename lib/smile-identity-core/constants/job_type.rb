@@ -22,5 +22,8 @@ module SmileIdentityCore
     UPDATE_PHOTO = 8
     # Compares document verification to an id check
     COMPARE_USER_INFO = 9
+    # Performs due diligence by screening against global watchlists,
+    # politically exposed persons lists, and adverse media publications
+    AML = 10
   end
 end
