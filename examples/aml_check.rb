@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'smile-identity-core'
+require 'smile-identity-core'
 require 'securerandom'
 # See https://docs.smileidentity.com/products/for-individuals-kyc/aml-check for
 # more information on business verification
