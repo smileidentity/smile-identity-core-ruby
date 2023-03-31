@@ -9,7 +9,7 @@ module SmileIdentityCore
   # The AML Check product allows you to perform due diligence on your customers by screening them against
   # global watchlists, politically exposed persons lists, and adverse media publications.
   # For more info visit https://docs.smileidentity.com/products/for-individuals-kyc/aml-check
-  class Aml
+  class AmlCheck
     include Validations
 
     ###
@@ -39,15 +39,9 @@ module SmileIdentityCore
     # e.g. Nigeria is NG, Kenya is KE, etc
     # @option opts [String] :full_name The full name of the customer.
     # @option opts [String] :birth_year The customer’s year of birth, in the format yyyy
-    def submit_job(partner_params, id_info, options = {})
-      @partner_params = validate_partner_params(symbolize_keys(partner_params))
-      @id_info = validate_id_info(symbolize_keys(id_info), [])
-      @options = options
-
-      if @partner_params[:job_type].to_i != JobType::AML
-        raise ArgumentError, 'Please ensure that you are setting your job_type to 10 to query AML'
-      end
-
+    def submit_job(params)
+      @params = symbolize_keys(params)
+      @optional_info = @params['optional_info']
       submit_requests
     end
 
@@ -59,7 +53,7 @@ module SmileIdentityCore
 
     def build_payload
       @payload = generate_signature
-      @payload.merge!(@id_info)
+      @payload.merge!(@params)
       add_partner_info
       add_sdk_info
       @payload
@@ -67,9 +61,8 @@ module SmileIdentityCore
 
     def add_partner_info
       @payload[:partner_id] = @partner_id
-      @payload[:partner_params] = @partner_params
-      @payload.merge!(user_id: @partner_params[:user_id])
-      @payload.merge!(job_id: @partner_params[:job_id])
+      @payload[:job_type] = SmileIdentityCore::JobType::AML
+      @payload[:partner_params] = @optional_info if @optional_info
     end
 
     def add_sdk_info
