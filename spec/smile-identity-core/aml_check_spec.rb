@@ -146,8 +146,8 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         Typhoeus.stub('https://testapi.smileidentity.com/v1/aml').and_return(response)
       end
 
-      it '#setup_requests it runs successfully' do
-        setup_response = connection.send(:setup_requests)
+      it '#submit_requests it runs successfully' do
+        setup_response = connection.send(:submit_requests)
 
         expect(setup_response).to eq(aml_response)
         # These values come from the `body` mock above:
