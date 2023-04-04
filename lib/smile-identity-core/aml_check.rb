@@ -87,7 +87,5 @@ module SmileIdentityCore
       end
       request.run
     end
-
-    alias setup_requests submit_requests
   end
 end
