@@ -42,7 +42,7 @@ module SmileIdentityCore
     # in partner_params.
     def submit_job(params)
       @params = symbolize_keys(params)
-      @optional_info = @params[:optional_info]
+      @optional_info = @params.delete(:optional_info)
       submit_requests
     end
 
