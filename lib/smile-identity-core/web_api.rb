@@ -92,8 +92,11 @@ module SmileIdentityCore
       updated_id_info[:entered] = id_info[:entered].to_s if !updated_id_info[:entered].nil? == updated_id_info[:entered]
 
       if updated_id_info[:entered] == 'true'
-        keys = %i[country id_type id_number]
-        keys -= %i[id_type id_number] if @partner_params[:job_type].to_i == JobType::DOCUMENT_VERIFICATION
+  keys = if @partner_params[:job_type].to_i == JobType::DOCUMENT_VERIFICATION
+    %i[country]
+  else
+    %i[country id_type id_number]
+  end
         keys.each do |key|
           raise ArgumentError, "Please make sure that #{key} is included in the id_info" if id_info[key].to_s.empty?
         end
