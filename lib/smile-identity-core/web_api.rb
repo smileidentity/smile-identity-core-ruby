@@ -7,7 +7,6 @@ require 'openssl'
 require 'uri'
 require 'typhoeus'
 require 'zip'
-require 'pry'
 
 module SmileIdentityCore
   # Allows Identity verifications of ids with images
