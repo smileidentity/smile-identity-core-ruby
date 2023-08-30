@@ -7,6 +7,7 @@ require 'openssl'
 require 'uri'
 require 'typhoeus'
 require 'zip'
+require 'pry'
 
 module SmileIdentityCore
   # Allows Identity verifications of ids with images
@@ -93,6 +94,7 @@ module SmileIdentityCore
 
       if updated_id_info[:entered] && updated_id_info[:entered] == 'true'
         %i[country id_type id_number].each do |key|
+          next if @partner_params[:job_type].to_i == JobType::DOCUMENT_VERIFICATION
           raise ArgumentError, "Please make sure that #{key} is included in the id_info" if id_info[key].to_s.empty?
         end
       end

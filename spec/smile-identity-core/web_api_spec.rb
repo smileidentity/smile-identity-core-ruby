@@ -140,6 +140,17 @@ RSpec.describe SmileIdentityCore::WebApi do
           end
         end
 
+        it 'allows leaving country and id_type fields empty in id_info for JT6' do
+          %i[country id_type].each do |key|
+            amended_id_info = id_info.merge(key => '')
+
+            expect { connection.submit_job(partner_params.merge({
+              job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+            }), images, amended_id_info, options) }
+              .not_to raise_error(ArgumentError, "Please make sure that #{key} is included in the id_info")
+          end
+        end
+
         it 'checks that return_job_status is a boolean' do
           expect { connection.submit_job(partner_params, images, id_info, options.merge(return_job_status: 'false')) }
             .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')
