@@ -140,7 +140,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           end
         end
 
-        it 'allows leaving country and id_type fields empty in id_info for JT6' do
+        it 'allows leaving id_number and id_type fields empty in id_info for JT6' do
           connection.instance_variable_set('@url', 'https://www.example.com')
           response_upload_url = 'https://smile-uploads-somewhere.amazonaws.com/videos/a_signed_url'
           body = {
@@ -155,14 +155,23 @@ RSpec.describe SmileIdentityCore::WebApi do
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
           Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
 
-          %i[country id_type].each do |key|
+          amended_partner_params = partner_params.merge({
+            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+          })
+          %i[id_number id_type].each do |key|
             amended_id_info = id_info.merge(key => '')
-
-            expect { connection.submit_job(partner_params.merge({
-              job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
-            }), images, amended_id_info, options) }
+            expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
               .not_to raise_error
           end
+        end
+
+        it 'country field in id_info is required for JT6' do
+          amended_id_info = id_info.merge('country' => '')
+          amended_partner_params = partner_params.merge({
+            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+          })
+          expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
+            .to raise_error(ArgumentError, 'Please make sure that country is included in the id_info')
         end
 
         it 'checks that return_job_status is a boolean' do
