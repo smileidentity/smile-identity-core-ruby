@@ -140,6 +140,40 @@ RSpec.describe SmileIdentityCore::WebApi do
           end
         end
 
+        it 'allows leaving id_number and id_type fields empty in id_info for JT6' do
+          connection.instance_variable_set('@url', 'https://www.example.com')
+          response_upload_url = 'https://smile-uploads-somewhere.amazonaws.com/videos/a_signed_url'
+          body = {
+            'upload_url' => response_upload_url,
+            'ref_id' => '125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww',
+            'smile_job_id' => '0000000583',
+            'camera_config' => 'null',
+            'code' => '2202'
+          }.to_json
+          Typhoeus.stub('https://www.example.com/upload').and_return(Typhoeus::Response.new(code: 200, body: body))
+          allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
+          allow(IO).to receive(:read).with('./tmp/id_image.png').and_return('')
+          Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
+
+          amended_partner_params = partner_params.merge({
+            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+          })
+          %i[id_number id_type].each do |key|
+            amended_id_info = id_info.merge(key => '')
+            expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
+              .not_to raise_error
+          end
+        end
+
+        it 'country field in id_info is required for JT6' do
+          amended_id_info = id_info.merge('country' => '')
+          amended_partner_params = partner_params.merge({
+            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+          })
+          expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
+            .to raise_error(ArgumentError, 'Please make sure that country is included in the id_info')
+        end
+
         it 'checks that return_job_status is a boolean' do
           expect { connection.submit_job(partner_params, images, id_info, options.merge(return_job_status: 'false')) }
             .to raise_error(ArgumentError, 'return_job_status needs to be a boolean')

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2023-08-31
+### Changed
+- Don't validate the presence of `id_type` and `id_number` for Document Verification jobs
+
 ## [2.2.0] - 2023-04-05
 ### Added
 - Adds support for AML check
