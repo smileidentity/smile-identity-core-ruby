@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds support for AML check
 ### Changed
 - Fix business verification docstrings
+- Don't validate the presence of `id_type` and `id_number` for Document Verification jobs
 
 ## [2.1.2] - 2023-03-09
 ### Changed
