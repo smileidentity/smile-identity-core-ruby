@@ -14,7 +14,7 @@ module SmileIdentityCore
 
     def determine_url(sid_server)
       if sid_server.to_s !~ URI::DEFAULT_PARSER.make_regexp
-        SID_SERVER_MAPPING[sid_server.to_s]
+        SID_SERVER_MAPPING[sid_server.to_s] || sid_server
       else
         sid_server
       end
