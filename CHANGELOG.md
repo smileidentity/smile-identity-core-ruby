@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Adds support for ruby 3.2
+### Changed
+- Lint project. Enforce rubocop rules in CI
 
 ## [2.2.1] - 2023-08-31
 ### Changed
