@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
+  # The ENV module contains constants and utility methods for mapping
+  # managing aliases to Smile Identity servers.
   module ENV
     SID_SERVER_MAPPING = {
       '0' => 'https://testapi.smileidentity.com/v1',

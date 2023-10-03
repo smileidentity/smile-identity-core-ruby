@@ -71,7 +71,7 @@ module SmileIdentityCore
       raise ArgumentError, 'Image details needs to be an array' unless images.is_a?(Array)
 
       # all job types require atleast a selfie
-      if images.length.zero? || images.none? { |h| (h[:image_type_id]).zero? || h[:image_type_id] == 2 }
+      if images.empty? || images.none? { |h| (h[:image_type_id]).zero? || h[:image_type_id] == 2 }
         raise ArgumentError, 'You need to send through at least one selfie image'
       end
 
