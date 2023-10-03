@@ -156,8 +156,8 @@ RSpec.describe SmileIdentityCore::WebApi do
           Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
 
           amended_partner_params = partner_params.merge({
-            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
-          })
+                                                          job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+                                                        })
           %i[id_number id_type].each do |key|
             amended_id_info = id_info.merge(key => '')
             expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
@@ -168,8 +168,8 @@ RSpec.describe SmileIdentityCore::WebApi do
         it 'country field in id_info is required for JT6' do
           amended_id_info = id_info.merge('country' => '')
           amended_partner_params = partner_params.merge({
-            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
-          })
+                                                          job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
+                                                        })
           expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
             .to raise_error(ArgumentError, 'Please make sure that country is included in the id_info')
         end

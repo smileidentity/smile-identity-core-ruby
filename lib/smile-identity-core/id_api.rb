@@ -10,14 +10,10 @@ module SmileIdentityCore
     REQUIRED_ID_INFO_FIELD = %i[country id_type id_number].freeze
 
     def initialize(partner_id, api_key, sid_server)
-      @partner_id = partner_id.to_s
       @api_key = api_key
+      @partner_id = partner_id.to_s
       @sid_server = sid_server.to_s
-      @url = if @sid_server !~ URI::DEFAULT_PARSER.make_regexp
-               SmileIdentityCore::ENV::SID_SERVER_MAPPING[@sid_server]
-             else
-               @sid_server
-             end
+      @url = SmileIdentityCore::ENV.determine_url(sid_server)
     end
 
     def submit_job(partner_params, id_info, options = {})
