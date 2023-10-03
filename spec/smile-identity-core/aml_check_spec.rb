@@ -18,7 +18,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
     }
   end
 
-  let(:aml_response){
+  let(:aml_response) do
     {
       "Actions": {
         "Listed": 'Listed'
@@ -104,7 +104,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       "signature": '...',
       "timestamp": '2023-02-17T16:24:16.835Z'
     }.to_json
-  }
+  end
 
   describe 'when initialized' do
     it 'sets the partner_id instance variables' do
@@ -159,8 +159,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         # if any keys get removed from the response which will affect the partner.
         expect(JSON.parse(setup_response).keys).to match_array(%w[SmileJobID PartnerParams people
                                                                   ResultText ResultCode Actions
-                                                                  signature timestamp no_of_persons_found
-                                                                  ])
+                                                                  signature timestamp no_of_persons_found])
       end
 
       it '#submit_job it runs successfully' do
@@ -174,8 +173,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         # if any keys get removed from the response which will affect the partner.
         expect(JSON.parse(setup_response).keys).to match_array(%w[SmileJobID PartnerParams people
                                                                   ResultText ResultCode Actions
-                                                                  signature timestamp no_of_persons_found
-                                                                  ])
+                                                                  signature timestamp no_of_persons_found])
       end
     end
 
@@ -202,14 +200,14 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       end
 
       it 'returns a hash formatted for the request with optional params' do
-        connection.instance_variable_set(:@optional_info, {user_email: "johndoe@email.com"})
+        connection.instance_variable_set(:@optional_info, { user_email: 'johndoe@email.com' })
 
         signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response).to match({ 'timestamp': signature[:timestamp], 'signature': signature[:signature],
                                            'partner_id': partner_id,
-                                           'partner_params': {user_email: "johndoe@email.com"},
+                                           'partner_params': { user_email: 'johndoe@email.com' },
                                            'user_id': payload[:user_id],
                                            'job_id': payload[:job_id],
                                            'job_type': SmileIdentityCore::JobType::AML,
@@ -231,7 +229,6 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       it 'successfully submits a job' do
         signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
-
       end
     end
   end

@@ -93,10 +93,10 @@ module SmileIdentityCore
 
       is_jt6 = @partner_params[:job_type].to_i == JobType::DOCUMENT_VERIFICATION
       keys = if is_jt6
-        %i[country]
-      else
-        %i[country id_type id_number]
-      end
+               %i[country]
+             else
+               %i[country id_type id_number]
+             end
 
       if updated_id_info[:entered] == 'true' || is_jt6
         keys.each do |key|
@@ -137,12 +137,12 @@ module SmileIdentityCore
 
     def request_web_token(request_params)
       request_params = request_params
-        .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
-        .merge(
-          { partner_id: @partner_id,
-            source_sdk: SmileIdentityCore::SOURCE_SDK,
-            source_sdk_version: SmileIdentityCore::VERSION }
-        )
+                       .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
+                       .merge(
+                         { partner_id: @partner_id,
+                           source_sdk: SmileIdentityCore::SOURCE_SDK,
+                           source_sdk_version: SmileIdentityCore::VERSION }
+                       )
       url = "#{@url}/token"
 
       response = Typhoeus.post(
@@ -161,9 +161,9 @@ module SmileIdentityCore
     end
 
     def validate_return_data
-      if (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
-        raise ArgumentError, 'Please choose to either get your response via the callback or job status query'
-      end
+      return unless (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
+
+      raise ArgumentError, 'Please choose to either get your response via the callback or job status query'
     end
 
     def validate_enroll_with_id
