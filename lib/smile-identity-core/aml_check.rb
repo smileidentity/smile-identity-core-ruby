@@ -20,7 +20,7 @@ module SmileIdentityCore
     def initialize(partner_id, api_key, sid_server)
       @api_key = api_key
       @partner_id = partner_id.to_s
-      @sid_server = sid_server.to_s
+      @sid_server = sid_server
       @url = SmileIdentityCore::ENV.determine_url(sid_server)
     end
 

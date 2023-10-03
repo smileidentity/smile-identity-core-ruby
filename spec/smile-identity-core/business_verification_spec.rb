@@ -50,7 +50,7 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
     end
 
     it 'sets the sid_server instance variables' do
-      expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server.to_s)
+      expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
     end
 
     it 'sets the correct @url instance variable' do
