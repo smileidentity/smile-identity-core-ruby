@@ -4,14 +4,9 @@ module SmileIdentityCore
   # A utility class to query job status
   class Utilities
     def initialize(partner_id, api_key, sid_server)
-      @partner_id = partner_id.to_s
       @api_key = api_key
-
-      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
-             else
-               sid_server
-             end
+      @partner_id = partner_id.to_s
+      @url = SmileIdentityCore::ENV.determine_url(sid_server)
 
       @signature_connection = SmileIdentityCore::Signature.new(@partner_id, @api_key)
     end
