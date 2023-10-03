@@ -12,14 +12,14 @@ module SmileIdentityCore
   # Allows Identity verifications of ids with images
   class WebApi
     def initialize(partner_id, default_callback, api_key, sid_server)
-      @partner_id = partner_id.to_s
-      @callback_url = default_callback
       @api_key = api_key
+      @callback_url = default_callback
+      @partner_id = partner_id.to_s
       @sid_server = sid_server
-      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
+      @url = if @sid_server !~ URI::DEFAULT_PARSER.make_regexp
+               SmileIdentityCore::ENV::SID_SERVER_MAPPING[@sid_server]
              else
-               sid_server
+               @sid_server
              end
     end
 

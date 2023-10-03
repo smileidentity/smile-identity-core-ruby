@@ -12,11 +12,11 @@ module SmileIdentityCore
     def initialize(partner_id, api_key, sid_server)
       @partner_id = partner_id.to_s
       @api_key = api_key
-
-      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
+      @sid_server = sid_server.to_s
+      @url = if @sid_server !~ URI::DEFAULT_PARSER.make_regexp
+               SmileIdentityCore::ENV::SID_SERVER_MAPPING[@sid_server]
              else
-               sid_server
+               @sid_server
              end
     end
 

@@ -116,7 +116,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
     end
 
     it 'sets the sid_server instance variables' do
-      expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server)
+      expect(connection.instance_variable_get(:@sid_server)).to eq(sid_server.to_s)
     end
 
     it 'sets the correct @url instance variable' do
