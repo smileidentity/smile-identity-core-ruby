@@ -9,5 +9,15 @@ module SmileIdentityCore
 
     TEST = '0'
     LIVE = '1'
+
+    module_function
+
+    def determine_url(sid_server)
+      if sid_server.to_s !~ URI::DEFAULT_PARSER.make_regexp
+        SID_SERVER_MAPPING[sid_server.to_s] || sid_server
+      else
+        sid_server
+      end
+    end
   end
 end

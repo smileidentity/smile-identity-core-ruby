@@ -24,14 +24,10 @@ module SmileIdentityCore
     # @param [String] :api_key your API key from the Smile Identity portal
     # @param [String] :sid_server Use 0 for the sandbox server, use 1 for production server
     def initialize(partner_id, api_key, sid_server)
-      @partner_id = partner_id.to_s
       @api_key = api_key
+      @partner_id = partner_id.to_s
       @sid_server = sid_server
-      @url = if sid_server !~ URI::DEFAULT_PARSER.make_regexp
-               SmileIdentityCore::ENV::SID_SERVER_MAPPING[sid_server.to_s]
-             else
-               sid_server
-             end
+      @url = SmileIdentityCore::ENV.determine_url(sid_server)
     end
 
     # Submit business verification
