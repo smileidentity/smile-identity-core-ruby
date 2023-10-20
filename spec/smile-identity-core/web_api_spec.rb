@@ -175,14 +175,15 @@ RSpec.describe SmileIdentityCore::WebApi do
         end
 
         %i[country id_type].each do |key|
-	        it "#{key} field in id_info is required for JT11" do
-	          amended_id_info = id_info.merge(key => '')
-	          amended_partner_params = partner_params.merge({
-	                                                          job_type: SmileIdentityCore::JobType::ENHANCED_DOCUMENT_VERIFICATION
-	                                                        })
-	          expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
-	            .to raise_error(ArgumentError, "Please make sure that #{key} is included in the id_info")
-	        end
+          it "#{key} field in id_info is required for JT11" do
+            amended_id_info = id_info.merge(key => '')
+            job_type = SmileIdentityCore::JobType::ENHANCED_DOCUMENT_VERIFICATION
+            amended_partner_params = partner_params.merge({
+                                                            job_type: job_type
+                                                          })
+            expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
+              .to raise_error(ArgumentError, "Please make sure that #{key} is included in the id_info")
+          end
         end
 
         it 'checks that return_job_status is a boolean' do
