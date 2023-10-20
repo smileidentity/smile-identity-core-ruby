@@ -85,7 +85,7 @@ module SmileIdentityCore
       updated_id_info[:entered] = 'false' if !updated_id_info.key?(:entered) || id_info[:entered].empty?
 
       # if it's a boolean
-      updated_id_info[:entered] = id_info[:entered].to_s if !updated_id_info[:entered].nil? == updated_id_info[:entered]
+      updated_id_info[:entered] = id_info[:entered].to_s
 
       is_jt6 = @partner_params[:job_type].to_i == JobType::DOCUMENT_VERIFICATION
       is_jt11 = @partner_params[:job_type].to_i == JobType::ENHANCED_DOCUMENT_VERIFICATION
