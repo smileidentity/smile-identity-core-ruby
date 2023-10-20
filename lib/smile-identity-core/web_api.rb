@@ -89,7 +89,7 @@ module SmileIdentityCore
 
       is_jt6 = @partner_params[:job_type].to_i == JobType::DOCUMENT_VERIFICATION
       is_jt11 = @partner_params[:job_type].to_i == JobType::ENHANCED_DOCUMENT_VERIFICATION
-      keys = if is_jt6
+      keys = if is_jt6 || is_jt11
                %i[country]
              else
                %i[country id_type id_number]
