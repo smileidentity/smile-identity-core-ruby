@@ -25,5 +25,9 @@ module SmileIdentityCore
     # Performs due diligence by screening against global watchlists,
     # politically exposed persons lists, and adverse media publications
     AML = 10
+    # Verifies the authenticity of Document IDs and confirms their validity
+    # with an ID authority, and uses biometric checks to confirm they
+    # belong to the user.
+    ENHANCED_DOCUMENT_VERIFICATION = 11
   end
 end
