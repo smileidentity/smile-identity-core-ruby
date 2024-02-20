@@ -8,18 +8,18 @@ Gem::Specification.new do |spec|
   spec.name          = 'smile-identity-core'
   spec.version       = SmileIdentityCore::VERSION
   spec.authors       = ['Smile Identity']
-  spec.email         = ['support@smileidentity.com']
+  spec.email         = ['support@usesmileid.com']
 
   spec.summary       = 'The Smile Identity Web API allows the user to access\
   most of the features of the Smile Identity system through direct server to server queries.'
   spec.description   = 'The Official Smile Identity gem'
-  spec.homepage      = 'https://www.smileidentity.com/'
+  spec.homepage      = 'https://www.usesmileid.com/'
   spec.required_ruby_version = '>= 2.5'
   spec.license = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/smileidentity/smile-identity-core-ruby'
-  spec.metadata['documentation_uri'] = 'https://docs.smileidentity.com'
+  spec.metadata['documentation_uri'] = 'https://docs.usesmileid.com'
   spec.metadata['changelog_uri'] = 'https://github.com/smileidentity/smile-identity-core-ruby/blob/master/CHANGELOG.md'
 
   # Specify which files should be added to the gem when it is released.

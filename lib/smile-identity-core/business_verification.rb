@@ -8,7 +8,7 @@ module SmileIdentityCore
   ##
   # The business verification product lets you search the business registration or
   # tax information (available in Nigeria only) of a business from one of our supported countries.
-  # For more info visit https://docs.smileidentity.com/products/for-businesses-kyb/business-verification
+  # For more info visit https://docs.usesmileid.com/products/for-businesses-kyb/business-verification
   class BusinessVerification
     include Validations
 

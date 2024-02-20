@@ -2,7 +2,7 @@
 
 require 'smile-identity-core'
 require 'securerandom'
-# See https://docs.smileidentity.com/products/for-individuals-kyc/aml-check for
+# See https://docs.usesmileid.com/products/for-individuals-kyc/aml-check for
 # more information on business verification
 
 # Initialize
