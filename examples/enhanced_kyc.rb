@@ -2,7 +2,7 @@
 
 require 'smile-identity-core'
 
-# See https://docs.smileidentity.com/server-to-server/ruby/products/enhanced-kyc for
+# See https://docs.usesmileid.com/server-to-server/ruby/products/enhanced-kyc for
 # how to setup and retrieve configuation values for the IDApi class.
 
 # Initialize

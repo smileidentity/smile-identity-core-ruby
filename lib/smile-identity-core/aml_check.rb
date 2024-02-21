@@ -8,7 +8,7 @@ module SmileIdentityCore
   ##
   # The AML Check product allows you to perform due diligence on your customers by screening them against
   # global watchlists, politically exposed persons lists, and adverse media publications.
-  # For more info visit https://docs.smileidentity.com/products/for-individuals-kyc/aml-check
+  # For more info visit https://docs.usesmileid.com/products/for-individuals-kyc/aml-check
   class AmlCheck
     include Validations
 

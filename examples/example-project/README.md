@@ -1,6 +1,6 @@
 # Example Project
 
-This project is an example implementation of the Smile Identity Ruby SDK on the server side. The example implements [Enhanced KYC](https://docs.smileidentity.com/products/identity-lookup), [Biometric KYC](https://docs.smileidentity.com/products/biometric-kyc), [Document Verification](https://docs.smileidentity.com/products/document-verification) and [SmartSelfieTM Authentication](https://docs.smileidentity.com/products/biometric-authentication) job types.
+This project is an example implementation of the Smile Identity Ruby SDK on the server side. The example implements [Enhanced KYC](https://docs.usesmileid.com/products/identity-lookup), [Biometric KYC](https://docs.usesmileid.com/products/biometric-kyc), [Document Verification](https://docs.usesmileid.com/products/document-verification) and [SmartSelfieTM Authentication](https://docs.usesmileid.com/products/biometric-authentication) job types.
 
 ## Setup
 

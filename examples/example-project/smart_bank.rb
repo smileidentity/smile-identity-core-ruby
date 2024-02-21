@@ -12,7 +12,7 @@ class SmartBank
   def initialize
     # login to the Smile Identity portal to view your partner id
     @partner_id = ENV['SMILE_PARTNER_ID']
-    # See https://docs.smileidentity.com/server-to-server/ruby/products/biometric-kyc#create-a-callback-endpoint
+    # See https://docs.usesmileid.com/server-to-server/ruby/products/biometric-kyc#create-a-callback-endpoint
     @default_callback = ENV['SMILE_JOB_CALLBACK_URL']
     @api_key = ENV['SMILE_API_KEY'] # copy your API key from the Smile Identity portal
     @sid_server = ENV['SMILE_SERVER_ENVIRONMENT'] # Use '0' for the sandbox server, use '1' for production server
@@ -187,7 +187,7 @@ enhanced_kyc_response['success'] # => true
 enhanced_kyc_response['result']['PartnerParams']['job_id'] # job_id
 enhanced_kyc_response['result']['PartnerParams']['user_id'] # user_id
 enhanced_kyc_response['result']['PartnerParams']['job_type'] # => 5
-# See https://docs.smileidentity.com/products/for-individuals-kyc/identity-lookup#return-values
+# See https://docs.usesmileid.com/products/for-individuals-kyc/identity-lookup#return-values
 # for the full JSON response interpretation
 
 # Biometric KYC
@@ -212,5 +212,5 @@ smart_selfie_auth_response['result']['PartnerParams']['user_id'] # user_id
 smart_selfie_auth_response['result']['PartnerParams']['job_type'] # => 2
 
 # All jobs submitted with a selfie has the same return values, result codes and texts. For example
-# see https://docs.smileidentity.com/products/for-individuals-kyc/biometric-kyc#return-values.
+# see https://docs.usesmileid.com/products/for-individuals-kyc/biometric-kyc#return-values.
 # Save the returned user_id and job_id in your DB as you would need them later when you call other services.

@@ -2,7 +2,7 @@
 
 require 'smile-identity-core'
 
-# See https://docs.smileidentity.com/server-to-server/ruby/products/enhanced_document-verification for
+# See https://docs.usesmileid.com/server-to-server/ruby/products/enhanced_document-verification for
 # how to setup and retrieve configuation values for the WebApi class.
 
 # Initialize

@@ -151,7 +151,7 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
             'phone': '08000000000',
             'legal_name': 'SMILE IDENTITY NIGERIA LIMITED',
             'state': 'LAGOS',
-            'email': 'smile@smileidentity.com',
+            'email': 'smile@usesmileid.com',
             'status': 'ACTIVE'
           },
           'fiduciaries': [

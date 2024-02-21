@@ -2,7 +2,7 @@
 
 require 'smile-identity-core'
 require 'securerandom'
-# See https://docs.smileidentity.com/products/for-businesses-kyb/business-verification for
+# See https://docs.usesmileid.com/products/for-businesses-kyb/business-verification for
 # more information on business verification
 
 # Initialize
