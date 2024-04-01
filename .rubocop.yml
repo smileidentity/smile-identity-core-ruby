@@ -11,14 +11,8 @@ AllCops:
 Bundler/DuplicatedGem:
   Enabled: true
 
-Bundler/DuplicatedGroup:
-  Enabled: true
-
 Bundler/GemFilename:
   Enabled: true
-
-Gemspec/DevelopmentDependencies:
-  Enabled: false
 
 Layout/ArgumentAlignment:
   Enabled: true
@@ -191,9 +185,6 @@ RSpec/NestedGroups:
   Max: 4
 
 RSpec/NoExpectationExample:
-  Enabled: false
-
-RSpec/SpecFilePathFormat:
   Enabled: false
 
 Style/RedundantBegin:
