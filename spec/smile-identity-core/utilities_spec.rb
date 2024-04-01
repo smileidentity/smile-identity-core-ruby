@@ -40,13 +40,13 @@ RSpec.describe SmileIdentityCore::Utilities do
         timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!
         signature: instance_of(String), # new signature!
         source_sdk: SmileIdentityCore::SOURCE_SDK,
-        source_sdk_version: SmileIdentityCore::VERSION
+        source_sdk_version: SmileIdentityCore::VERSION,
       )
 
       connection.get_job_status(
         user_id,
         job_id,
-        { return_history: return_history, return_image_links: return_image_links }
+        { return_history: return_history, return_image_links: return_image_links },
       )
     end
 
@@ -65,7 +65,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     context 'when options are provided as strings' do
       it 'symbolizes them' do
         allow(connection).to receive(:query_job_status).with(
-          hash_including(history: return_history, image_links: return_image_links)
+          hash_including(history: return_history, image_links: return_image_links),
         )
         connection.get_job_status(
           user_id, job_id, { 'return_history' => return_history, 'return_image_links' => return_image_links }
@@ -126,7 +126,7 @@ RSpec.describe SmileIdentityCore::Utilities do
       connection.instance_variable_set(:@timestamp, 'we only care here that it comes through')
 
       result = connection.send(:configure_job_query,
-                               111, 222, { return_history: return_history, return_image_links: return_image_links })
+        111, 222, { return_history: return_history, return_image_links: return_image_links })
 
       expect(result[:user_id]).to eq(111)
       expect(result[:job_id]).to eq(222)

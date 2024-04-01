@@ -17,7 +17,7 @@ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key
 partner_params = {
   user_id: '<put your unique ID for the user here>',
   job_id: '<put your unique job ID here>',
-  job_type: 11
+  job_type: 11,
 }
 
 # Create image list
@@ -33,27 +33,27 @@ partner_params = {
 image_details = [
   {
     image_type_id: '<0 | 2>',
-    image: '<full path to selfie image or base64image string>'
+    image: '<full path to selfie image or base64image string>',
   },
   { # Not required if you don't require proof of life (note photo of photo check
     # will still be performed on the uploaded selfie)
     image_type_id: '<4 | 6>',
-    image: '<full path to liveness image or base64 image string>'
+    image: '<full path to liveness image or base64 image string>',
   },
   {
     image_type_id: '<1 | 3>',
-    image: '<full path to front of id document image or base64image string>'
+    image: '<full path to front of id document image or base64image string>',
   },
   { # Optional, only use if you're uploading the back of the id document image
     image_type_id: '<5 | 7>',
-    image: '<full path to back of id document image or base64image string>'
-  }
+    image: '<full path to back of id document image or base64image string>',
+  },
 ]
 
 # The ID Document Information
 id_info = {
   country: '<2-letter country code>', # The country where ID document was issued
-  id_type: '<id type>' # The ID document type
+  id_type: '<id type>', # The ID document type
 }
 
 # Set options for the job
@@ -67,7 +67,7 @@ options = {
   # Set to true to receive links to the selfie and the photo it was compared to.
   # You must set return_job_status to true to use this flag.
   return_image_links: '<true |false>',
-  signature: true
+  signature: true,
 }
 
 # Submit the job

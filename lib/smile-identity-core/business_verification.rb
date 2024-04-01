@@ -85,7 +85,7 @@ module SmileIdentityCore
         "#{@url}/business_verification",
         method: 'POST',
         headers: { 'Content-Type' => 'application/json' },
-        body: build_payload.to_json
+        body: build_payload.to_json,
       )
 
       request.on_complete do |response|

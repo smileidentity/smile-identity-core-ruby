@@ -12,7 +12,7 @@ RSpec.describe SmileIdentityCore::WebApi do
     {
       user_id: '1',
       job_id: '2',
-      job_type: SmileIdentityCore::JobType::BIOMETRIC_KYC
+      job_type: SmileIdentityCore::JobType::BIOMETRIC_KYC,
     }
   end
 
@@ -20,12 +20,12 @@ RSpec.describe SmileIdentityCore::WebApi do
     [
       {
         image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-        image: './tmp/selfie.png'
+        image: './tmp/selfie.png',
       },
       {
         image_type_id: SmileIdentityCore::ImageType::ID_CARD_IMAGE_FILE,
-        image: './tmp/id_image.png'
-      }
+        image: './tmp/id_image.png',
+      },
     ]
   end
 
@@ -33,12 +33,12 @@ RSpec.describe SmileIdentityCore::WebApi do
     [
       {
         image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-        image: './tmp/selfie.png'
+        image: './tmp/selfie.png',
       },
       {
         image_type_id: SmileIdentityCore::ImageType::ID_CARD_BACK_IMAGE_BASE64,
-        image: '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhUSEhMVFRUXFxcWFRUVFRUVFRgWFRUXFhcW='
-      }
+        image: '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhUSEhMVFRUXFxcWFRUVFRUVFRgWFRUXFhcW=',
+      },
 
     ]
   end
@@ -51,7 +51,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       country: 'NG',
       id_type: 'BVN',
       id_number: '00000000000',
-      entered: 'true'
+      entered: 'true',
     }
   end
 
@@ -60,7 +60,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       optional_callback: 'www.optional_callback.com',
       return_job_status: false,
       return_image_links: false,
-      return_history: false
+      return_history: false,
     }
   end
 
@@ -97,7 +97,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           missing_partner_params = {
             user_id: '1',
             job_id: '2',
-            job_type: nil
+            job_type: nil,
           }
 
           expect { connection.submit_job(no_partner_parameters, images, id_info, options) }
@@ -117,8 +117,8 @@ RSpec.describe SmileIdentityCore::WebApi do
           just_id_image = [
             {
               image_type_id: SmileIdentityCore::ImageType::ID_CARD_BACK_IMAGE_FILE,
-              image_path: './tmp/id_image.png'
-            }
+              image_path: './tmp/id_image.png',
+            },
           ]
 
           expect { connection.submit_job(partner_params, no_images, id_info, options) }
@@ -148,7 +148,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             'ref_id' => '125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww',
             'smile_job_id' => '0000000583',
             'camera_config' => 'null',
-            'code' => '2202'
+            'code' => '2202',
           }.to_json
           Typhoeus.stub('https://www.example.com/upload').and_return(Typhoeus::Response.new(code: 200, body: body))
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return('')
@@ -156,8 +156,8 @@ RSpec.describe SmileIdentityCore::WebApi do
           Typhoeus.stub(response_upload_url).and_return(Typhoeus::Response.new(code: 200))
 
           amended_partner_params = partner_params.merge({
-                                                          job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
-                                                        })
+            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION,
+          })
           %i[id_number id_type].each do |key|
             amended_id_info = id_info.merge(key => '')
             expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
@@ -168,8 +168,8 @@ RSpec.describe SmileIdentityCore::WebApi do
         it 'country field in id_info is required for JT6' do
           amended_id_info = id_info.merge('country' => '')
           amended_partner_params = partner_params.merge({
-                                                          job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION
-                                                        })
+            job_type: SmileIdentityCore::JobType::DOCUMENT_VERIFICATION,
+          })
           expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
             .to raise_error(ArgumentError, 'Please make sure that country is included in the id_info')
         end
@@ -179,8 +179,8 @@ RSpec.describe SmileIdentityCore::WebApi do
             amended_id_info = id_info.merge(key => '')
             job_type = SmileIdentityCore::JobType::ENHANCED_DOCUMENT_VERIFICATION
             amended_partner_params = partner_params.merge({
-                                                            job_type: job_type
-                                                          })
+              job_type: job_type,
+            })
             expect { connection.submit_job(amended_partner_params, images, amended_id_info, options) }
               .to raise_error(ArgumentError, "Please make sure that #{key} is included in the id_info")
           end
@@ -205,7 +205,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           'ref_id' => '125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww',
           'smile_job_id' => '0000000583',
           'camera_config' => 'null',
-          'code' => '2202'
+          'code' => '2202',
         }.to_json
 
         Typhoeus.stub('https://www.example.com/upload').and_return(Typhoeus::Response.new(code: 200, body: body))
@@ -228,8 +228,8 @@ RSpec.describe SmileIdentityCore::WebApi do
       [5, 7].each do |job_type|
         it "ensures that IDApi is called when job id is #{job_type}" do
           body = {
-            "JSONVersion": '1.0.0',
-            "SmileJobID": '0000001096'
+            JSONVersion: '1.0.0',
+            SmileJobID: '0000001096',
           }
           response = Typhoeus::Response.new(code: 200, body: body)
           Typhoeus.stub('https://testapi.smileidentity.com/v1/business_verification').and_return(response)
@@ -243,7 +243,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           allow(instance).to receive(:submit_job).and_return(body)
 
           connection.submit_job(partner_params.merge(job_type: job_type), images, id_info.merge(business_info),
-                                options.merge(optional_callback: 'https://zombo.com'))
+            options.merge(optional_callback: 'https://zombo.com'))
           expect(instance).to have_received(:submit_job).once
         end
       end
@@ -270,7 +270,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         connection.instance_variable_set('@options', options)
         expect { connection.send(:validate_return_data) }
           .to raise_error(ArgumentError,
-                          'Please choose to either get your response via the callback or job status query')
+            'Please choose to either get your response via the callback or job status query')
 
         connection.instance_variable_set('@options', options_with_job_status_true)
         connection.instance_variable_set('@callback_url', default_callback)
@@ -281,31 +281,31 @@ RSpec.describe SmileIdentityCore::WebApi do
     describe '#validate_enroll_with_id' do
       before do
         connection.instance_variable_set('@images', [
-                                           {
-                                             image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-                                             image: './tmp/selfie1.png'
-                                           },
-                                           {
-                                             image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-                                             image: './tmp/selfie2.png'
-                                           }
-                                         ])
+          {
+            image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
+            image: './tmp/selfie1.png',
+          },
+          {
+            image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
+            image: './tmp/selfie2.png',
+          },
+        ])
         connection.instance_variable_set('@id_info',
-                                         {
-                                           first_name: '',
-                                           last_name: '',
-                                           middle_name: '',
-                                           country: '',
-                                           id_type: '',
-                                           id_number: '',
-                                           entered: 'false'
-                                         })
+          {
+            first_name: '',
+            last_name: '',
+            middle_name: '',
+            country: '',
+            id_type: '',
+            id_number: '',
+            entered: 'false',
+          })
       end
 
       it 'validates the id parameters required for job_type 1' do
         expect { connection.send(:validate_enroll_with_id) }
           .to raise_error(ArgumentError,
-                          'You are attempting to complete a job type 1 without providing an id card image or id info')
+            'You are attempting to complete a job type 1 without providing an id card image or id info')
 
         connection.instance_variable_set('@images', images)
         expect { connection.send(:validate_enroll_with_id) }.not_to raise_error
@@ -361,7 +361,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           'model_parameters' => {}, # The code hard-codes this value
           'callback_url' => 'www.example.com',
           'source_sdk' => SmileIdentityCore::SOURCE_SDK,
-          'source_sdk_version' => SmileIdentityCore::VERSION
+          'source_sdk_version' => SmileIdentityCore::VERSION,
         )
         expect(parsed_response).to have_key 'signature'
       end
@@ -383,7 +383,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           'ref_id' => '125-0000000583-s8fqo7ju2ji2u32hhu4us11bq3yhww',
           'smile_job_id' => response_smile_job_id,
           'camera_config' => 'null',
-          'code' => '2202'
+          'code' => '2202',
         }.to_json
 
         Typhoeus.stub("#{url}/upload").and_return(Typhoeus::Response.new(code: 200, body: body))
@@ -434,7 +434,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:configure_info_json) { connection.send(:configure_info_json, 'the server information url') }
 
       it 'includes the images on the root level' do
-        expect(configure_info_json.fetch(:images)).to be_kind_of(Array)
+        expect(configure_info_json.fetch(:images)).to be_a(Array)
       end
 
       it 'includes the relevant id_info on the root level' do
@@ -449,20 +449,20 @@ RSpec.describe SmileIdentityCore::WebApi do
         it 'includes its relevant keys' do
           [:apiVersion].each do |key|
             expect(connection.send(:configure_info_json,
-                                   'the server information url')[:package_information]).to have_key(key)
+              'the server information url')[:package_information]).to have_key(key)
           end
         end
 
         it 'includes the relevant keys for the nested apiVersion' do
           %i[buildNumber majorVersion minorVersion].each do |key|
             expect(connection.send(:configure_info_json,
-                                   'the server information url')[:package_information][:apiVersion]).to have_key(key)
+              'the server information url')[:package_information][:apiVersion]).to have_key(key)
           end
         end
 
         it 'sets the correct version information' do
           api_version = connection.send(:configure_info_json,
-                                        'the server information url')[:package_information][:apiVersion]
+            'the server information url')[:package_information][:apiVersion]
           expect(api_version[:buildNumber]).to be(0)
           expect(api_version[:majorVersion]).to be(2)
           expect(api_version[:minorVersion]).to be(0)
@@ -483,7 +483,7 @@ RSpec.describe SmileIdentityCore::WebApi do
             signature: instance_of(String), # new signature!
             userData: instance_of(Hash), # hard-coded, and spec'd below
             retry: 'false', # hard-coded
-            file_name: 'selfie.zip' # hard-coded
+            file_name: 'selfie.zip', # hard-coded
           )
           expect(configure_info_json.fetch(:misc_information)).to have_key(:signature)
         end
@@ -503,7 +503,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the correct data type' do
-        expect(connection.send(:configure_image_payload)).to be_kind_of(Array)
+        expect(connection.send(:configure_image_payload)).to be_a(Array)
       end
 
       it 'includes the relevant keys in the hash of the array' do
@@ -542,8 +542,8 @@ RSpec.describe SmileIdentityCore::WebApi do
             apiVersion: {
               buildNumber: 0,
               majorVersion: 2,
-              minorVersion: 0
-            }
+              minorVersion: 0,
+            },
           },
           misc_information: {
             signature: "zWzSzfvXzvN0MdPHtW78a9w3Zlyy7k9UY6Li7pikHniTeuma2/9gzZsZIMVy\n/NhMyK0crjvLeheZ\
@@ -565,8 +565,8 @@ RSpec.describe SmileIdentityCore::WebApi do
               email: '',
               phone: '',
               countryCode: '+',
-              countryName: ''
-            }
+              countryName: '',
+            },
           },
           id_info: id_info,
           images: connection.send(:configure_image_payload),
@@ -575,15 +575,15 @@ RSpec.describe SmileIdentityCore::WebApi do
             'ref_id' => '125-0000000549-vzegm7mb23rznn5e1lepyij444olpa',
             'smile_job_id' => '0000000549',
             'camera_config' => 'null',
-            'code' => '2202'
-          }
+            'code' => '2202',
+          },
         }
       end
 
       let(:zip_up_file) { connection.send(:zip_up_file, info_json) }
 
       it 'returns the correct object type after being zipped' do
-        expect(zip_up_file).to be_a_kind_of(StringIO)
+        expect(zip_up_file).to be_a(StringIO)
       end
 
       it 'returns an object with a size greater than 0' do
@@ -625,8 +625,8 @@ RSpec.describe SmileIdentityCore::WebApi do
               apiVersion: {
                 buildNumber: 0,
                 majorVersion: 2,
-                minorVersion: 0
-              }
+                minorVersion: 0,
+              },
             },
             misc_information: {
               signature: "zWzSzfvXzvN0MdPHtW7879w3Zlyy7k9UY6Li7pikHniTUuma2/9gzZsZIMVy\n/NhMyK0crjvLe\
@@ -648,8 +648,8 @@ RSpec.describe SmileIdentityCore::WebApi do
                 email: '',
                 phone: '',
                 countryCode: '+',
-                countryName: ''
-              }
+                countryName: '',
+              },
             },
             id_info: id_info,
             images: connection.send(:configure_image_payload),
@@ -657,8 +657,8 @@ RSpec.describe SmileIdentityCore::WebApi do
               'upload_url' => 'https://some_url/selfie.zip',
               'smile_job_id' => '0000000549',
               'camera_config' => 'null',
-              'code' => '2202'
-            }
+              'code' => '2202',
+            },
           }
         end
 
@@ -743,16 +743,16 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       before do
         connection.instance_variable_set('@partner_params', {
-                                           user_id: '1',
-                                           job_id: '2',
-                                           job_type: 1
-                                         })
+          user_id: '1',
+          job_id: '2',
+          job_type: 1,
+        })
         connection.instance_variable_set('@url', url)
         connection.instance_variable_set('@options', options)
         connection.instance_variable_set('@api_key', api_key)
         connection.instance_variable_set('@partner_id', partner_id)
         connection.instance_variable_set('@utilies_connection',
-                                         SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
+          SmileIdentityCore::Utilities.new(partner_id, api_key, sid_server))
 
         hmac = OpenSSL::HMAC.new(api_key, 'sha256')
         hmac.update(timestamp.to_s)
@@ -779,7 +779,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           success: true,
           smile_job_id: '123',
           source_sdk: instance_of(String),
-          source_sdk_version: instance_of(String)
+          source_sdk_version: instance_of(String),
         }.to_json
 
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
@@ -798,7 +798,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           success: true,
           smile_job_id: '123',
           source_sdk: SmileIdentityCore::SOURCE_SDK,
-          source_sdk_version: SmileIdentityCore::VERSION
+          source_sdk_version: SmileIdentityCore::VERSION,
         }.to_json
 
         typhoeus_response = Typhoeus::Response.new(code: 200, body: body.to_s)
@@ -823,7 +823,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           user_id: user_id,
           job_id: job_id,
           product: product,
-          callback_url: callback_url
+          callback_url: callback_url,
         }
       end
 
@@ -899,7 +899,7 @@ RSpec.describe SmileIdentityCore::WebApi do
           headers = { 'Content-Type' => 'application/json' }
 
           allow(Typhoeus).to receive(:post).with(url, { body: request_body, headers: headers })
-                                           .and_return(typhoeus_response)
+            .and_return(typhoeus_response)
 
           connection.get_web_token(request_params)
         end

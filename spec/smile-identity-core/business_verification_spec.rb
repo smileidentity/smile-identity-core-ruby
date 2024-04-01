@@ -11,32 +11,32 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
       partner_params: {
         user_id: 'kyb_test_user_008',
         job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
-        job_type: SmileIdentityCore::JobType::BUSINESS_VERIFICATION
+        job_type: SmileIdentityCore::JobType::BUSINESS_VERIFICATION,
       },
       id_info: {
         country: 'NG',
         id_type: 'BUSINESS_REGISTRATION',
         id_number: 'A000000',
-        business_type: 'co'
-      }
+        business_type: 'co',
+      },
     }
   end
 
   it 'sets REQUIRED_ID_INFO_FIELD' do
-    expect(SmileIdentityCore::BusinessVerification::REQUIRED_ID_INFO_FIELD).to eq(%i[country id_type id_number])
+    expect(described_class::REQUIRED_ID_INFO_FIELD).to eq(%i[country id_type id_number])
   end
 
   describe 'when id_type is called' do
     it 'returns BASIC_BUSINESS_REGISTRATION' do
-      expect(SmileIdentityCore::BusinessVerification::BASIC_BUSINESS_REGISTRATION).to eq('BASIC_BUSINESS_REGISTRATION')
+      expect(described_class::BASIC_BUSINESS_REGISTRATION).to eq('BASIC_BUSINESS_REGISTRATION')
     end
 
     it 'returns BUSINESS_REGISTRATION' do
-      expect(SmileIdentityCore::BusinessVerification::BUSINESS_REGISTRATION).to eq('BUSINESS_REGISTRATION')
+      expect(described_class::BUSINESS_REGISTRATION).to eq('BUSINESS_REGISTRATION')
     end
 
     it 'returns TAX_INFORMATION' do
-      expect(SmileIdentityCore::BusinessVerification::TAX_INFORMATION).to eq('TAX_INFORMATION')
+      expect(described_class::TAX_INFORMATION).to eq('TAX_INFORMATION')
     end
   end
 
@@ -80,7 +80,7 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
       expect do
         connection.submit_job(payload[:partner_params].merge(job_type: 1), payload[:id_info])
       end.to raise_error(ArgumentError,
-                         'Please ensure that you are setting your job_type to 7 to query Business Verification')
+        'Please ensure that you are setting your job_type to 7 to query Business Verification')
     end
 
     it 'throws ArgumentError if id_info is nil' do
@@ -121,101 +121,101 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
     describe '#setup_requests' do
       it 'returns a correct json object if it runs successfully' do
         body = {
-          'signature': '---',
-          'timestamp': '2022-10-17T10:46:49.392Z',
-          'JSONVersion': '1.0.0',
-          'SmileJobID': '0000001927',
-          'PartnerParams': {
-            'user_id': 'kyb_test_user_008',
-            'job_id': 'DeXyJOGtaACFFfbZ2kxjuICE',
-            'job_type': 7
+          signature: '---',
+          timestamp: '2022-10-17T10:46:49.392Z',
+          JSONVersion: '1.0.0',
+          SmileJobID: '0000001927',
+          PartnerParams: {
+            user_id: 'kyb_test_user_008',
+            job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
+            job_type: 7,
           },
-          'ResultType': 'Business Verification',
-          'ResultText': 'Business Verified',
-          'ResultCode': '1012',
-          'IsFinalResult': 'true',
-          'Actions': {
-            'Verify_Business': 'Verified',
-            'Return_Business_Info': 'Returned'
+          ResultType: 'Business Verification',
+          ResultText: 'Business Verified',
+          ResultCode: '1012',
+          IsFinalResult: 'true',
+          Actions: {
+            Verify_Business: 'Verified',
+            Return_Business_Info: 'Returned',
           },
-          'company_information': {
-            'company_type': 'PRIVATE_COMPANY_LIMITED_BY_SHARES',
-            'country': 'Nigeria',
-            'address': '10, Workbox, Ojora Close, Victoria Island, Lagos',
-            'registration_number': '0000000',
-            'search_number': '0000000',
-            'authorized_shared_capital': '10000000',
-            'industry': 'Technology Solutions Company',
-            'tax_id': 'N/A',
-            'registration_date': '2016-01-28T16:06:22.003+00:00',
-            'phone': '08000000000',
-            'legal_name': 'SMILE IDENTITY NIGERIA LIMITED',
-            'state': 'LAGOS',
-            'email': 'smile@usesmileid.com',
-            'status': 'ACTIVE'
+          company_information: {
+            company_type: 'PRIVATE_COMPANY_LIMITED_BY_SHARES',
+            country: 'Nigeria',
+            address: '10, Workbox, Ojora Close, Victoria Island, Lagos',
+            registration_number: '0000000',
+            search_number: '0000000',
+            authorized_shared_capital: '10000000',
+            industry: 'Technology Solutions Company',
+            tax_id: 'N/A',
+            registration_date: '2016-01-28T16:06:22.003+00:00',
+            phone: '08000000000',
+            legal_name: 'SMILE IDENTITY NIGERIA LIMITED',
+            state: 'LAGOS',
+            email: 'smile@usesmileid.com',
+            status: 'ACTIVE',
           },
-          'fiduciaries': [
+          fiduciaries: [
             {
-              'name': 'Company X',
-              'fiduciary_type': 'SECRETARY_COMPANY',
-              'address': '10, Workbox, Ojora Close, Victoria Island, Lagos',
-              'registration_number': '000000',
-              'status': 'N/A'
-            }
+              name: 'Company X',
+              fiduciary_type: 'SECRETARY_COMPANY',
+              address: '10, Workbox, Ojora Close, Victoria Island, Lagos',
+              registration_number: '000000',
+              status: 'N/A',
+            },
           ],
-          'beneficial_owners': [
+          beneficial_owners: [
             {
-              'shareholdings': '100000',
-              'address': '10, Workbox, Ojora Close, Victoria Island, Lagos',
-              'gender': 'Male',
-              'nationality': 'Nigerian',
-              'registration_number': 'N/A',
-              'name': 'Joe Bloggs',
-              'shareholder_type': 'Individual',
-              'phone_number': '0123456789'
+              shareholdings: '100000',
+              address: '10, Workbox, Ojora Close, Victoria Island, Lagos',
+              gender: 'Male',
+              nationality: 'Nigerian',
+              registration_number: 'N/A',
+              name: 'Joe Bloggs',
+              shareholder_type: 'Individual',
+              phone_number: '0123456789',
             },
             {
-              'shareholdings': '700000',
-              'address': '1234 Main Street Anytown Anystate 00000 USA',
-              'gender': 'Not Applicable',
-              'nationality': 'N/A',
-              'registration_number': '000000',
-              'name': 'XYZ Widget Corporation',
-              'shareholder_type': 'Corporate',
-              'phone_number': '0123456789'
-            }
+              shareholdings: '700000',
+              address: '1234 Main Street Anytown Anystate 00000 USA',
+              gender: 'Not Applicable',
+              nationality: 'N/A',
+              registration_number: '000000',
+              name: 'XYZ Widget Corporation',
+              shareholder_type: 'Corporate',
+              phone_number: '0123456789',
+            },
           ],
-          'proprietors': [],
-          'documents': {
-            'search_certificate': ''
+          proprietors: [],
+          documents: {
+            search_certificate: '',
           },
-          'directors': [
+          directors: [
             {
-              'shareholdings': '100000',
-              'id_number': 'A000000',
-              'address': '10, Workbox, Ojora Close, Victoria Island, Lagos',
-              'occupation': 'CEO',
-              'gender': 'MALE',
-              'nationality': 'Nigerian',
-              'date_of_birth': '2000-09-20',
-              'name': 'Joe Doe Leo',
-              'id_type': 'Passport',
-              'phone_number': '0123456789'
+              shareholdings: '100000',
+              id_number: 'A000000',
+              address: '10, Workbox, Ojora Close, Victoria Island, Lagos',
+              occupation: 'CEO',
+              gender: 'MALE',
+              nationality: 'Nigerian',
+              date_of_birth: '2000-09-20',
+              name: 'Joe Doe Leo',
+              id_type: 'Passport',
+              phone_number: '0123456789',
             },
             {
-              'shareholdings': '100000',
-              'id_number': 'A000000',
-              'address': '1234 Main Street Anytown Anystate 00000 USA',
-              'occupation': 'COO',
-              'gender': 'FEMALE',
-              'nationality': 'American',
-              'date_of_birth': '2000-01-01',
-              'name': 'Jane Doe',
-              'id_type': 'Passport',
-              'phone_number': '0123456789'
-            }
+              shareholdings: '100000',
+              id_number: 'A000000',
+              address: '1234 Main Street Anytown Anystate 00000 USA',
+              occupation: 'COO',
+              gender: 'FEMALE',
+              nationality: 'American',
+              date_of_birth: '2000-01-01',
+              name: 'Jane Doe',
+              id_type: 'Passport',
+              phone_number: '0123456789',
+            },
           ],
-          'success': true
+          success: true,
         }.to_json
 
         response = Typhoeus::Response.new(code: 200, body: body)
@@ -244,17 +244,17 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
       end
 
       it 'returns a hash formatted for the request' do
-        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
-        expect(parsed_response).to match({ 'timestamp': signature[:timestamp], 'signature': signature[:signature],
-                                           'partner_id': partner_id, 'country': 'NG',
-                                           'partner_params': payload[:partner_params],
-                                           'id_type': payload[:id_info][:id_type],
-                                           'id_number': payload[:id_info][:id_number],
-                                           'business_type': payload[:id_info][:business_type],
-                                           'source_sdk': SmileIdentityCore::SOURCE_SDK,
-                                           'source_sdk_version': SmileIdentityCore::VERSION })
+        expect(parsed_response).to match({ timestamp: signature[:timestamp], signature: signature[:signature],
+                                           partner_id: partner_id, country: 'NG',
+                                           partner_params: payload[:partner_params],
+                                           id_type: payload[:id_info][:id_type],
+                                           id_number: payload[:id_info][:id_number],
+                                           business_type: payload[:id_info][:business_type],
+                                           source_sdk: SmileIdentityCore::SOURCE_SDK,
+                                           source_sdk_version: SmileIdentityCore::VERSION })
       end
     end
   end

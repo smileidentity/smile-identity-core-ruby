@@ -25,8 +25,8 @@ module SmileIdentityCore
 
       if partner_params[:job_type] == JobType::BUSINESS_VERIFICATION
         return SmileIdentityCore::BusinessVerification
-               .new(@partner_id, @api_key, @url)
-               .submit_job(partner_params, id_info)
+            .new(@partner_id, @api_key, @url)
+            .submit_job(partner_params, id_info)
       end
 
       options = symbolize_keys(options || {})
@@ -46,7 +46,7 @@ module SmileIdentityCore
         "#{@url}/#{endpoint}",
         method: 'POST',
         headers: { 'Content-Type' => 'application/json' },
-        body: configure_json
+        body: configure_json,
       )
 
       request.on_complete do |response|
@@ -63,14 +63,14 @@ module SmileIdentityCore
 
     def configure_json
       signature_generator.generate_signature(Time.now.to_s)
-                         .merge(@id_info)
-                         .merge(
-                           partner_id: @partner_id,
-                           partner_params: @partner_params,
-                           source_sdk: SmileIdentityCore::SOURCE_SDK,
-                           source_sdk_version: SmileIdentityCore::VERSION
-                         )
-                         .to_json
+        .merge(@id_info)
+        .merge(
+          partner_id: @partner_id,
+          partner_params: @partner_params,
+          source_sdk: SmileIdentityCore::SOURCE_SDK,
+          source_sdk_version: SmileIdentityCore::VERSION,
+        )
+        .to_json
     end
 
     def signature_generator

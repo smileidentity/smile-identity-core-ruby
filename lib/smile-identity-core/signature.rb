@@ -19,7 +19,7 @@ module SmileIdentityCore
       @signature = Base64.strict_encode64(hmac.digest)
       {
         signature: @signature,
-        timestamp: timestamp.to_s
+        timestamp: timestamp.to_s,
       }
     end
 

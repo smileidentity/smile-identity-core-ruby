@@ -17,7 +17,7 @@ module SmileIdentityCore
       options[:return_image_links] ||= false
 
       query_job_status(configure_job_query(user_id, job_id,
-                                           options).merge(@signature_connection.generate_signature(Time.now.to_s)))
+        options).merge(@signature_connection.generate_signature(Time.now.to_s)))
     end
 
     private
@@ -29,9 +29,9 @@ module SmileIdentityCore
     def query_job_status(request_json_data)
       request = Typhoeus::Request.new(
         "#{@url}/job_status",
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         method: :post,
-        body: request_json_data.to_json
+        body: request_json_data.to_json,
       )
 
       request.on_complete do |response|
@@ -47,8 +47,6 @@ module SmileIdentityCore
         raise 'Unable to confirm validity of the job_status response' unless valid
 
         return body
-      rescue StandardError => e
-        raise e
       end
 
       request.run
@@ -62,7 +60,7 @@ module SmileIdentityCore
         image_links: options[:return_image_links],
         history: options[:return_history],
         source_sdk: SmileIdentityCore::SOURCE_SDK,
-        source_sdk_version: SmileIdentityCore::VERSION
+        source_sdk_version: SmileIdentityCore::VERSION,
       }
     end
   end

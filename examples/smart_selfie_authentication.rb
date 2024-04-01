@@ -17,7 +17,7 @@ connection = SmileIdentityCore::WebApi.new(partner_id, default_callback, api_key
 partner_params = {
   user_id: '<put previously registered user"s user_id here>',
   job_id: '<put your unique job ID here>',
-  job_type: 2
+  job_type: 2,
 }
 
 # Create image list
@@ -29,13 +29,13 @@ partner_params = {
 image_details = [
   {
     image_type_id: '<0 | 2>',
-    image: '<full path to selfie image or base64image string>'
+    image: '<full path to selfie image or base64image string>',
   },
   { # Not required if you don't require proof of life (note photo of photo check will
     # still be performed on the uploaded selfie)
     image_type_id: '<4 | 6>',
-    image: '<full path to liveness image or base64 image string>'
-  }
+    image: '<full path to liveness image or base64 image string>',
+  },
 ]
 
 # Set options for the job
@@ -49,7 +49,7 @@ options = {
   # Set to true to receive links to the selfie and the photo it was
   # compared to. You must set return_job_status to true to use this flag.
   return_image_links: '<true | false>',
-  signature: true
+  signature: true,
 }
 
 # Submit the job
