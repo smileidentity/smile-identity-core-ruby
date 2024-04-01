@@ -29,7 +29,7 @@ module SmileIdentityCore
     def query_job_status(request_json_data)
       request = Typhoeus::Request.new(
         "#{@url}/job_status",
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         method: :post,
         body: request_json_data.to_json,
       )
@@ -47,8 +47,6 @@ module SmileIdentityCore
         raise 'Unable to confirm validity of the job_status response' unless valid
 
         return body
-      rescue StandardError => e
-        raise e
       end
 
       request.run

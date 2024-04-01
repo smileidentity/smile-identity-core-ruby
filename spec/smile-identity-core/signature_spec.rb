@@ -10,9 +10,9 @@ RSpec.describe SmileIdentityCore::Signature do
     it 'returns the defined keys' do
       payload = connection.generate_signature
       %i[signature timestamp].each do |key|
-        expect(payload).to be_kind_of(Hash)
+        expect(payload).to be_a(Hash)
         expect(payload).to have_key(key)
-        expect(payload[key]).to be_kind_of(String)
+        expect(payload[key]).to be_a(String)
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe SmileIdentityCore::Signature do
       hmac.update(partner_id)
       hmac.update('sid_request')
       signature = Base64.strict_encode64(hmac.digest)
-      expect(connection.confirm_signature(timestamp, signature)).to eq(true)
+      expect(connection.confirm_signature(timestamp, signature)).to be(true)
     end
   end
 end

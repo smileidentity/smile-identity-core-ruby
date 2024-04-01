@@ -59,8 +59,8 @@ RSpec.describe SmileIdentityCore::IDApi do
 
       it 'validates that business verification is called' do
         body = {
-          "JSONVersion": '1.0.0',
-          "SmileJobID": '0000001096',
+          JSONVersion: '1.0.0',
+          SmileJobID: '0000001096',
         }
         response = Typhoeus::Response.new(code: 200, body: body)
         Typhoeus.stub('https://testapi.smileidentity.com/v1/business_verification').and_return(response)
@@ -128,32 +128,32 @@ RSpec.describe SmileIdentityCore::IDApi do
 
       it 'returns a correct json object if it runs successfully' do
         body = {
-          "JSONVersion": '1.0.0',
-          "SmileJobID": '0000001096',
-          "PartnerParams": {
-            "user_id": 'dmKaJazQCziLc6Tw9lwcgzLo',
-            "job_id": 'DeXyJOGtaACFFfbZ2kxjuICE',
-            "job_type": 5,
+          JSONVersion: '1.0.0',
+          SmileJobID: '0000001096',
+          PartnerParams: {
+            user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
+            job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
+            job_type: 5,
           },
-          "ResultType": 'ID Verification',
-          "ResultText": 'ID Number Validated',
-          "ResultCode": '1012',
-          "IsFinalResult": 'true',
-          "Actions": {
-            "Verify_ID_Number": 'Verified',
-            "Return_Personal_Info": 'Returned',
+          ResultType: 'ID Verification',
+          ResultText: 'ID Number Validated',
+          ResultCode: '1012',
+          IsFinalResult: 'true',
+          Actions: {
+            Verify_ID_Number: 'Verified',
+            Return_Personal_Info: 'Returned',
           },
-          "Country": 'NG',
-          "IDType": 'BVN',
-          "IDNumber": '00000000000',
-          "ExpirationDate": 'NaN-NaN-NaN',
-          "FullName": 'some  person',
-          "DOB": 'NaN-NaN-NaN',
-          "Photo": 'Not Available',
-          "signature": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZl\
+          Country: 'NG',
+          IDType: 'BVN',
+          IDNumber: '00000000000',
+          ExpirationDate: 'NaN-NaN-NaN',
+          FullName: 'some  person',
+          DOB: 'NaN-NaN-NaN',
+          Photo: 'Not Available',
+          signature: 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZl\
           i8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2\
           ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba',
-          "timestamp": 1_570_612_182_124,
+          timestamp: 1_570_612_182_124,
         }.to_json
 
         response = Typhoeus::Response.new(code: 200, body: body)

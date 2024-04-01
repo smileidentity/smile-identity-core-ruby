@@ -41,4 +41,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rubyzip', '~> 1.2', '>= 1.2.3'
   spec.add_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

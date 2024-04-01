@@ -237,38 +237,38 @@ module SmileIdentityCore
 
     def configure_info_json(server_information)
       {
-        "package_information": {
-          "apiVersion": {
-            "buildNumber": 0,
-            "majorVersion": 2,
-            "minorVersion": 0,
+        package_information: {
+          apiVersion: {
+            buildNumber: 0,
+            majorVersion: 2,
+            minorVersion: 0,
           },
-          "language": 'ruby',
+          language: 'ruby',
         },
-        "misc_information": SmileIdentityCore::Signature.new(@partner_id, @api_key)
+        misc_information: SmileIdentityCore::Signature.new(@partner_id, @api_key)
           .generate_signature(Time.zone.now.to_s)
           .merge(
-            "retry": 'false',
-            "partner_params": @partner_params,
-            "file_name": 'selfie.zip', # figure out what to do here
-            "smile_client_id": @partner_id,
-            "callback_url": @callback_url,
-            "userData": { # TO ASK what goes here
-              "isVerifiedProcess": false,
-              "name": '',
-              "fbUserID": '',
-              "firstName": 'Bill',
-              "lastName": '',
-              "gender": '',
-              "email": '',
-              "phone": '',
-              "countryCode": '+',
-              "countryName": '',
+            retry: 'false',
+            partner_params: @partner_params,
+            file_name: 'selfie.zip', # figure out what to do here
+            smile_client_id: @partner_id,
+            callback_url: @callback_url,
+            userData: { # TO ASK what goes here
+              isVerifiedProcess: false,
+              name: '',
+              fbUserID: '',
+              firstName: 'Bill',
+              lastName: '',
+              gender: '',
+              email: '',
+              phone: '',
+              countryCode: '+',
+              countryName: '',
             },
           ),
-        "id_info": @id_info,
-        "images": configure_image_payload,
-        "server_information": server_information,
+        id_info: @id_info,
+        images: configure_image_payload,
+        server_information: server_information,
       }
     end
 
@@ -304,7 +304,7 @@ module SmileIdentityCore
           @images.each do |img|
             if (img[:image_type_id]).zero? || img[:image_type_id] == 1
               zos.put_next_entry(File.basename(img[:image]))
-              zos.print IO.read(img[:image])
+              zos.print File.read(img[:image])
             end
           end
         end

@@ -6,6 +6,7 @@ require:
 
 AllCops:
   TargetRubyVersion: 2.6
+  NewCops: enable
 
 Bundler/DuplicatedGem:
   Enabled: true
@@ -215,3 +216,12 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: true
   EnforcedStyleForMultiline: comma
+
+RSpec/NoExpectationExample:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false

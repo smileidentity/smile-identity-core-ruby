@@ -228,8 +228,8 @@ RSpec.describe SmileIdentityCore::WebApi do
       [5, 7].each do |job_type|
         it "ensures that IDApi is called when job id is #{job_type}" do
           body = {
-            "JSONVersion": '1.0.0',
-            "SmileJobID": '0000001096',
+            JSONVersion: '1.0.0',
+            SmileJobID: '0000001096',
           }
           response = Typhoeus::Response.new(code: 200, body: body)
           Typhoeus.stub('https://testapi.smileidentity.com/v1/business_verification').and_return(response)
@@ -434,7 +434,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:configure_info_json) { connection.send(:configure_info_json, 'the server information url') }
 
       it 'includes the images on the root level' do
-        expect(configure_info_json.fetch(:images)).to be_kind_of(Array)
+        expect(configure_info_json.fetch(:images)).to be_a(Array)
       end
 
       it 'includes the relevant id_info on the root level' do
@@ -503,7 +503,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       it 'returns the correct data type' do
-        expect(connection.send(:configure_image_payload)).to be_kind_of(Array)
+        expect(connection.send(:configure_image_payload)).to be_a(Array)
       end
 
       it 'includes the relevant keys in the hash of the array' do
@@ -583,7 +583,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       let(:zip_up_file) { connection.send(:zip_up_file, info_json) }
 
       it 'returns the correct object type after being zipped' do
-        expect(zip_up_file).to be_a_kind_of(StringIO)
+        expect(zip_up_file).to be_a(StringIO)
       end
 
       it 'returns an object with a size greater than 0' do

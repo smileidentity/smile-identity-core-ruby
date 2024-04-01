@@ -11,11 +11,12 @@ class SmartBank
 
   def initialize
     # login to the Smile Identity portal to view your partner id
-    @partner_id = ENV['SMILE_PARTNER_ID']
+    @partner_id = ENV.fetch('SMILE_PARTNER_ID', nil)
     # See https://docs.usesmileid.com/server-to-server/ruby/products/biometric-kyc#create-a-callback-endpoint
-    @default_callback = ENV['SMILE_JOB_CALLBACK_URL']
-    @api_key = ENV['SMILE_API_KEY'] # copy your API key from the Smile Identity portal
-    @sid_server = ENV['SMILE_SERVER_ENVIRONMENT'] # Use '0' for the sandbox server, use '1' for production server
+    @default_callback = ENV.fetch('SMILE_JOB_CALLBACK_URL', nil)
+    @api_key = ENV.fetch('SMILE_API_KEY', nil) # copy your API key from the Smile Identity portal
+    # Use '0' for the sandbox server, use '1' for production server
+    @sid_server = ENV.fetch('SMILE_SERVER_ENVIRONMENT', nil)
     @user_id = SecureRandom.uuid # your unique ID for the user
     @job_id = SecureRandom.uuid # your unique job ID
   end
