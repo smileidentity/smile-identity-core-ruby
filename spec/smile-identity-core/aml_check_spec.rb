@@ -187,7 +187,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       end
 
       it 'returns a hash formatted for the request' do
-        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response).to match({
@@ -209,7 +209,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       it 'returns a hash formatted for the request with optional params' do
         connection.instance_variable_set(:@optional_info, { user_email: 'johndoe@email.com' })
 
-        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response).to match({
@@ -234,7 +234,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       connection.instance_variable_set(:@params, nil)
       connection.instance_variable_set(:@optional_info, nil)
 
-      signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
+      signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
       allow(connection).to receive(:generate_signature).and_return(signature)
     end
   end

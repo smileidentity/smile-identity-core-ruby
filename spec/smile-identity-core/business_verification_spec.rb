@@ -244,7 +244,7 @@ RSpec.describe SmileIdentityCore::BusinessVerification do
       end
 
       it 'returns a hash formatted for the request' do
-        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response).to match({ timestamp: signature[:timestamp], signature: signature[:signature],

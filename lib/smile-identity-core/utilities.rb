@@ -17,7 +17,7 @@ module SmileIdentityCore
       options[:return_image_links] ||= false
 
       query_job_status(configure_job_query(user_id, job_id,
-        options).merge(@signature_connection.generate_signature(Time.zone.now.to_s)))
+        options).merge(@signature_connection.generate_signature(Time.now.to_s)))
     end
 
     private

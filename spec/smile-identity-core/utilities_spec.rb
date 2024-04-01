@@ -79,7 +79,7 @@ RSpec.describe SmileIdentityCore::Utilities do
     let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
     let(:partner_id) { 1 }
     let(:api_key) { Base64.encode64(rsa.public_key.to_pem) }
-    let(:timestamp) { Time.zone.now }
+    let(:timestamp) { Time.now }
     let(:good_signature) do
       SmileIdentityCore::Signature.new(partner_id.to_s, api_key).generate_signature(timestamp.to_s)[:signature]
     end

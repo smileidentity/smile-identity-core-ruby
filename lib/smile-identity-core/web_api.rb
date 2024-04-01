@@ -135,7 +135,7 @@ module SmileIdentityCore
 
     def request_web_token(request_params)
       request_params = request_params
-        .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.zone.now.to_s))
+        .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
         .merge(
           { partner_id: @partner_id,
             source_sdk: SmileIdentityCore::SOURCE_SDK,
@@ -159,7 +159,7 @@ module SmileIdentityCore
     end
 
     def validate_return_data
-      return unless @callback_url.blank? && !@options[:return_job_status]
+      return unless (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
 
       raise ArgumentError, 'Please choose to either get your response via the callback or job status query'
     end
@@ -197,7 +197,7 @@ module SmileIdentityCore
     end
 
     def configure_prep_upload_json
-      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.zone.now.to_s).merge(
+      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s).merge(
         file_name: 'selfie.zip',
         smile_client_id: @partner_id,
         partner_params: @partner_params,
@@ -246,7 +246,7 @@ module SmileIdentityCore
           language: 'ruby',
         },
         misc_information: SmileIdentityCore::Signature.new(@partner_id, @api_key)
-          .generate_signature(Time.zone.now.to_s)
+          .generate_signature(Time.now.to_s)
           .merge(
             retry: 'false',
             partner_params: @partner_params,

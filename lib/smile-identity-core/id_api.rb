@@ -62,7 +62,7 @@ module SmileIdentityCore
     end
 
     def configure_json
-      signature_generator.generate_signature(Time.zone.now.to_s)
+      signature_generator.generate_signature(Time.now.to_s)
         .merge(@id_info)
         .merge(
           partner_id: @partner_id,
