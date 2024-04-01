@@ -17,7 +17,7 @@ connection = SmileIdentityCore::IDApi.new(partner_id, default_callback, api_key,
 partner_params = {
   job_id: '<put your unique job ID here>',
   user_id: '<put your unique ID for the user here>',
-  job_type: SmileIdentityCore::JobType::BUSINESS_VERIFICATION
+  job_type: SmileIdentityCore::JobType::BUSINESS_VERIFICATION,
 }
 
 # Create ID info
@@ -35,7 +35,7 @@ id_info = {
   # Postal address of business. Only Required for BUSINESS_REGISTRATION in Kenya
   postal_address: '<postal address>',
   # Postal code of business. Only Required for BUSINESS_REGISTRATION in Kenya
-  postal_code: '<postal code>'
+  postal_code: '<postal code>',
 }
 
 # Set the options for the job

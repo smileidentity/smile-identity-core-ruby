@@ -16,7 +16,7 @@ connection = SmileIdentityCore::IDApi.new(partner_id, api_key, sid_server)
 partner_params = {
   job_id: '<put your unique job ID here>',
   user_id: '<put your unique ID for the user here>',
-  job_type: 5
+  job_type: 5,
 }
 
 # Create ID info
@@ -27,12 +27,12 @@ id_info = {
   id_type: '<id type>',
   id_number: '<valid id number>',
   dob: '<date of birth>', # yyyy-mm-dd
-  phone_number: '<phone number>'
+  phone_number: '<phone number>',
 }
 
 # Set the options for the job
 options = {
-  signature: true
+  signature: true,
 }
 
 # Submit the job

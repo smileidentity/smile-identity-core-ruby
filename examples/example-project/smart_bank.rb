@@ -35,12 +35,12 @@ class SmartBank
       id_type: 'PASSPORT',
       id_number: 'G0000000',
       dob: '1992-12-07', # yyyy-mm-dd
-      phone_number: '00000000000'
+      phone_number: '00000000000',
     }
 
     # Set the options for the job
     options = {
-      signature: true
+      signature: true,
     }
 
     # Submit the job
@@ -57,13 +57,13 @@ class SmartBank
     image_details = [
       {
         image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-        image: '/path/to/selfie_image.jpeg'
+        image: '/path/to/selfie_image.jpeg',
       },
       { # Not required if you don't require proof of life (note photo of photo check will
         # still be performed on the uploaded selfie)
         image_type_id: SmileIdentityCore::ImageType::LIVENESS_IMAGE_FILE,
-        image: '/path/to/liveness_image.jpeg'
-      }
+        image: '/path/to/liveness_image.jpeg',
+      },
     ]
 
     # Create ID number info
@@ -74,7 +74,7 @@ class SmartBank
       id_type: 'PASSPORT',
       id_number: 'G0000000',
       dob: '1992-12-07', # yyyy-mm-dd
-      entered: 'true' # must be a string
+      entered: 'true', # must be a string
     }
 
     # Submit the job
@@ -91,27 +91,27 @@ class SmartBank
     image_details = [
       {
         image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-        image: '/path/to/selfie_image.jpeg'
+        image: '/path/to/selfie_image.jpeg',
       },
       { # Not required if you don't require proof of life (note photo of photo
         # check will still be performed on the uploaded selfie)
         image_type_id: SmileIdentityCore::ImageType::LIVENESS_IMAGE_FILE,
-        image: '/path/to/liveness_image.jpeg'
+        image: '/path/to/liveness_image.jpeg',
       },
       {
         image_type_id: SmileIdentityCore::ImageType::ID_CARD_IMAGE_FILE,
-        image: '/path/to/front_document_image.jpeg'
+        image: '/path/to/front_document_image.jpeg',
       },
       { # Optional, only use if you're uploading the back of the id document image
         image_type_id: SmileIdentityCore::ImageType::ID_CARD_BACK_IMAGE_FILE,
-        image: '/path/to/back_document_image.jpeg'
-      }
+        image: '/path/to/back_document_image.jpeg',
+      },
     ]
 
     # The ID Document Information
     id_info = {
       country: 'GH', # The country where ID document was issued
-      id_type: 'PASSPORT' # The ID document type
+      id_type: 'PASSPORT', # The ID document type
     }
 
     # Submit the job
@@ -128,20 +128,20 @@ class SmartBank
     partner_params = {
       user_id: '512c9c37-a689-4959-a620-bed75fb41344', # previously registered user's user_id
       job_id: SecureRandom.uuid, # new unique job ID
-      job_type: SmileIdentityCore::JobType::SMART_SELFIE_REGISTRATION
+      job_type: SmileIdentityCore::JobType::SMART_SELFIE_REGISTRATION,
     }
 
     # Create image list
     image_details = [
       {
         image_type_id: SmileIdentityCore::ImageType::SELFIE_IMAGE_FILE,
-        image: '/path/to/selfie_image.jpeg'
+        image: '/path/to/selfie_image.jpeg',
       },
       { # Not required if you don't require proof of life
         # (note photo of photo check will still be performed on the uploaded selfie)
         image_type_id: SmileIdentityCore::ImageType::LIVENESS_IMAGE_FILE,
-        image: '/path/to/liveness_image.jpeg'
-      }
+        image: '/path/to/liveness_image.jpeg',
+      },
     ]
 
     # Submit the job
@@ -154,7 +154,7 @@ class SmartBank
     {
       user_id: user_id,
       job_id: job_id,
-      job_type: job_type
+      job_type: job_type,
     }
   end
 
@@ -175,7 +175,7 @@ class SmartBank
       # Set to true to receive links to the selfie and the photo it was compared to.
       # You must set return_job_status to true to use this flag.
       return_image_links: true,
-      signature: true
+      signature: true,
     }
   end
 end

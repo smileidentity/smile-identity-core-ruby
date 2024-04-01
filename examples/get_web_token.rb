@@ -19,7 +19,7 @@ request_params = {
   user_id: '<your unique user id>',
   job_id: '<your unique job id>',
   product: '<smile identity product type>',
-  callback_url: '<your callback url>'
+  callback_url: '<your callback url>',
 }
 
 # Get web token

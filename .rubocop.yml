@@ -1,9 +1,153 @@
+---
+
 require:
-  - rubocop-rake
-  - rubocop-rspec
+- rubocop-rake
+- rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.6
+  EnabledByDefault: false
+  DisabledByDefault: true
+
+Bundler/DuplicatedGem:
+  Enabled: true
+
+Bundler/DuplicatedGroup:
+  Enabled: true
+
+Bundler/GemFilename:
+  Enabled: true
+
+Layout/ArgumentAlignment:
+  Enabled: true
+  EnforcedStyle: with_fixed_indentation
+
+Layout/ArrayAlignment:
+  Enabled: true
+
+Layout/AssignmentIndentation:
+  Enabled: true
+
+Layout/BlockAlignment:
+  Enabled: true
+
+Layout/CaseIndentation:
+  Enabled: true
+
+Layout/ConditionPosition:
+  Enabled: true
+
+Layout/ElseAlignment:
+  Enabled: true
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: true
+
+Layout/EmptyLineAfterMagicComment:
+  Enabled: true
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: true
+
+Layout/EmptyLinesAroundClassBody:
+  Enabled: true
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: true
+
+Layout/EndAlignment:
+  Enabled: true
+
+Layout/EndOfLine:
+  Enabled: true
+
+Layout/ExtraSpacing:
+  Enabled: true
+  ForceEqualSignAlignment: false
+  AllowForAlignment: false
+
+Layout/FirstArgumentIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/FirstArrayElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/HashAlignment:
+  Enabled: true
+
+Layout/IndentationConsistency:
+  Enabled: true
+
+Layout/IndentationStyle:
+  Enabled: true
+
+Layout/IndentationWidth:
+  Enabled: true
+
+Layout/LeadingEmptyLines:
+  Enabled: true
+
+Layout/MultilineBlockLayout:
+  Enabled: true
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+
+Layout/MultilineOperationIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+
+Layout/ParameterAlignment:
+  Enabled: true
+
+Layout/SpaceAfterComma:
+  Enabled: true
+
+Layout/SpaceAroundKeyword:
+  Enabled: true
+
+Layout/SpaceAroundOperators:
+  Enabled: true
+
+Layout/SpaceBeforeBlockBraces:
+  Enabled: true
+
+Layout/SpaceBeforeFirstArg:
+  Enabled: true
+
+Layout/SpaceInsideBlockBraces:
+  Enabled: true
+
+Layout/SpaceInsideParens:
+  Enabled: true
+
+Layout/TrailingEmptyLines:
+  Enabled: true
+
+Layout/TrailingWhitespace:
+  Enabled: true
+
+Lint/AmbiguousAssignment:
+  Enabled: true
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: true
+
+Lint/AmbiguousOperator:
+  Enabled: true
+
+Lint/AmbiguousRange:
+  Enabled: true
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
 
 Metrics/AbcSize:
   Max: 30
@@ -20,26 +164,32 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 15
 
-Naming/FileName:
-  Enabled: false
+Style/RedundantBegin:
+  Enabled: true
 
-RSpec/ExampleLength:
-  Enabled: false
+Style/RedundantCondition:
+  Enabled: true
 
-RSpec/FilePath:
-  Enabled: false
+Style/RedundantInterpolation:
+  Enabled: true
 
-RSpec/InstanceVariable:
-  Enabled: false
+Style/RedundantParentheses:
+  Enabled: true
 
-RSpec/MultipleExpectations:
-  Enabled: false
+Style/RedundantReturn:
+  Enabled: true
 
-RSpec/MultipleMemoizedHelpers:
-  Enabled: false
-  
-RSpec/NestedGroups:
-  Enabled: false
+Style/StringLiterals:
+  Enabled: true
 
-RSpec/RepeatedExampleGroupDescription:
-  Enabled: false
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: comma

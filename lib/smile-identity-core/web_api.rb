@@ -58,7 +58,7 @@ module SmileIdentityCore
       %i[user_id job_id job_type].each do |key|
         if partner_params[key].to_s.empty?
           raise ArgumentError,
-                "Please make sure that #{key} is included in the partner params"
+            "Please make sure that #{key} is included in the partner params"
         end
       end
 
@@ -135,18 +135,18 @@ module SmileIdentityCore
 
     def request_web_token(request_params)
       request_params = request_params
-                       .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s))
-                       .merge(
-                         { partner_id: @partner_id,
-                           source_sdk: SmileIdentityCore::SOURCE_SDK,
-                           source_sdk_version: SmileIdentityCore::VERSION }
-                       )
+        .merge(SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.zone.now.to_s))
+        .merge(
+          { partner_id: @partner_id,
+            source_sdk: SmileIdentityCore::SOURCE_SDK,
+            source_sdk_version: SmileIdentityCore::VERSION },
+        )
       url = "#{@url}/token"
 
       response = Typhoeus.post(
         url,
         headers: { 'Content-Type' => 'application/json' },
-        body: request_params.to_json
+        body: request_params.to_json,
       )
 
       return response.body if response.code == 200
@@ -159,7 +159,7 @@ module SmileIdentityCore
     end
 
     def validate_return_data
-      return unless (!@callback_url || @callback_url.empty?) && !@options[:return_job_status]
+      return unless @callback_url.blank? && !@options[:return_job_status]
 
       raise ArgumentError, 'Please choose to either get your response via the callback or job status query'
     end
@@ -197,14 +197,14 @@ module SmileIdentityCore
     end
 
     def configure_prep_upload_json
-      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.now.to_s).merge(
+      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature(Time.zone.now.to_s).merge(
         file_name: 'selfie.zip',
         smile_client_id: @partner_id,
         partner_params: @partner_params,
         model_parameters: {}, # what is this for
         callback_url: @callback_url,
         source_sdk: SmileIdentityCore::SOURCE_SDK,
-        source_sdk_version: SmileIdentityCore::VERSION
+        source_sdk_version: SmileIdentityCore::VERSION,
       ).to_json
     end
 
@@ -214,7 +214,7 @@ module SmileIdentityCore
         url,
         method: 'POST',
         headers: { 'Content-Type' => 'application/json' },
-        body: configure_prep_upload_json
+        body: configure_prep_upload_json,
       )
 
       request.on_complete do |response|
@@ -226,7 +226,7 @@ module SmileIdentityCore
           info_json = configure_info_json(prep_upload_response)
 
           file_upload_response = upload_file(prep_upload_response['upload_url'], info_json,
-                                             prep_upload_response['smile_job_id'])
+            prep_upload_response['smile_job_id'])
           return file_upload_response
         end
 
@@ -241,34 +241,34 @@ module SmileIdentityCore
           "apiVersion": {
             "buildNumber": 0,
             "majorVersion": 2,
-            "minorVersion": 0
+            "minorVersion": 0,
           },
-          "language": 'ruby'
+          "language": 'ruby',
         },
         "misc_information": SmileIdentityCore::Signature.new(@partner_id, @api_key)
-                                                        .generate_signature(Time.now.to_s)
-                                                        .merge(
-                                                          "retry": 'false',
-                                                          "partner_params": @partner_params,
-                                                          "file_name": 'selfie.zip', # figure out what to do here
-                                                          "smile_client_id": @partner_id,
-                                                          "callback_url": @callback_url,
-                                                          "userData": { # TO ASK what goes here
-                                                            "isVerifiedProcess": false,
-                                                            "name": '',
-                                                            "fbUserID": '',
-                                                            "firstName": 'Bill',
-                                                            "lastName": '',
-                                                            "gender": '',
-                                                            "email": '',
-                                                            "phone": '',
-                                                            "countryCode": '+',
-                                                            "countryName": ''
-                                                          }
-                                                        ),
+          .generate_signature(Time.zone.now.to_s)
+          .merge(
+            "retry": 'false',
+            "partner_params": @partner_params,
+            "file_name": 'selfie.zip', # figure out what to do here
+            "smile_client_id": @partner_id,
+            "callback_url": @callback_url,
+            "userData": { # TO ASK what goes here
+              "isVerifiedProcess": false,
+              "name": '',
+              "fbUserID": '',
+              "firstName": 'Bill',
+              "lastName": '',
+              "gender": '',
+              "email": '',
+              "phone": '',
+              "countryCode": '+',
+              "countryName": '',
+            },
+          ),
         "id_info": @id_info,
         "images": configure_image_payload,
-        "server_information": server_information
+        "server_information": server_information,
       }
     end
 
@@ -278,13 +278,13 @@ module SmileIdentityCore
           {
             image_type_id: i[:image_type_id],
             image: '',
-            file_name: File.basename(i[:image])
+            file_name: File.basename(i[:image]),
           }
         else
           {
             image_type_id: i[:image_type_id],
             image: i[:image],
-            file_name: ''
+            file_name: '',
           }
         end
       end
@@ -319,7 +319,7 @@ module SmileIdentityCore
         url,
         method: 'PUT',
         headers: { 'Content-Type' => 'application/zip' },
-        body: file.read
+        body: file.read,
       )
 
       request.on_complete do |response|

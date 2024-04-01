@@ -73,8 +73,8 @@ module SmileIdentityCore
 
     def submit_requests
       request = Typhoeus::Request.new("#{@url}/aml", method: 'POST',
-                                                     headers: { 'Content-Type' => 'application/json' },
-                                                     body: build_payload.to_json)
+        headers: { 'Content-Type' => 'application/json' },
+        body: build_payload.to_json)
 
       request.on_complete do |response|
         return response.body if response.success?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SmileIdentityCore
-  module Validations   # :nodoc:
+  module Validations # :nodoc:
     def validate_partner_params(partner_params)
       raise ArgumentError, 'Please ensure that you send through partner params' if partner_params.nil?
 
@@ -10,7 +10,7 @@ module SmileIdentityCore
       %i[user_id job_id job_type].each do |key|
         if partner_params[key].to_s.empty?
           raise ArgumentError,
-                "Please make sure that #{key} is included in the partner params"
+            "Please make sure that #{key} is included in the partner params"
         end
       end
 
@@ -18,7 +18,7 @@ module SmileIdentityCore
     end
 
     def validate_id_info(id_info, required_id_info_fields)
-      raise ArgumentError, 'Please make sure that id_info is not empty or nil' if id_info.nil? || id_info.empty?
+      raise ArgumentError, 'Please make sure that id_info is not empty or nil' if id_info.blank?
 
       raise ArgumentError, 'Id info needs to be a hash' unless id_info.is_a?(Hash)
 

@@ -10,7 +10,7 @@ RSpec.describe SmileIdentityCore::IDApi do
     {
       user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
       job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
-      job_type: SmileIdentityCore::JobType::BASIC_KYC
+      job_type: SmileIdentityCore::JobType::BASIC_KYC,
     }
   end
 
@@ -23,7 +23,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       id_type: 'BVN',
       id_number: '00000000000',
       phone_number: '0726789065',
-      entered: 'true'
+      entered: 'true',
     }
   end
 
@@ -60,7 +60,7 @@ RSpec.describe SmileIdentityCore::IDApi do
       it 'validates that business verification is called' do
         body = {
           "JSONVersion": '1.0.0',
-          "SmileJobID": '0000001096'
+          "SmileJobID": '0000001096',
         }
         response = Typhoeus::Response.new(code: 200, body: body)
         Typhoeus.stub('https://testapi.smileidentity.com/v1/business_verification').and_return(response)
@@ -80,9 +80,9 @@ RSpec.describe SmileIdentityCore::IDApi do
         missing_partner_params = {
           user_id: 'dmKaJazQCziLc6Tw9lwcgzLo',
           job_id: 'DeXyJOGtaACFFfbZ2kxjuICE',
-          job_type: 5
+          job_type: 5,
         }
-        missing_partner_params.each do |key, _|
+        missing_partner_params.each_key do |key|
           expect { connection.submit_job(missing_partner_params.merge({ key => nil }), id_info) }
             .to raise_error(ArgumentError, "Please make sure that #{key} is included in the partner params")
         end
@@ -92,7 +92,7 @@ RSpec.describe SmileIdentityCore::IDApi do
         expect do
           connection.submit_job(
             { user_id: 'dmKaJazQCziLc6Tw9lwcgzLo', job_id: 'DeXyJOGtaACFFfbZ2kxjuICE', job_type: 1 },
-            id_info
+            id_info,
           )
         end.to raise_error(ArgumentError, 'Please ensure that you are setting your job_type to 5 or 7 to query ID Api')
       end
@@ -133,7 +133,7 @@ RSpec.describe SmileIdentityCore::IDApi do
           "PartnerParams": {
             "user_id": 'dmKaJazQCziLc6Tw9lwcgzLo',
             "job_id": 'DeXyJOGtaACFFfbZ2kxjuICE',
-            "job_type": 5
+            "job_type": 5,
           },
           "ResultType": 'ID Verification',
           "ResultText": 'ID Number Validated',
@@ -141,7 +141,7 @@ RSpec.describe SmileIdentityCore::IDApi do
           "IsFinalResult": 'true',
           "Actions": {
             "Verify_ID_Number": 'Verified',
-            "Return_Personal_Info": 'Returned'
+            "Return_Personal_Info": 'Returned',
           },
           "Country": 'NG',
           "IDType": 'BVN',
@@ -153,7 +153,7 @@ RSpec.describe SmileIdentityCore::IDApi do
           "signature": 'RKYX2ZVpvNTFW8oXdG2rerewererfCdFdRvika0bhJ13ntunAae85e1Fbw9NZl\
           i8PE0P0N2cbX5wNCV4Yag4PTCQrLjHG1ZnBHG/Q/Y+sdsdsddsa/rMGyx/m0Jc6w5JrrRDzYsr2\
           ihe5sJEs4Mp1N3iTvQcefV93VMo18LQ/Uco0=|7f0b0d5ebc3e5499c224f2db478e210d1860f01368ebc045c7bbe6969f1c08ba',
-          "timestamp": 1_570_612_182_124
+          "timestamp": 1_570_612_182_124,
         }.to_json
 
         response = Typhoeus::Response.new(code: 200, body: body)
@@ -194,7 +194,7 @@ RSpec.describe SmileIdentityCore::IDApi do
           'id' => 'info',
           'is_merged' => 'in, too',
           'source_sdk' => SmileIdentityCore::SOURCE_SDK,
-          'source_sdk_version' => SmileIdentityCore::VERSION
+          'source_sdk_version' => SmileIdentityCore::VERSION,
         )
         expect(parsed_response).not_to have_key 'sec_key'
       end

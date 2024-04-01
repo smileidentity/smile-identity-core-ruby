@@ -6,12 +6,12 @@ RSpec.describe SmileIdentityCore::ENV do
   describe '.determine_url' do
     context 'when sid_server is an environment key' do
       it 'returns the mapped URL for TEST' do
-        expect(described_class.determine_url(SmileIdentityCore::ENV::TEST))
+        expect(described_class.determine_url(described_class::TEST))
           .to eq('https://testapi.smileidentity.com/v1')
       end
 
       it 'returns the mapped URL for LIVE' do
-        expect(described_class.determine_url(SmileIdentityCore::ENV::LIVE))
+        expect(described_class.determine_url(described_class::LIVE))
           .to eq('https://api.smileidentity.com/v1')
       end
     end

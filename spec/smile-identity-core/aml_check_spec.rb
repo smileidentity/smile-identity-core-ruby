@@ -14,51 +14,51 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       countries: ['US'],
       full_name: 'John Leo Doe',
       birth_year: '1984',
-      search_existing_user: false
+      search_existing_user: false,
     }
   end
 
   let(:aml_response) do
     {
       "Actions": {
-        "Listed": 'Listed'
+        "Listed": 'Listed',
       },
       "PartnerParams": {
         "job_type": 10,
         "user_id": 'aml_test_user_008',
-        "job_id": 'DeXyJOGtaACFFfbZ2kxjuICE'
+        "job_id": 'DeXyJOGtaACFFfbZ2kxjuICE',
       },
       "SmileJobID": '0000000411',
       "no_of_persons_found": 1,
       "people": [
         {
           "addresses": [
-            'Burbank'
+            'Burbank',
           ],
           "adverse_media": [
             {
               "date_published": '2021-09-24',
               "publisher": 'Regulatory Times',
               "source_link": 'https:regulatorytimes.com/article',
-              "title": 'Jon Doe angered regulators'
-            }
+              "title": 'Jon Doe angered regulators',
+            },
           ],
           "aliases": [
-            'John Doe'
+            'John Doe',
           ],
           "associations": [
             {
               "association_type": 'PEP',
               "name": 'Bob Smith',
-              "relationship": 'Bob Smith is an associate of John Leo Doe'
-            }
+              "relationship": 'Bob Smith is an associate of John Leo Doe',
+            },
           ],
           "dates_of_birth": [
-            '1984-07-16'
+            '1984-07-16',
           ],
           "name": 'John Leo Doe',
           "nationalities": [
-            'American'
+            'American',
           ],
           "pep": {
             "pep_level": 1,
@@ -67,21 +67,21 @@ RSpec.describe SmileIdentityCore::AmlCheck do
                 "country": 'United States',
                 "from": '2020-01-05',
                 "position": 'Representative',
-                "to": '2022-01-05'
+                "to": '2022-01-05',
               },
               {
                 "country": 'United States',
                 "from": '2022-01-05',
                 "position": 'Senator',
-                "to": nil
-              }
+                "to": nil,
+              },
             ],
             "sources": [
               {
                 "source_link": 'https://www.senate.gov/senators/',
-                "source_name": 'senate.gov'
-              }
-            ]
+                "source_name": 'senate.gov',
+              },
+            ],
           },
           "sanctions": [
             {
@@ -90,19 +90,19 @@ RSpec.describe SmileIdentityCore::AmlCheck do
               "source_details": {
                 "listed_date": '2020-01-05',
                 "source_link": [
-                  'https://sanctionslist.com'
+                  'https://sanctionslist.com',
                 ],
                 "source_name": 'Office of Foreign Assets Control (OFAC)',
-                "source_type": 'Sanctions'
-              }
-            }
-          ]
-        }
+                "source_type": 'Sanctions',
+              },
+            },
+          ],
+        },
       ],
       "ResultCode": '1030',
       "ResultText": 'Found on list',
       "signature": '...',
-      "timestamp": '2023-02-17T16:24:16.835Z'
+      "timestamp": '2023-02-17T16:24:16.835Z',
     }.to_json
   end
 
@@ -183,7 +183,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       end
 
       it 'returns a hash formatted for the request' do
-        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response).to match({ 'timestamp': signature[:timestamp], 'signature': signature[:signature],
@@ -202,7 +202,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       it 'returns a hash formatted for the request with optional params' do
         connection.instance_variable_set(:@optional_info, { user_email: 'johndoe@email.com' })
 
-        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response).to match({ 'timestamp': signature[:timestamp], 'signature': signature[:signature],
@@ -227,7 +227,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       end
 
       it 'successfully submits a job' do
-        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
       end
     end

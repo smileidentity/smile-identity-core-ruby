@@ -18,7 +18,7 @@ request_params = {
   full_name: 'John Leo Doe',
   countries: ['US'],
   birth_year: '1984', # yyyy
-  search_existing_user: false
+  search_existing_user: false,
 }
 
 # Submit the job

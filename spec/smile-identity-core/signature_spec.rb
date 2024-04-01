@@ -29,7 +29,7 @@ RSpec.describe SmileIdentityCore::Signature do
 
   describe '#confirm_signature' do
     it 'confirms an incoming signature from the server' do
-      timestamp = Time.now.to_s
+      timestamp = Time.zone.now.to_s
       hmac = OpenSSL::HMAC.new(api_key, 'sha256')
       hmac.update(timestamp)
       hmac.update(partner_id)
