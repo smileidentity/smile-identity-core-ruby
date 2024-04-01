@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   most of the features of the Smile Identity system through direct server to server queries.'
   spec.description = 'The Official Smile Identity gem'
   spec.homepage = 'https://www.usesmileid.com/'
-  spec.required_ruby_version = '>= 2.5'
+  spec.required_ruby_version = '>= 2.6'
   spec.license = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage

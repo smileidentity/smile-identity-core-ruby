@@ -157,9 +157,11 @@ RSpec.describe SmileIdentityCore::AmlCheck do
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array(%w[SmileJobID PartnerParams people
-                                                                  ResultText ResultCode Actions
-                                                                  signature timestamp no_of_persons_found])
+        expect(JSON.parse(setup_response).keys).to match_array(%w[
+          SmileJobID PartnerParams people
+          ResultText ResultCode Actions
+          signature timestamp no_of_persons_found
+        ])
       end
 
       it '#submit_job it runs successfully' do
@@ -171,9 +173,11 @@ RSpec.describe SmileIdentityCore::AmlCheck do
 
         # this test does not directly relate to the implementation of the library but it will help us to debug
         # if any keys get removed from the response which will affect the partner.
-        expect(JSON.parse(setup_response).keys).to match_array(%w[SmileJobID PartnerParams people
-                                                                  ResultText ResultCode Actions
-                                                                  signature timestamp no_of_persons_found])
+        expect(JSON.parse(setup_response).keys).to match_array(%w[
+          SmileJobID PartnerParams people
+          ResultText ResultCode Actions
+          signature timestamp no_of_persons_found
+        ])
       end
     end
 
@@ -186,17 +190,20 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
-        expect(parsed_response).to match({ 'timestamp': signature[:timestamp], 'signature': signature[:signature],
-                                           'partner_id': partner_id,
-                                           'user_id': payload[:user_id],
-                                           'job_id': payload[:job_id],
-                                           'full_name': payload[:full_name],
-                                           'job_type': SmileIdentityCore::JobType::AML,
-                                           'countries': payload[:countries],
-                                           'search_existing_user': payload[:search_existing_user],
-                                           'birth_year': payload[:birth_year],
-                                           'source_sdk': SmileIdentityCore::SOURCE_SDK,
-                                           'source_sdk_version': SmileIdentityCore::VERSION })
+        expect(parsed_response).to match({
+          'timestamp': signature[:timestamp],
+          'signature': signature[:signature],
+          'partner_id': partner_id,
+          'user_id': payload[:user_id],
+          'job_id': payload[:job_id],
+          'full_name': payload[:full_name],
+          'job_type': SmileIdentityCore::JobType::AML,
+          'countries': payload[:countries],
+          'search_existing_user': payload[:search_existing_user],
+          'birth_year': payload[:birth_year],
+          'source_sdk': SmileIdentityCore::SOURCE_SDK,
+          'source_sdk_version': SmileIdentityCore::VERSION,
+        })
       end
 
       it 'returns a hash formatted for the request with optional params' do
@@ -205,31 +212,30 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
-        expect(parsed_response).to match({ 'timestamp': signature[:timestamp], 'signature': signature[:signature],
-                                           'partner_id': partner_id,
-                                           'partner_params': { user_email: 'johndoe@email.com' },
-                                           'user_id': payload[:user_id],
-                                           'job_id': payload[:job_id],
-                                           'job_type': SmileIdentityCore::JobType::AML,
-                                           'search_existing_user': payload[:search_existing_user],
-                                           'full_name': payload[:full_name],
-                                           'countries': payload[:countries],
-                                           'birth_year': payload[:birth_year],
-                                           'source_sdk': SmileIdentityCore::SOURCE_SDK,
-                                           'source_sdk_version': SmileIdentityCore::VERSION })
+        expect(parsed_response).to match({
+          'timestamp': signature[:timestamp],
+          'signature': signature[:signature],
+          'partner_id': partner_id,
+          'partner_params': { user_email: 'johndoe@email.com' },
+          'user_id': payload[:user_id],
+          'job_id': payload[:job_id],
+          'job_type': SmileIdentityCore::JobType::AML,
+          'search_existing_user': payload[:search_existing_user],
+          'full_name': payload[:full_name],
+          'countries': payload[:countries],
+          'birth_year': payload[:birth_year],
+          'source_sdk': SmileIdentityCore::SOURCE_SDK,
+          'source_sdk_version': SmileIdentityCore::VERSION,
+        })
       end
     end
 
-    describe '#build_payload' do
-      before do
-        connection.instance_variable_set(:@params, nil)
-        connection.instance_variable_set(:@optional_info, nil)
-      end
+    it 'successfully submits a job' do
+      connection.instance_variable_set(:@params, nil)
+      connection.instance_variable_set(:@optional_info, nil)
 
-      it 'successfully submits a job' do
-        signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
-        allow(connection).to receive(:generate_signature).and_return(signature)
-      end
+      signature = { 'signature': Base64.strict_encode64('signature'), timestamp: Time.zone.now.to_s }
+      allow(connection).to receive(:generate_signature).and_return(signature)
     end
   end
 end

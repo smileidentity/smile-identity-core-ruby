@@ -6,8 +6,6 @@ require:
 
 AllCops:
   TargetRubyVersion: 2.6
-  EnabledByDefault: false
-  DisabledByDefault: true
 
 Bundler/DuplicatedGem:
   Enabled: true
@@ -163,6 +161,30 @@ Metrics/MethodLength:
 
 Metrics/PerceivedComplexity:
   Max: 15
+
+Naming/FileName:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: true
+  Max: 150
+
+RSpec/FilePath:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: true
+  Max: 10
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: true
+  Max: 4
 
 Style/RedundantBegin:
   Enabled: true
