@@ -1,125 +1,133 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.3] - 2023-10-20
-## Added
-- Adds support for Enhanced Document Verification
-
 ## [Unreleased]
+### Changed
+- Linted the project with internal RuboCop rules
+
+### Fixed
+- Removed support for Ruby 2.5 in RuboCop configuration and the gemspec file
+
+## [2.2.3] - 2023-10-20
+### Added
+- Support for Enhanced Document Verification
 
 ## [2.2.2] - 2023-10-05
 ### Changed
-- Lint project. Enforce rubocop rules via github action
+- Lint project. Enforce RuboCop rules via GitHub action
 
-## Added
-Support Ruby 3.2
+### Added
+- Support for Ruby 3.2
 
 ## [2.2.1] - 2023-08-31
 ### Changed
-- Don't validate the presence of `id_type` and `id_number` for Document Verification jobs
+- Removed the validation of `id_type` and `id_number` for Document Verification jobs
 
 ## [2.2.0] - 2023-04-05
 ### Added
-- Adds support for AML check
+- Support for AML check
+
 ### Changed
-- Fix business verification docstrings
+- Fixed business verification docstrings
 
 ## [2.1.2] - 2023-03-09
 ### Changed
-- Fix `get_web_token` by ensuring signature merges to request_params
+- Fixed `get_web_token` by ensuring signature merges into request_params
 
 ## [2.1.1] - 2022-12-13
 ### Added
-- Adds UPDATE_PHOTO and COMPARE_USER_INFO to JobType
-### Changed
-- Fix wrong constant values for JobType SMART_SELFIE_AUTHENTICATION and SMART_SELFIE_REGISTRATION
+- UPDATE_PHOTO and COMPARE_USER_INFO to JobType
 
-# [2.1.0] - 2022-10-28
-## Changed
+### Changed
+- Fixed incorrect constant values for JobType SMART_SELFIE_AUTHENTICATION and SMART_SELFIE_REGISTRATION
+
+## [2.1.0] - 2022-10-28
+### Changed
 - Moved Business verification to IDApi
 
-# [2.0.0] - 2022-10-24
+## [2.0.0] - 2022-10-24
 ### Added
-- build: Adds support for ruby 3.1
-- docs: adds "examples" folder
-- Adds Business Verification product
+- Support for Ruby 3.1
+- "Examples" folder in documentation
+- Business Verification product
 
 ### Changed
-- ci: Move from TravisCI to Github Actions
-- core: Enforces the use of signature on all API calls
-- core: Adds helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::ImageType, SMILE_IDENTITY_CORE::JobType
-- Fixes invalid links in gemspec
+- Transition from TravisCI to GitHub Actions
+- Enforced the use of signature on all API calls
+- Added helper constants SMILE_IDENTITY_CORE::ENV, SMILE_IDENTITY_CORE::ImageType, SMILE_IDENTITY_CORE::JobType
+- Fixed invalid links in gemspec
 
 ### Removed
-- build: Drops support for ruby 2.5.1
-- core: Removes support for `sec_key` as an authentication method
-  
+- Support for Ruby 2.5.1
+- `sec_key` as an authentication method
+
 ## [1.2.1] - 2021-12-02
 ### Changed
-- Revert changes to version SmileIdentityCore.version_as_hash
-- Uses hard coded apiVersion
+- Reverted changes to version SmileIdentityCore.version_as_hash
+- Used hardcoded apiVersion
 
 ## [1.2.0] - 2021-10-08
 ### Added
-- Add Signature option for signing requests
+- Signature option for signing requests
 
 ## [1.1.0] - 2021-09-29
-Set version information from SmileIdentityCore.version_as_hash
-- Change the urls for both test and prod aa55a72d10854f05a35db4dad3ea63930e8996f6
+### Added
+- Version information from SmileIdentityCore.version_as_hash
+- Changed URLs for both test and production environments
 
 ## [1.0.2] - 2020-01-16
-Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too
+### Added
+- {"success":true,"smile_job_id":"job_id"} to the response when polling job status
 
 ## [1.0.1] - 2019-10-24
-## Updated
-Remove first_name and last_name validations from id information in Web Api
-Add country, id_number and id_type validations for id information in ID Api
+### Updated
+- Removed first_name and last_name validations from ID information in Web API
+- Added country, id_number, and id_type validations for ID information in ID API
 
 ## [1.0.0] - 2019-10-11
-## Updated
-Amend the success response when job status is false to be a JSON String containing {"success":true,"smile_job_id":"job_id"}
-Add the ID API Class
-Add the ability to query ID Api from the Web API class
-Update the documentation
+### Updated
+- Amended the success response when job status is false to be a JSON String containing {"success":true,"smile_job_id":"job_id"}
+- Added the ID API Class
+- Added the ability to query ID API from the Web API class
+- Updated the documentation
 
 ## [0.2.3] - 2019-09-17
 ### Changed
-- Lenient Decoding of the api key
+- Lenient decoding of the API key
 
 ## [0.2.2] - 2019-09-17
 ### Added
-- Add the language to the package information
+- Language to the package information
 
 ## [0.2.1] - 2019-09-05
-
 ### Added
-- Accept more formats as inputs
-- Use the signature class in the Web API class
-- Add a Utilities class with get_job_status that we use internally to expose a public get_job_status method on WebApi
+- Support for additional formats as inputs
+- Usage of the signature class in the Web API class
+- Utilities class with a public `get_job_status` method on WebApi
 
 ### Updated
-- Updates to the readme
-- Update some error messages
+- Readme updates
+- Updated some error messages
 
 ### Fixed
-- Fix the loss of optional_callback
-- Ensure that we allow nil inputs or empty hashes for options and id_info
-- Confirm the signature when querying the job status
+- Issue with the loss of optional_callback
+- Ensured allowance for nil inputs or empty hashes for options and id_info
+- Confirmation of signature when querying job status
 
 ## [0.2.0] - 2019-08-14
 ### Added
-- Introduced return_history and image_links
+- Return_history and image_links features
 
 ### Removed
-- Removed two parameters: optional_callback and return_job_status in the submit_job function in favour of an options hash.
+- Two parameters: optional_callback and return_job_status in the submit_job function in favor of an options hash
 
 ## [0.1.1] - 2019-07-23
 ### Added
-- Some package configurations were added.
+- Additional package configurations
 
 ## [0.1.0] - 2019-07-19
 ### Added
-- The first release version of Web Api.
+- The first release version of Web API
