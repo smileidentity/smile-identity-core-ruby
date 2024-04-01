@@ -17,6 +17,9 @@ Bundler/DuplicatedGroup:
 Bundler/GemFilename:
   Enabled: true
 
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
 Layout/ArgumentAlignment:
   Enabled: true
   EnforcedStyle: with_fixed_indentation
@@ -187,6 +190,12 @@ RSpec/NestedGroups:
   Enabled: true
   Max: 4
 
+RSpec/NoExpectationExample:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
 Style/RedundantBegin:
   Enabled: true
 
@@ -216,12 +225,3 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: true
   EnforcedStyleForMultiline: comma
-
-RSpec/NoExpectationExample:
-  Enabled: false
-
-RSpec/SpecFilePathFormat:
-  Enabled: false
-
-Gemspec/DevelopmentDependencies:
-  Enabled: false
