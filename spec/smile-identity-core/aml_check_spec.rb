@@ -15,6 +15,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       full_name: 'John Leo Doe',
       birth_year: '1984',
       search_existing_user: false,
+      strict_match: true,
     }
   end
 
@@ -102,6 +103,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       ResultCode: '1030',
       ResultText: 'Found on list',
       signature: '...',
+      StrictMatch: true,
       timestamp: '2023-02-17T16:24:16.835Z',
     }.to_json
   end
@@ -160,7 +162,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         expect(JSON.parse(setup_response).keys).to match_array(%w[
           SmileJobID PartnerParams people
           ResultText ResultCode Actions
-          signature timestamp no_of_persons_found
+          signature StrictMatch timestamp no_of_persons_found
         ])
       end
 
@@ -176,7 +178,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         expect(JSON.parse(setup_response).keys).to match_array(%w[
           SmileJobID PartnerParams people
           ResultText ResultCode Actions
-          signature timestamp no_of_persons_found
+          signature StrictMatch timestamp no_of_persons_found
         ])
       end
     end
@@ -201,6 +203,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           countries: payload[:countries],
           search_existing_user: payload[:search_existing_user],
           birth_year: payload[:birth_year],
+          strict_match: payload[:strict_match],
           source_sdk: SmileIdentityCore::SOURCE_SDK,
           source_sdk_version: SmileIdentityCore::VERSION,
         })
@@ -224,6 +227,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           full_name: payload[:full_name],
           countries: payload[:countries],
           birth_year: payload[:birth_year],
+          strict_match: payload[:strict_match],
           source_sdk: SmileIdentityCore::SOURCE_SDK,
           source_sdk_version: SmileIdentityCore::VERSION,
         })

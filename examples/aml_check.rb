@@ -19,6 +19,7 @@ request_params = {
   countries: ['US'],
   birth_year: '1984', # yyyy
   search_existing_user: false,
+  strict_match: true, # optional - default is true
 }
 
 # Submit the job

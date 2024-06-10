@@ -33,6 +33,7 @@ module SmileIdentityCore
     # @option opts [Array] :countries An array that takes the customer’s known nationalities in 2-character
     # (ISO 3166-1 alpha-2) format e.g. Nigeria is NG, Kenya is KE, etc
     # @option opts [boolean] :search_existing_user If you intend to re-use the name and year of birth
+    # @option opts [boolean] :strict_match If you want to perform a strict match on the serach criteria.
     # of a user’s previous KYC job
     # @option opts [Hash] :optional_info Any optional data, this will be returned
     # in partner_params.
