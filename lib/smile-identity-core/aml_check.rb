@@ -52,6 +52,7 @@ module SmileIdentityCore
     def build_payload
       @payload = generate_signature
       @payload.merge!(@params)
+      @payload[:strict_match] = true unless @params.key?(:strict_match)
       add_partner_info
       add_sdk_info
       @payload

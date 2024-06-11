@@ -254,6 +254,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       end
 
       it 'returns a hash formatted for the request when strict_match is not provided (default value)' do
+        payload.delete(:strict_match)
         connection.instance_variable_set(:@params, payload)
 
         signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
