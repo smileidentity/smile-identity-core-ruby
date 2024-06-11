@@ -232,6 +232,35 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           source_sdk_version: SmileIdentityCore::VERSION,
         })
       end
+
+      it 'returns a hash formatted for the request when strict_match is false' do
+        payload[:strict_match] = false
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:strict_match]).to be false
+      end
+
+      it 'returns a hash formatted for the request when strict_match is true' do
+        payload[:strict_match] = true
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:strict_match]).to be true
+      end
+
+      it 'returns a hash formatted for the request when strict_match is not provided (default value)' do
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:strict_match]).to be true
+      end
     end
 
     it 'successfully submits a job' do
