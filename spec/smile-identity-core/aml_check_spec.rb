@@ -15,6 +15,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       full_name: 'John Leo Doe',
       birth_year: '1984',
       search_existing_user: false,
+      strict_match: true,
     }
   end
 
@@ -102,6 +103,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
       ResultCode: '1030',
       ResultText: 'Found on list',
       signature: '...',
+      StrictMatch: true,
       timestamp: '2023-02-17T16:24:16.835Z',
     }.to_json
   end
@@ -160,7 +162,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         expect(JSON.parse(setup_response).keys).to match_array(%w[
           SmileJobID PartnerParams people
           ResultText ResultCode Actions
-          signature timestamp no_of_persons_found
+          signature StrictMatch timestamp no_of_persons_found
         ])
       end
 
@@ -176,7 +178,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         expect(JSON.parse(setup_response).keys).to match_array(%w[
           SmileJobID PartnerParams people
           ResultText ResultCode Actions
-          signature timestamp no_of_persons_found
+          signature StrictMatch timestamp no_of_persons_found
         ])
       end
     end
@@ -201,6 +203,7 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           countries: payload[:countries],
           search_existing_user: payload[:search_existing_user],
           birth_year: payload[:birth_year],
+          strict_match: payload[:strict_match],
           source_sdk: SmileIdentityCore::SOURCE_SDK,
           source_sdk_version: SmileIdentityCore::VERSION,
         })
@@ -224,9 +227,40 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           full_name: payload[:full_name],
           countries: payload[:countries],
           birth_year: payload[:birth_year],
+          strict_match: payload[:strict_match],
           source_sdk: SmileIdentityCore::SOURCE_SDK,
           source_sdk_version: SmileIdentityCore::VERSION,
         })
+      end
+
+      it 'returns a hash formatted for the request when strict_match is false' do
+        payload[:strict_match] = false
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:strict_match]).to be false
+      end
+
+      it 'returns a hash formatted for the request when strict_match is true' do
+        payload[:strict_match] = true
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:strict_match]).to be true
+      end
+
+      it 'returns a hash formatted for the request when strict_match is not provided (default value)' do
+        payload.delete(:strict_match)
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:strict_match]).to be true
       end
     end
 
