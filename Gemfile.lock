@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    smile-identity-core (2.2.4)
+    smile-identity-core (2.2.5)
       rubyzip (~> 1.2, >= 1.2.3)
       typhoeus (~> 1.0, >= 1.0.1)
 
