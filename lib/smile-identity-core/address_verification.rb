@@ -45,12 +45,8 @@ module SmileIdentityCore
       params.is_a?(Hash) ? params.transform_keys(&:to_sym) : params
     end
 
-    def generate_signature
-      SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_signature
-    end
-
     def construct_and_validate_headers
-      signature = generate_signature
+      signature = SmileIdentityCore::Signature.new(@partner_id, @api_key).generate_iso_timestamp_signature
       {
         'smileid-source-sdk' => SmileIdentityCore::SOURCE_SDK,
         'smileid-source-sdk-version' => SmileIdentityCore::VERSION,

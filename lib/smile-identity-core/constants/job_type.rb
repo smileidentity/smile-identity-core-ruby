@@ -29,9 +29,9 @@ module SmileIdentityCore
     # with an ID authority, and uses biometric checks to confirm they
     # belong to the user.
     ENHANCED_DOCUMENT_VERIFICATION = 11
-    ADDRESS_VERIFICATION = 12
     # Verifies the authenticity of National IDs or Utility Numbers and confirms
     # their validity with an ID authority, and retrieves user address information
     # from the ID authority.
+    ADDRESS_VERIFICATION = 12
   end
 end

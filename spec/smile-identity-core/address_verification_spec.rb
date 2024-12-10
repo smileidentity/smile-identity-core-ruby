@@ -49,8 +49,10 @@ RSpec.describe SmileIdentityCore::AddressVerification do
 
     describe '#headers' do
       it 'generates correct headers' do
+        signature_instance = SmileIdentityCore::Signature.new(partner_id, api_key)
         signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
-        allow(connection).to receive(:generate_signature).and_return(signature)
+        allow(signature_instance).to receive(:generate_iso_timestamp_signature).and_return(signature)
+        allow(SmileIdentityCore::Signature).to receive(:new).and_return(signature_instance)
 
         headers = connection.send(:construct_and_validate_headers)
         expect(headers).to include(
@@ -65,8 +67,10 @@ RSpec.describe SmileIdentityCore::AddressVerification do
 
     describe 'header construction' do
       it 'constructs headers with valid keys and values' do
+        signature_instance = SmileIdentityCore::Signature.new(partner_id, api_key)
         signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.utc.iso8601 }
-        allow(connection).to receive(:generate_signature).and_return(signature)
+        allow(signature_instance).to receive(:generate_iso_timestamp_signature).and_return(signature)
+        allow(SmileIdentityCore::Signature).to receive(:new).and_return(signature_instance)
 
         headers = connection.send(:construct_and_validate_headers)
         expect(headers.keys).to match_array(%w[
