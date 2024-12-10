@@ -11,7 +11,8 @@ module SmileIdentityCore
     # Generates a signature based on the specified timestamp (uses the current time by default)
     #
     # @return [Hash] containing both the signature and related timestamp
-    def generate_signature(timestamp = Time.now.to_s)
+    # ISO 8601 formatted timestamp
+    def generate_signature(timestamp = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S.%LZ'))
       hmac = OpenSSL::HMAC.new(@api_key, 'sha256')
       hmac.update(timestamp.to_s)
       hmac.update(@partner_id)
