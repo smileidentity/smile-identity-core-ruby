@@ -14,7 +14,7 @@ connection = SmileIdentityCore::AddressVerification.new(partner_id, api_key, sid
 request_params = {
   country: 'ZA', # The country [NG, ZA] where the address is located
   address: 'Cape town', # The address to be verified
-  # utility_number: "07101602642", # The utility number to be verified specifically for NG
+  # utility_number: "12345678911", # The utility number to be verified specifically for NG
   # utility_provider: "IkejaElectric", # The utility provider to be verified specifically for NG
   id_number: '1234567891234', # The ZA ID number of the user to be verified specifically for ZA
   full_name: 'Doe Joe Leo', # The full name of the user to be verified optionally
