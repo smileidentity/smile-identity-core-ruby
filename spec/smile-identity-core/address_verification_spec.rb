@@ -144,7 +144,7 @@ RSpec.describe SmileIdentityCore::AddressVerification do
 
       context 'when the country is ZA' do
         it 'raises an error when id_number is missing' do
-          za_payload = payload.merge(country: 'ZA').except(:utility_number, :utility_provider, :id_number)
+          za_payload = payload.merge(country: 'ZA').except(:id_number)
           expect { connection.submit_job(za_payload) }.to raise_error(RuntimeError)
         end
       end
