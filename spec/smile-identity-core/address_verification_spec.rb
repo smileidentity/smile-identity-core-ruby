@@ -116,35 +116,35 @@ RSpec.describe SmileIdentityCore::AddressVerification do
 
     describe 'payload validation' do
       it 'raises an error when country is missing' do
-        invalid_payload = payload.except(:country)
+        invalid_payload = payload.reject { |key| key == :country }
         expect { connection.submit_job(invalid_payload) }.to raise_error(RuntimeError)
       end
 
       it 'raises an error when address is missing' do
-        invalid_payload = payload.except(:address)
+        invalid_payload = payload.reject { |key| key == :address }
         expect { connection.submit_job(invalid_payload) }.to raise_error(RuntimeError)
       end
 
       it 'raises an error when callback_url is missing' do
-        invalid_payload = payload.except(:callback_url)
+        invalid_payload = payload.reject { |key| key == :callback_url }
         expect { connection.submit_job(invalid_payload) }.to raise_error(RuntimeError)
       end
 
       context 'when the country is NG' do
         it 'raises an error when utility_number is missing' do
-          invalid_payload = payload.except(:utility_number)
+          invalid_payload = payload.reject { |key| key == :utility_number }
           expect { connection.submit_job(invalid_payload) }.to raise_error(RuntimeError)
         end
 
         it 'raises an error when utility_provider is missing' do
-          invalid_payload = payload.except(:utility_provider)
+          invalid_payload = payload.reject { |key| key == :utility_provider }
           expect { connection.submit_job(invalid_payload) }.to raise_error(RuntimeError)
         end
       end
 
       context 'when the country is ZA' do
         it 'raises an error when id_number is missing' do
-          za_payload = payload.merge(country: 'ZA').except(:id_number)
+          za_payload = payload.merge(country: 'ZA').reject { |key| key == :id_number }
           expect { connection.submit_job(za_payload) }.to raise_error(RuntimeError)
         end
       end
