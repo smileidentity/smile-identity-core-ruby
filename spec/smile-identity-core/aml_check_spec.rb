@@ -181,6 +181,22 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           signature StrictMatch timestamp no_of_persons_found
         ])
       end
+
+    end
+
+    context 'when aliases are provided' do
+      before do
+        sent_body = nil
+        Typhoeus.stub('https://testapi.smileidentity.com/v1/aml') do |request|
+          @sent_body = JSON.parse(request.options[:body])
+          Typhoeus::Response.new(code: 200, body: aml_response)
+        end
+      end
+
+      it '#submit_job includes aliases in the request body' do
+        connection.submit_job(payload.merge(aliases: ['Johnny Doe', 'J. Doe']))
+        expect(@sent_body['aliases']).to eq(['Johnny Doe', 'J. Doe'])
+      end
     end
 
     describe '#build_payload' do
@@ -261,6 +277,25 @@ RSpec.describe SmileIdentityCore::AmlCheck do
         allow(connection).to receive(:generate_signature).and_return(signature)
         parsed_response = connection.send(:build_payload)
         expect(parsed_response[:strict_match]).to be true
+      end
+
+      it 'includes aliases in the payload when provided' do
+        payload[:aliases] = ['Johnny Doe', 'J. Doe']
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response[:aliases]).to eq(['Johnny Doe', 'J. Doe'])
+      end
+
+      it 'does not include aliases in the payload when omitted' do
+        connection.instance_variable_set(:@params, payload)
+
+        signature = { signature: Base64.strict_encode64('signature'), timestamp: Time.now.to_s }
+        allow(connection).to receive(:generate_signature).and_return(signature)
+        parsed_response = connection.send(:build_payload)
+        expect(parsed_response).not_to have_key(:aliases)
       end
     end
 

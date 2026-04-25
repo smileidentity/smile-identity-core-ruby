@@ -20,6 +20,7 @@ request_params = {
   birth_year: '1984', # yyyy
   search_existing_user: false,
   strict_match: true, # optional - default is true
+  # aliases: ['Johnny Doe', 'J. Doe'],  # optional - secondary names to broaden screening
 }
 
 # Submit the job
