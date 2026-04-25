@@ -181,12 +181,10 @@ RSpec.describe SmileIdentityCore::AmlCheck do
           signature StrictMatch timestamp no_of_persons_found
         ])
       end
-
     end
 
     context 'when aliases are provided' do
       before do
-        sent_body = nil
         Typhoeus.stub('https://testapi.smileidentity.com/v1/aml') do |request|
           @sent_body = JSON.parse(request.options[:body])
           Typhoeus::Response.new(code: 200, body: aml_response)
