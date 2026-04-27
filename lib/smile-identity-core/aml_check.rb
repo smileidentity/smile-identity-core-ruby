@@ -35,6 +35,8 @@ module SmileIdentityCore
     # @option opts [boolean] :search_existing_user If you intend to re-use the name and year of birth
     # @option opts [boolean] :strict_match If you want to perform a strict match on the serach criteria.
     # of a user’s previous KYC job
+    # @option opts [Array<String>] :aliases An optional list of secondary or alternative names
+    #   (e.g. maiden names, transliterations, nicknames) to include in the screening search.
     # @option opts [Hash] :optional_info Any optional data, this will be returned
     # in partner_params.
     def submit_job(params)
