@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   most of the features of the Smile Identity system through direct server to server queries.'
   spec.description = 'The Official Smile Identity gem'
   spec.homepage = 'https://www.usesmileid.com/'
-  spec.required_ruby_version = '>= 2.6'
+  spec.required_ruby_version = '>= 2.7'
   spec.license = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage
@@ -31,15 +31,16 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler', '~> 2.0'
-  spec.add_development_dependency 'rake', '~> 12.3'
+  spec.add_development_dependency 'bundler', '>= 2.0'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 1.37.1'
+  spec.add_development_dependency 'rubocop', '~> 1.68'
   spec.add_development_dependency 'rubocop-rake', '~> 0.6.0'
-  spec.add_development_dependency 'rubocop-rspec', '~> 2.14.1'
-  spec.add_development_dependency 'simplecov', '~> 0.18'
+  spec.add_development_dependency 'rubocop-rspec', '~> 3.0'
+  spec.add_development_dependency 'simplecov', '~> 0.22'
 
-  spec.add_dependency 'rubyzip', '~> 1.2', '>= 1.2.3'
-  spec.add_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
+  spec.add_dependency 'base64'
+  spec.add_dependency 'rubyzip', '~> 2.3'
+  spec.add_dependency 'typhoeus', '~> 1.4'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

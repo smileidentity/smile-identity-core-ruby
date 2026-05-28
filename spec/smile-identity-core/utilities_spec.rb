@@ -31,17 +31,19 @@ RSpec.describe SmileIdentityCore::Utilities do
       # NB: testing by mocking what's passed to #query_job_status isn't ideal, because it makes
       # it harder to refactor the class' internals, but it'll have to do for now.
 
-      allow(connection).to receive(:query_job_status).with(
-        user_id: user_id,
-        job_id: job_id,
-        partner_id: partner_id.to_s, # NB the .to_s
-        history: return_history,
-        image_links: return_image_links,
-        timestamp: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/, # new signature!
-        signature: instance_of(String), # new signature!
-        source_sdk: SmileIdentityCore::SOURCE_SDK,
-        source_sdk_version: SmileIdentityCore::VERSION,
-      )
+      allow(connection).to receive(:query_job_status) do |params|
+        expect(params).to include(
+          user_id: user_id,
+          job_id: job_id,
+          partner_id: partner_id.to_s,
+          history: return_history,
+          image_links: return_image_links,
+          source_sdk: SmileIdentityCore::SOURCE_SDK,
+          source_sdk_version: SmileIdentityCore::VERSION,
+        )
+        expect(params[:signature]).to be_a(String)
+        expect(params[:timestamp]).to match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-+]\d{4}/)
+      end
 
       connection.get_job_status(
         user_id,
