@@ -7,7 +7,7 @@
 ![Ruby 3.2](https://img.shields.io/badge/ruby-3.2-blue)
 ![Ruby 3.3](https://img.shields.io/badge/ruby-3.3-blue)
 ![Ruby 3.4](https://img.shields.io/badge/ruby-3.4-blue)
-![Ruby 4.0](https://img.shields.io/badge/ruby-head-blue)
+![Ruby 4.0](https://img.shields.io/badge/ruby-4.0-blue)
 
 Smile Identity provides the best solutions for real time Digital KYC, identity verification, user onboarding, and user authentication across Africa. Our server side libraries make it easy to integrate us on the server-side. Since the library is server-side, you will be required to pass the images (if required) to the library.
 
