@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [2.3.2] - 2026-06-10
+### Added
+- Support for Ruby 3.3, 3.4, and 4.0
+- `base64` as an explicit runtime dependency (no longer a default gem as of Ruby 3.4)
+- CI test matrix coverage and Ruby version badges in the README
+
+### Changed
+- Raised minimum supported Ruby version to 2.7
+- Upgraded development dependencies (`rake`, `rubocop`, `rubocop-rspec`, `simplecov`) and runtime dependencies (`rubyzip`, `typhoeus`)
+- Relaxed `bundler` development dependency constraint to support Bundler 3.x on Ruby 4.0
+- Updated RuboCop configuration for the newer `rubocop-rspec` plugin API
+
+### Removed
+- Support for Ruby 2.6
+
 ## [2.3.1] - 2026-04-24
 ### Added
 - Support for optional `aliases` parameter in AML Check (`AmlCheck#submit_job`) to allow secondary names in screening requests
