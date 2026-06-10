@@ -8,15 +8,24 @@ on:
   workflow_call:
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
         # See https://www.ruby-lang.org/en/downloads/ for latest stable releases.
-        ruby: ['2.6', '2.7', '3.0', '3.1', '3.2']
+        ruby: ['3.1', '3.2', '3.3', '3.4', '4.0']
+        os: [ubuntu-latest]
+        include:
+          # Ruby 2.7 and 3.0 are EOL and need an older Ubuntu with OpenSSL 1.x
+          - ruby: '2.7'
+            os: ubuntu-22.04
+          - ruby: '3.0'
+            os: ubuntu-22.04
     steps:
     - uses: actions/checkout@v6
+    - name: Remove Gemfile.lock for compatibility
+      run: rm -f Gemfile.lock
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -26,9 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
+    - name: Remove Gemfile.lock for compatibility
+      run: rm -f Gemfile.lock
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.2
+        ruby-version: '3.4'
         bundler-cache: true
     - name: Run RuboCop
       run: bundle exec rubocop --parallel

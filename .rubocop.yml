@@ -2,11 +2,19 @@
 
 require:
 - rubocop-rake
+
+plugins:
 - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   NewCops: enable
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+Naming/PredicateMethod:
+  Enabled: false
 
 Bundler/DuplicatedGem:
   Enabled: true
@@ -167,7 +175,10 @@ RSpec/ExampleLength:
   Enabled: true
   Max: 150
 
-RSpec/FilePath:
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/SpecFilePathSuffix:
   Enabled: false
 
 RSpec/InstanceVariable:
