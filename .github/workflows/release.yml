@@ -10,11 +10,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         set-safe-directory: false
     - name: Release Gem
-      uses: cadwallion/publish-rubygems-action@master
+      uses: cadwallion/publish-rubygems-action@94a6f4cd5350581749c569b5001eecc864e3ad0b # master
       env:
         RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
