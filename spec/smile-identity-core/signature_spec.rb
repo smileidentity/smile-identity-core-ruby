@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'securerandom'
+
 RSpec.describe SmileIdentityCore::Signature do
   let(:partner_id) { '001' }
   let(:rsa) { OpenSSL::PKey::RSA.new(1024) }
@@ -69,6 +71,12 @@ RSpec.describe SmileIdentityCore::Signature do
       hmac.update('sid_request')
       signature = Base64.strict_encode64(hmac.digest)
       expect(connection.confirm_signature(timestamp, signature)).to be(true)
+    end
+
+    it 'rejects a signature that does not match' do
+      timestamp = Time.now.to_s
+      fake_signature = Base64.strict_encode64(SecureRandom.random_bytes(32))
+      expect(connection.confirm_signature(timestamp, fake_signature)).to be(false)
     end
   end
 end
