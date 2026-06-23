@@ -69,7 +69,6 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw-ucrt
 
 DEPENDENCIES
   bundler (~> 2.0)
