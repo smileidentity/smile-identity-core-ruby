@@ -312,6 +312,7 @@ module SmileIdentityCore
     end
 
     def upload_file(url, info_json, smile_job_id)
+      validate_upload_url!(url)
       file = zip_up_file(info_json)
       file.rewind
 
@@ -334,6 +335,20 @@ module SmileIdentityCore
         return job_response
       end
       request.run
+    end
+
+    # Validate upload_url against expected host/prefix
+    def validate_upload_url!(upload_url)
+      allowed_host = URI.parse(@url).host
+      begin
+        uri = URI.parse(upload_url)
+      rescue URI::InvalidURIError
+        raise ArgumentError, "Invalid upload_url"
+      end
+      # Only allow URLs that match the known host
+      unless uri.host == allowed_host
+        raise ArgumentError, "Untrusted upload_url: #{upload_url}"
+      end
     end
 
     def query_job_status(counter = 0)
