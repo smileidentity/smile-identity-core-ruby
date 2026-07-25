@@ -25,7 +25,10 @@ module SmileIdentityCore
     # @param [String] msg_signature a previously generated signature, to be confirmed
     # @return [Boolean] TRUE or FALSE
     def confirm_signature(timestamp, msg_signature)
-      get_signature(timestamp)[:signature] == msg_signature
+      expected = get_signature(timestamp)[:signature]
+      return false unless expected.bytesize == msg_signature.bytesize
+
+      OpenSSL.fixed_length_secure_compare(expected, msg_signature)
     end
 
     private
