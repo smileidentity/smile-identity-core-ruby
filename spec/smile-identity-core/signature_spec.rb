@@ -78,5 +78,13 @@ RSpec.describe SmileIdentityCore::Signature do
       fake_signature = Base64.strict_encode64(SecureRandom.random_bytes(32))
       expect(connection.confirm_signature(timestamp, fake_signature)).to be(false)
     end
+
+    it 'rejects a nil signature' do
+      expect(connection.confirm_signature(Time.now.to_s, nil)).to be(false)
+    end
+
+    it 'rejects a non-string signature' do
+      expect(connection.confirm_signature(Time.now.to_s, 123)).to be(false)
+    end
   end
 end

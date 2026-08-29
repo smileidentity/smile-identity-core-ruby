@@ -25,10 +25,12 @@ module SmileIdentityCore
     # @param [String] msg_signature a previously generated signature, to be confirmed
     # @return [Boolean] TRUE or FALSE
     def confirm_signature(timestamp, msg_signature)
+      return false unless msg_signature.is_a?(String)
+
       expected = get_signature(timestamp)[:signature]
       return false unless expected.bytesize == msg_signature.bytesize
 
-      OpenSSL.fixed_length_secure_compare(expected, msg_signature)
+      secure_compare(expected, msg_signature)
     end
 
     private
@@ -43,6 +45,17 @@ module SmileIdentityCore
         signature: @signature,
         timestamp: timestamp.to_s,
       }
+    end
+
+    # Compares equal-length strings without short-circuiting on the first
+    # differing byte. This keeps compatibility with Ruby versions that do not
+    # provide OpenSSL.fixed_length_secure_compare.
+    def secure_compare(first, second)
+      result = 0
+      first.each_byte.with_index do |byte, index|
+        result |= byte ^ second.getbyte(index)
+      end
+      result.zero?
     end
   end
 end
