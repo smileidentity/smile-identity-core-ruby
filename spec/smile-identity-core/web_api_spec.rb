@@ -582,6 +582,24 @@ RSpec.describe SmileIdentityCore::WebApi do
 
       let(:zip_up_file) { connection.send(:zip_up_file, info_json) }
 
+      shared_examples 'a readable archive' do
+        it 'preserves the metadata and image bytes' do
+          image_bytes = "\x00\xFF\x89PNG\r\n".b
+          allow(IO).to receive(:read).with('./tmp/selfie.png').and_return(image_bytes)
+          allow(IO).to receive(:read).with('./tmp/id_image.png').and_return(image_bytes)
+
+          Zip::File.open_buffer(zip_up_file) do |archive|
+            expect(JSON.parse(archive.read('info.json'))).to eq(JSON.parse(expected_info.to_json))
+            file_images = expected_info[:images].reject { |image| image[:file_name].empty? }
+            expected_names = ['info.json'] + file_images.map { |image| image[:file_name] }
+            expect(archive.entries.map(&:name)).to match_array(expected_names)
+            file_images.each do |image|
+              expect(archive.read(image[:file_name])).to eq(image_bytes)
+            end
+          end
+        end
+      end
+
       it 'returns the correct object type after being zipped' do
         expect(zip_up_file).to be_a(StringIO)
       end
@@ -593,6 +611,10 @@ RSpec.describe SmileIdentityCore::WebApi do
       end
 
       context 'with only physical files' do
+        let(:expected_info) { info_json }
+
+        include_examples 'a readable archive'
+
         it 'contains the necessary info.json file in the zip' do
           zip_up_file.rewind
           file = zip_up_file.read
@@ -663,6 +685,9 @@ RSpec.describe SmileIdentityCore::WebApi do
         end
 
         let(:zip_up_file) { connection.send(:zip_up_file, info_json_v2) }
+        let(:expected_info) { info_json_v2 }
+
+        include_examples 'a readable archive'
 
         it 'contains the necessary info.json file in the zip' do
           zip_up_file.rewind
