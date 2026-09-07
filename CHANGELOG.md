@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.0] - Unreleased
+## [3.0.0] - 2026-09-07
 ### Changed
 - Require Ruby 3.0 or later, matching rubyzip 3.x. This drops support for Ruby 2.6 and 2.7.
 
