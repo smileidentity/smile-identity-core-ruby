@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec', '~> 2.14.1'
   spec.add_development_dependency 'simplecov', '~> 0.18'
 
+  spec.add_dependency 'base64', '~> 0.3'
   spec.add_dependency 'rubyzip', '>= 3.4.0', '< 4.0'
   spec.add_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
   spec.metadata['rubygems_mfa_required'] = 'true'
