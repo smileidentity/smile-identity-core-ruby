@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.0.0] - 2026-09-07
+### Changed
+- Require Ruby 3.0 or later, matching rubyzip 3.x. This drops support for Ruby 2.6 and 2.7.
+
+### Fixed
+- Declare the `base64` dependency so the SDK loads on Ruby 3.4.
+
+### Security
+- Require rubyzip 3.4.0 or later (below 4.0) to address [CVE-2026-85396](https://rubysec.com/advisories/CVE-2026-85396/). The SDK creates ZIP archives and does not call the affected `Zip::Entry#extract` method.
+
 ## [2.3.1] - 2026-04-24
 ### Added
 - Support for optional `aliases` parameter in AML Check (`AmlCheck#submit_job`) to allow secondary names in screening requests
