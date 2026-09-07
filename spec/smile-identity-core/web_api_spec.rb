@@ -585,6 +585,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       shared_examples 'a readable archive' do
         it 'preserves the metadata and image bytes' do
           image_bytes = "\x00\xFF\x89PNG\r\n".b
+          allow(IO).to receive(:read).and_call_original
           allow(IO).to receive(:read).with('./tmp/selfie.png').and_return(image_bytes)
           allow(IO).to receive(:read).with('./tmp/id_image.png').and_return(image_bytes)
 
