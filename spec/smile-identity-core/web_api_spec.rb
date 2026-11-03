@@ -614,7 +614,7 @@ RSpec.describe SmileIdentityCore::WebApi do
       context 'with only physical files' do
         let(:expected_info) { info_json }
 
-        include_examples 'a readable archive'
+        it_behaves_like 'a readable archive'
 
         it 'contains the necessary info.json file in the zip' do
           zip_up_file.rewind
@@ -688,7 +688,7 @@ RSpec.describe SmileIdentityCore::WebApi do
         let(:zip_up_file) { connection.send(:zip_up_file, info_json_v2) }
         let(:expected_info) { info_json_v2 }
 
-        include_examples 'a readable archive'
+        it_behaves_like 'a readable archive'
 
         it 'contains the necessary info.json file in the zip' do
           zip_up_file.rewind

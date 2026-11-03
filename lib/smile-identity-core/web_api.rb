@@ -71,7 +71,7 @@ module SmileIdentityCore
       raise ArgumentError, 'Image details needs to be an array' unless images.is_a?(Array)
 
       # all job types require atleast a selfie
-      if images.empty? || images.none? { |h| (h[:image_type_id]).zero? || h[:image_type_id] == 2 }
+      if images.empty? || images.none? { |h| h[:image_type_id].zero? || h[:image_type_id] == 2 }
         raise ArgumentError, 'You need to send through at least one selfie image'
       end
 
@@ -165,9 +165,9 @@ module SmileIdentityCore
     end
 
     def validate_enroll_with_id
-      if (@images.none? { |h| h[:image_type_id] == 1 || h[:image_type_id] == 3 }) && @id_info[:entered] != 'true'
-        raise ArgumentError, 'You are attempting to complete a job type 1 without providing an id card image or id info'
-      end
+      return unless @images.none? { |h| [1, 3].include?(h[:image_type_id]) } && @id_info[:entered] != 'true'
+
+      raise ArgumentError, 'You are attempting to complete a job type 1 without providing an id card image or id info'
     end
 
     def check_boolean(key, obj)
@@ -302,7 +302,7 @@ module SmileIdentityCore
 
         if @images.length.positive?
           @images.each do |img|
-            if (img[:image_type_id]).zero? || img[:image_type_id] == 1
+            if img[:image_type_id].zero? || img[:image_type_id] == 1
               zos.put_next_entry(File.basename(img[:image]))
               zos.print File.read(img[:image])
             end
