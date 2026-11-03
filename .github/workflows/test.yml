@@ -13,8 +13,6 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # Ruby 4.0 is new to the matrix; don't let it block merges until it has a green history.
-    continue-on-error: ${{ matrix.ruby == '4.0' }}
     strategy:
       fail-fast: false
       matrix:
