@@ -1,5 +1,8 @@
 # Smile Identity Ruby Server Side SDK
 
+[![Build Status](https://github.com/smileidentity/smile-identity-core-ruby/actions/workflows/test.yml/badge.svg)](https://github.com/smileidentity/smile-identity-core-ruby/actions/workflows/test.yml)
+![Ruby](https://img.shields.io/badge/ruby-3.0%20%E2%80%93%204.0-blue)
+
 Requires Ruby 3.0 or later.
 
 Smile Identity provides the best solutions for real time Digital KYC, identity verification, user onboarding, and user authentication across Africa. Our server side libraries make it easy to integrate us on the server-side. Since the library is server-side, you will be required to pass the images (if required) to the library.

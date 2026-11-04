@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Declare the `logger` dependency so the SDK loads on Ruby 4.0, where `logger` is no longer a default gem.
 
 ## [3.0.0] - 2026-09-07
 ### Changed

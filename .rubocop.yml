@@ -1,12 +1,19 @@
 ---
 
-require:
+plugins:
 - rubocop-rake
 - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 3.0
   NewCops: enable
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+# Renaming public methods like Signature#confirm_signature would break callers.
+Naming/PredicateMethod:
+  Enabled: false
 
 Bundler/DuplicatedGem:
   Enabled: true
@@ -167,7 +174,10 @@ RSpec/ExampleLength:
   Enabled: true
   Max: 150
 
-RSpec/FilePath:
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/SpecFilePathSuffix:
   Enabled: false
 
 RSpec/InstanceVariable:

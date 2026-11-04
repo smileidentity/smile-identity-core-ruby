@@ -32,14 +32,15 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 2.0'
-  spec.add_development_dependency 'rake', '~> 12.3'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 1.37.1'
-  spec.add_development_dependency 'rubocop-rake', '~> 0.6.0'
-  spec.add_development_dependency 'rubocop-rspec', '~> 2.14.1'
-  spec.add_development_dependency 'simplecov', '~> 0.18'
+  spec.add_development_dependency 'rubocop', '~> 1.68'
+  spec.add_development_dependency 'rubocop-rake', '~> 0.7'
+  spec.add_development_dependency 'rubocop-rspec', '~> 3.0'
+  spec.add_development_dependency 'simplecov', '~> 0.22'
 
   spec.add_dependency 'base64', '~> 0.3'
+  spec.add_dependency 'logger', '~> 1.5'
   spec.add_dependency 'rubyzip', '>= 3.4.0', '< 4.0'
   spec.add_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
   spec.metadata['rubygems_mfa_required'] = 'true'
