@@ -836,6 +836,70 @@ RSpec.describe SmileIdentityCore::WebApi do
       it 'increments the counter if the counter is less than 20 and job_complete is not true' do
         # NOTE: to give more thought
       end
+
+      context 'when a poll gets HTTP 429' do
+        let(:job_status_url) { 'https://testapi.smileidentity.com/v1/job_status' }
+        let(:complete_body) do
+          { timestamp: timestamp.to_s, signature: @signature.to_s, job_complete: true, code: '2302' }.to_json
+        end
+        let(:complete) { Typhoeus::Response.new(code: 200, body: complete_body) }
+
+        before { allow(connection).to receive(:sleep) }
+
+        def too_many_requests(body: '{"error":"Too many requests"}', headers: nil)
+          Typhoeus::Response.new(code: 429, body: body, headers: headers)
+        end
+
+        it 'keeps polling when the 429 has a JSON body' do
+          Typhoeus.stub(job_status_url).and_return([too_many_requests, complete])
+
+          expect(connection.send(:query_job_status)).to eq(JSON.parse(complete_body))
+          expect(connection).to have_received(:sleep).with(2).twice
+        end
+
+        it 'keeps polling when the 429 has a plain text body' do
+          Typhoeus.stub(job_status_url).and_return([too_many_requests(body: 'Too Many Requests'), complete])
+
+          expect(connection.send(:query_job_status)).to eq(JSON.parse(complete_body))
+        end
+
+        it 'waits for Retry-After when it is longer than the poll interval' do
+          Typhoeus.stub(job_status_url).and_return([too_many_requests(headers: { 'Retry-After' => '10' }), complete])
+
+          expect(connection.send(:query_job_status)).to eq(JSON.parse(complete_body))
+          expect(connection).to have_received(:sleep).with(2).ordered
+          expect(connection).to have_received(:sleep).with(10).ordered
+        end
+
+        it 'waits no longer than 60 seconds for Retry-After' do
+          Typhoeus.stub(job_status_url).and_return([too_many_requests(headers: { 'Retry-After' => '600' }), complete])
+
+          connection.send(:query_job_status)
+          expect(connection).to have_received(:sleep).with(60)
+        end
+
+        it 'waits for the poll interval when Retry-After is shorter' do
+          Typhoeus.stub(job_status_url).and_return([too_many_requests(headers: { 'Retry-After' => '1' }), complete])
+
+          connection.send(:query_job_status)
+          expect(connection).to have_received(:sleep).with(2).twice
+        end
+
+        it 'ignores a Retry-After that is an HTTP date' do
+          headers = { 'Retry-After' => 'Wed, 21 Oct 2026 07:28:00 GMT' }
+          Typhoeus.stub(job_status_url).and_return([too_many_requests(headers: headers), complete])
+
+          expect(connection.send(:query_job_status)).to eq(JSON.parse(complete_body))
+          expect(connection).to have_received(:sleep).with(2).twice
+        end
+
+        it 'raises when the last poll gets 429' do
+          Typhoeus.stub(job_status_url).and_return(Array.new(20) { too_many_requests(body: 'Too Many Requests') })
+
+          expect { connection.send(:query_job_status) }.to raise_error(SmileIdentityCore::RateLimitedError)
+          expect(connection).to have_received(:sleep).exactly(20).times
+        end
+      end
     end
 
     describe 'get_web_token' do

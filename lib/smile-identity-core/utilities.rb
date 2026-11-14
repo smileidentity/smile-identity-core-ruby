@@ -35,6 +35,12 @@ module SmileIdentityCore
       )
 
       request.on_complete do |response|
+        if response.code == 429
+          retry_after = response.headers&.[]('Retry-After').to_s.strip
+          raise RateLimitedError.new("#{response.code}: #{response.body}",
+            retry_after.match?(/\A\d+\z/) ? retry_after.to_i : nil)
+        end
+
         body = JSON.parse(response.body)
 
         # NB: we have to trust that the server will return the right kind of

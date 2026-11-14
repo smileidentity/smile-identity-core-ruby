@@ -336,11 +336,17 @@ module SmileIdentityCore
       request.run
     end
 
-    def query_job_status(counter = 0)
-      counter < 4 ? (sleep 2) : (sleep 6)
+    def query_job_status(counter = 0, retry_after = 0)
+      sleep [counter < 4 ? 2 : 6, retry_after].max
       counter += 1
 
-      response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options)
+      begin
+        response = @utilies_connection.get_job_status(@partner_params[:user_id], @partner_params[:job_id], @options)
+      rescue RateLimitedError => e
+        raise if counter == 20
+
+        return query_job_status(counter, [e.retry_after.to_i, 60].min)
+      end
 
       if response && (response['job_complete'] == true || counter == 20)
         response
