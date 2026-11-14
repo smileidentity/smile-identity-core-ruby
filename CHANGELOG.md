@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Declare the `logger` dependency so the SDK loads on Ruby 4.0, where `logger` is no longer a default gem.
+- `WebApi#submit_job` with `return_job_status` no longer loses the job result when a job status poll gets HTTP 429. It keeps polling within the same 20 polls, waiting for `Retry-After` (whole seconds, up to 60) when that is longer than the poll interval. A 429 on the last poll raises `SmileIdentityCore::RateLimitedError`, which `Utilities#get_job_status` now also raises on HTTP 429.
 
 ## [3.0.0] - 2026-09-07
 ### Changed

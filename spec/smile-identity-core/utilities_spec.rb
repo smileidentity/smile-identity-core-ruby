@@ -117,6 +117,25 @@ RSpec.describe SmileIdentityCore::Utilities do
         end.to raise_error('Unable to confirm validity of the job_status response')
       end
     end
+
+    context 'when the response is HTTP 429' do
+      it 'raises a RateLimitedError with Retry-After in whole seconds' do
+        Typhoeus.stub(@url).and_return(Typhoeus::Response.new(code: 429, body: 'Too Many Requests',
+          headers: { 'Retry-After' => '5' }))
+
+        expect do
+          connection.send(:query_job_status, { some: 'json data' })
+        end.to raise_error(SmileIdentityCore::RateLimitedError) { |error| expect(error.retry_after).to eq(5) }
+      end
+
+      it 'sets retry_after to nil when Retry-After is missing' do
+        Typhoeus.stub(@url).and_return(Typhoeus::Response.new(code: 429, body: '{"error":"Too many requests"}'))
+
+        expect do
+          connection.send(:query_job_status, { some: 'json data' })
+        end.to raise_error(SmileIdentityCore::RateLimitedError) { |error| expect(error.retry_after).to be_nil }
+      end
+    end
   end
 
   describe '#configure_job_query' do
