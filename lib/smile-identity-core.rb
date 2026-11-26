@@ -14,4 +14,15 @@ require_relative 'smile-identity-core/constants/job_type'
 
 module SmileIdentityCore
   class Error < StandardError; end
+
+  # Raised when the job status endpoint answers HTTP 429. retry_after holds the
+  # Retry-After header in whole seconds, or nil when it is missing or a date.
+  class RateLimitedError < Error
+    attr_reader :retry_after
+
+    def initialize(message, retry_after = nil)
+      super(message)
+      @retry_after = retry_after
+    end
+  end
 end
